@@ -1,0 +1,158 @@
+@extends('layouts.app')
+
+@section('title', 'Создание заявки на доставку')
+
+@section('content')
+
+    <div id="contain" class="layout">
+        <div id="navbar-button" class="navbar-toggler">
+            <svg class="navbar-toggler__ico navbar-toggler__ico--open" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 4H21V6H3V4ZM3 11H21V13H3V11ZM3 18H21V20H3V18Z" fill="white"/>
+            </svg>
+            <svg class="navbar-toggler__ico navbar-toggler__ico--close" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M11.9997 10.586L16.9497 5.63599L18.3637 7.04999L13.4137 12L18.3637 16.95L16.9497 18.364L11.9997 13.414L7.04974 18.364L5.63574 16.95L10.5857 12L5.63574 7.04999L7.04974 5.63599L11.9997 10.586Z" fill="#fff"></path>
+            </svg>
+        </div>
+        @include('sidebar')
+    <div class="layout__right">
+        @include('header')
+        <section class="request-section">
+            <h3>Создание заявки на доставку</h3>
+            <div class="request-content">
+{{--                <div class="btn request-btn js-open-modal" data-modal="modal-request1">--}}
+{{--                    <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">--}}
+{{--                        <path d="M9.99991 9.48832L13.5357 13.0233L12.3566 14.2025L10.8332 12.6792V17.3333H9.16658V12.6775L7.64325 14.2025L6.46408 13.0233L9.99991 9.48832ZM9.99991 0.666657C11.4307 0.666725 12.8116 1.19258 13.8801 2.14426C14.9485 3.09593 15.63 4.40704 15.7949 5.82832C16.8318 6.11109 17.7363 6.74924 18.3505 7.63126C18.9646 8.51328 19.2492 9.58307 19.1546 10.6536C19.06 11.7242 18.5922 12.7275 17.8329 13.4882C17.0736 14.2488 16.0712 14.7185 15.0007 14.815V13.1367C15.3842 13.0819 15.7529 12.9513 16.0854 12.7525C16.4179 12.5536 16.7074 12.2906 16.937 11.9787C17.1667 11.6667 17.332 11.3122 17.4231 10.9357C17.5143 10.5592 17.5296 10.1683 17.468 9.78588C17.4065 9.40343 17.2694 9.03708 17.0647 8.7082C16.86 8.37932 16.5919 8.0945 16.2759 7.87038C15.96 7.64626 15.6025 7.48732 15.2245 7.40283C14.8465 7.31835 14.4554 7.31002 14.0741 7.37832C14.2046 6.77073 14.1975 6.14163 14.0534 5.53712C13.9093 4.9326 13.6318 4.36798 13.2412 3.8846C12.8507 3.40122 12.3569 3.01133 11.7961 2.74349C11.2354 2.47564 10.6218 2.33663 10.0003 2.33663C9.37887 2.33663 8.76529 2.47564 8.20452 2.74349C7.64375 3.01133 7.14999 3.40122 6.75941 3.8846C6.36884 4.36798 6.09134 4.9326 5.94723 5.53712C5.80313 6.14163 5.79607 6.77073 5.92658 7.37832C5.16629 7.23555 4.38043 7.40064 3.74187 7.83729C3.1033 8.27394 2.66435 8.94637 2.52158 9.70666C2.3788 10.4669 2.5439 11.2528 2.98055 11.8914C3.41719 12.5299 4.08963 12.9689 4.84991 13.1117L4.99991 13.1367V14.815C3.92945 14.7186 2.92692 14.2491 2.16752 13.4885C1.40813 12.7279 0.940184 11.7246 0.845474 10.654C0.750763 9.5834 1.03531 8.51356 1.64939 7.63147C2.26346 6.74938 3.168 6.11115 4.20491 5.82832C4.36967 4.40697 5.05108 3.09575 6.11956 2.14404C7.18804 1.19234 8.56904 0.666543 9.99991 0.666657Z" fill="white"/>--}}
+{{--                    </svg>--}}
+{{--                    <input type="submit" form="request-form" value="Создать заявку">--}}
+{{--                    <span>Создать заявку</span>--}}
+{{--                    <label for="submit-form" tabindex="0">Создать заявку</label>--}}
+{{--                    <div class="btn request-btn js-open-modal">--}}
+{{--                        <input class="request-field-btn" type="submit" value="Создать заявку" form="request-form">--}}
+{{--                    </div>--}}
+{{--                    --}}
+{{--                </div>--}}
+                <input class="btn request-btn" type="submit" value="Создать заявку" form="request-form" data-modal="modal-request2">
+                <div class="request-info">
+                    Информация / пояснение о загрузке данных от куда либо. <br>
+                    Возможно инструкция к загрузке?
+                </div>
+            </div>
+            <div class="modal" data-modal="modal-request1">
+                <svg class="modal__cross js-modal-close" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M11.9997 10.586L16.9497 5.63599L18.3637 7.04999L13.4137 12L18.3637 16.95L16.9497 18.364L11.9997 13.414L7.04974 18.364L5.63574 16.95L10.5857 12L5.63574 7.04999L7.04974 5.63599L11.9997 10.586Z" fill="#888888"/>
+                </svg>
+                <div class="modal-title">Спасибо за заявку!</div>
+                <div class="modal-text">Отслеживать статус или редактировать заявку,
+                    вы можете в разделе <a href="">«Список заявок»</a></div>
+                <div class="btn request-btn">
+                    <span>Создать еще заявку</span>
+                </div>
+            </div>
+            <div class="modal" data-modal="modal-request2">
+                <svg class="modal__cross js-modal-close" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M11.9997 10.586L16.9497 5.63599L18.3637 7.04999L13.4137 12L18.3637 16.95L16.9497 18.364L11.9997 13.414L7.04974 18.364L5.63574 16.95L10.5857 12L5.63574 7.04999L7.04974 5.63599L11.9997 10.586Z" fill="#888888"/>
+                </svg>
+                <div class="modal-title">Спасибо за заявку!</div>
+                <div class="modal-text">Отслеживать статус или редактировать заявку,
+                    вы можете в разделе <a href="">«Список заявок»</a></div>
+                <div class="btn request-btn">
+                    <span>Создать еще заявку</span>
+                </div>
+            </div>
+        </section>
+        <section class="request-section--manually">
+            <h3>Создание заявки в ручную</h3>
+            <div class="request-form">
+                <div class="request-form__wrapper">
+                    <form id="request-form" name="request-form" method="post" action="{{ route('application-create') }}">
+                        @csrf
+                        <input type="text" hidden value="{{ $user->id }}" name="user_id">
+                        <input type="text" value="" id="n-order" class="text" placeholder="Номер заказа" name="order_number">
+                        <input type="text" value="" id="n-product" class="text" placeholder="Наименование товара" name="product_name">
+                        <input type="text" value="" id="vendor" class="text" placeholder="Артикул" name="product_art">
+                        <input type="text" value="" id="brand" class="text" placeholder="Бренд" name="product_brand">
+                        <div class="field-title">Форма оплаты</div>
+                        <select class="select" name="payment_type">
+                            <option>Онлайн оплата банковской картой</option>
+                            <option>Онлайн оплата</option>
+                            <option>Онлайн оплата банковской картой</option>
+                        </select>
+                        <div class="field-title">Ставка НДС</div>
+                        <select class="select" name="vat">
+                            <option>0%</option>
+                            <option>10%</option>
+                            <option>15%</option>
+                        </select>
+                        <div class="field-title field-title--cost">Стоимость</div>
+                        <input type="text" class="field-cost text" value name="cost">
+                        <div class="field-title">Параметры отправляемого груза</div>
+                        <div class="field-group">
+                            <input type="text" value="" id="p-width" class="text" placeholder="Ширина, см" name="width">
+                            <input type="text" value="" id="p-height" class="text" placeholder="Высота, см" name="height">
+                        </div>
+                        <div class="field-group">
+                            <input type="text" value="" id="p-depth" class="text" placeholder="Глубина, см" name="depth">
+                            <input type="text" value="" id="p-amount" class="text" placeholder="Количество" name="count">
+                        </div>
+                        <div class="field-group">
+                            <input type="text" value="" id="p-volume" class="text" placeholder="Объем, м2" name="volume">
+                            <input type="text" value="" id="est-weight" class="text" placeholder="Расчетный вес, кг" name="weight">
+                        </div>
+                        <div class="field-title">Признак склада отгрузки</div>
+                        <select class="select" name="warehouse_address">
+                            <option>Выберите адрес</option>
+                            <option>ул. Ленина</option>
+                            <option>ул. Пушкина</option>
+                        </select>
+                        <input type="text" value="" id="delivery-date" class="text" placeholder="Дата доставки" name="delivery_date">
+                        <div class="field-title">Время доставки</div>
+                        <div class="field-group field-group--time">
+                            <div class="field-group__label">с</div>
+                            <select class="select" name="delivery_from">
+                                <option>9:00</option>
+                                <option>10:00</option>
+                                <option>11:00</option>
+                            </select>
+                            <div class="field-group__label">до</div>
+                            <select class="select" name="delivery_till">
+                                <option>18:00</option>
+                                <option>19:00</option>
+                                <option>20:00</option>
+                            </select>
+                        </div>
+                        <div class="field-title">Адрес доставки</div>
+                        <input type="text" value="" id="address" class="text"
+                               placeholder="Московская обл, г Луховицы, деревня Асошники, ул Самара, д 1"
+                                name="delivery_address">
+                        <div class="field-group">
+                            <input type="text" value="" id="flat" class="text" placeholder="Квартира" name="flat">
+                            <input type="text" value="" id="floor" class="text" placeholder="Этаж" name="floor">
+                        </div>
+                        <div class="field-group">
+                            <input type="text" value="" id="entrance" class="text" placeholder="Подъезд" name="entrance">
+                            <input type="text" value="" id="postcode" class="text" placeholder="Почтовый индекс" name="postcode">
+                        </div>
+                        <div class="field-checkbox">
+                            <input id="remember" type="checkbox" class="field-checkbox__input" name="elevator" value="">
+                            <label class="field-checkbox__label" for="remember">Возможно ли использование лифта для доставки?</label>
+                        </div>
+                        <textarea class="field-textarea"></textarea>
+                        <div class="field-title">Информация о покупателе</div>
+                        <input type="text" value="" id="user" class="text" placeholder="ФИО покупателя" name="client_name">
+                        <input type="text" value="" id="phone" class="text" placeholder="Телефон покупателя" name="client_phone">
+                    </form>
+                </div>
+                <div class="request-form__block">
+                    <div class="request-form__title">Сумма к получению с покупателя</div>
+                    <div class="field-cost">33 990 ₽</div>
+                    <div class="btn request-btn js-open-modal" data-modal="modal-request2">
+                        <span>Создать заявку</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+    <div class="overlay js-overlay-modal"></div>
+    </div>
+@endsection

@@ -1,7 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\UserController;
+use  Illuminate\Support\Facades\Auth;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,10 +22,12 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('application-list', [ApplicationController::class, 'getList'])->name('application-list');
+Route::get('application', [ApplicationController::class, 'show'])->name('application');
+Route::get('profile', [UserController::class, 'show'])->name('profile');
+Route::get('profile-edit', [UserController::class, 'editForm'])->name('profile-edit-form');
+Route::post('profile-save', [UserController::class, 'save'])->name('profile-save');
+Route::get('avatar-delete', [UserController::class, 'avatarDelete'])->name('avatar-delete');
+Route::post('application-create', [ApplicationController::class, 'create'])->name('application-create');
 
-Route::group(['prefix' => 'v1'], function() {
-    Route::group(['prefix' => 'user'], function() {
-        Route::post('create', [\App\Http\Controllers\UserController::class, 'create']);
-    });
-});
