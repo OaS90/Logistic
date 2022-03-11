@@ -30,7 +30,7 @@ class CreateApplicationsTable extends Migration
             $table->float('volume')->comment('объем в м2');
             $table->float('weight')->comment('вес в кг');
             $table->text('warehouse_address')->comment('адрес склада отгрузки');
-            $table->dateTime('delivery_date');
+            $table->date('delivery_date');
             $table->string('delivery_time');
             $table->text('delivery_address');
             $table->integer('flat');

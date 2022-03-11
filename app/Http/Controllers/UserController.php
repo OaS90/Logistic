@@ -4,10 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Infrastructure\Repositories\UserRepository;
 
 class UserController extends Controller
 {
+    protected $repo;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->repo = $userRepository;
+    }
+
     public function show()
     {
         return view('profile', ['user' => Auth::user()]);
@@ -18,27 +25,27 @@ class UserController extends Controller
         return view('profile-edit', ['user' => Auth::user()]);
     }
 
-    public function save(Request $request)
+    public function update(Request $request): \Illuminate\Http\RedirectResponse
     {
         $user = Auth::user();
+        $data = $request->except(['_token']);
 
         if ($request->hasFile('avatar')) {
             $fileName = $request->file('avatar')->getClientOriginalName();
             $avatarPath = $request->file('avatar')->storeAs('avatars', $fileName, 'public');
-            $user->update(['avatar' => $avatarPath]);
+            $data['avatar'] = $avatarPath;
         }
 
-        $user->update($request->except(['_token', 'avatar']));
-
+        $this->repo->update($data, $user);
+        // нужно ли будет выводить попап?
         return redirect()->back();
     }
 
     public function avatarDelete(): \Illuminate\Http\RedirectResponse
     {
         $user = Auth::user();
-        Storage::delete('public/' . $user->avatar);
-        $user->update(['avatar' => '']);
-
+        $this->repo->deleteAvatar($user);
+        // нужно ли будет выводить попап?
         return redirect()->back();
     }
 }

@@ -27,7 +27,7 @@ Route::get('application-list', [ApplicationController::class, 'getList'])->name(
 Route::get('application', [ApplicationController::class, 'show'])->name('application');
 Route::get('profile', [UserController::class, 'show'])->name('profile');
 Route::get('profile-edit', [UserController::class, 'editForm'])->name('profile-edit-form');
-Route::post('profile-save', [UserController::class, 'save'])->name('profile-save');
+Route::post('profile-save', [UserController::class, 'update'])->name('profile-save');
 Route::get('avatar-delete', [UserController::class, 'avatarDelete'])->name('avatar-delete');
 Route::post('application-create', [ApplicationController::class, 'create'])->name('application-create');
 

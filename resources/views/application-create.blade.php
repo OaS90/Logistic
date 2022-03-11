@@ -66,7 +66,7 @@
                 <div class="request-form__wrapper">
                     <form id="request-form" name="request-form" method="post" action="{{ route('application-create') }}">
                         @csrf
-                        <input type="text" hidden value="{{ $user->id }}" name="user_id">
+                        <input type="text" hidden value="{{ $userId }}" name="user_id">
                         <input type="text" value="" id="n-order" class="text" placeholder="Номер заказа" name="order_number">
                         <input type="text" value="" id="n-product" class="text" placeholder="Наименование товара" name="product_name">
                         <input type="text" value="" id="vendor" class="text" placeholder="Артикул" name="product_art">
@@ -133,7 +133,7 @@
                             <input type="text" value="" id="postcode" class="text" placeholder="Почтовый индекс" name="postcode">
                         </div>
                         <div class="field-checkbox">
-                            <input id="remember" type="checkbox" class="field-checkbox__input" name="elevator" value="">
+                            <input id="remember" type="checkbox" class="field-checkbox__input" name="elevator">
                             <label class="field-checkbox__label" for="remember">Возможно ли использование лифта для доставки?</label>
                         </div>
                         <textarea class="field-textarea"></textarea>
