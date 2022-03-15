@@ -115,8 +115,8 @@
                             <th>Адрес доставки</th>
                         </tr>
                         @foreach($list as $application)
-                            <tr class="select-td">
-                                <td>{{ $application->order_number }}</td>
+                            <tr>
+                                <td><a href="{{ route('application-show', ['id' => $application->id]) }}">{{ $application->order_number }}</a></td>
                                 <td>{{ $application->product_name }}</td>
                                 <td>{{ $application->product_art }}</td>
                                 <td>{{ $application->product_brand }}</td>

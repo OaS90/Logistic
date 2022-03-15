@@ -1,6 +1,6 @@
 <header class="navbar-header">
     <div class="navbar-logo">
-        <img src="images/logo.png" alt="Транспорт Логистика">
+        <img src="{{ asset('images/logo.png') }}" alt="Транспорт Логистика">
     </div>
     <div class="navbar-personal">
         <div class="personal__help" title="Помощь">
@@ -26,7 +26,7 @@
                                 fill="white"/>
                         </svg>
                    </span>
-            <span class="user-name">Иван Иванов Иванович<br>Клиент ПГК</span>
+            <span class="user-name">{{ $user->full_name }}<br>{{ $user->company }}</span>
             <span class="user-btn">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path

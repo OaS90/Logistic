@@ -13,8 +13,10 @@
         rel="stylesheet">
 </head>
 <body id="main">
-    @yield('content')
-    <script src="{{ asset('js/main.js') }}"></script>
-    <script src="{{ asset('js/app.js') }}"></script>
+    <div id="app">
+        @yield('content')
+    </div>
+    <script src="{{ asset('js/main.js') }}" type="application/javascript"></script>
+    <script src="{{ asset('js/app.js') }}" type="application/javascript"></script>
 </body>
 </html>

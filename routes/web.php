@@ -24,9 +24,10 @@ Auth::routes();
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('application-list', [ApplicationController::class, 'getList'])->name('application-list');
 Route::get('application', [ApplicationController::class, 'show'])->name('application');
+Route::get('application/{id}', [ApplicationController::class, 'current'])->name('application-show');
 Route::get('profile', [UserController::class, 'show'])->name('profile');
 Route::get('profile-edit', [UserController::class, 'editForm'])->name('profile-edit-form');
 Route::post('profile-save', [UserController::class, 'update'])->name('profile-save');
 Route::get('avatar-delete', [UserController::class, 'avatarDelete'])->name('avatar-delete');
 Route::post('application-create', [ApplicationController::class, 'create'])->name('application-create');
-
+Route::post('application-address', [ApplicationController::class, 'getAddress']);

@@ -8,16 +8,22 @@ use Illuminate\Support\Facades\Auth;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Application\CsvExportService;
 use App\Infrastructure\Exports\ApplicationExport;
+use App\Infrastructure\DadataAdapter;
 
 class ApplicationController extends Controller
 {
     protected $repo;
     protected $exportService;
+    protected $dadataAdapter;
 
-    public function __construct(ApplicationRepository $applicationRepository, CsvExportService $exportService)
+    public function __construct(ApplicationRepository $applicationRepository,
+                                CsvExportService $exportService,
+                                DadataAdapter $dadataAdapter
+    )
     {
         $this->repo = $applicationRepository;
         $this->exportService = $exportService;
+        $this->dadataAdapter = $dadataAdapter;
     }
 
     public function getList()
@@ -25,6 +31,11 @@ class ApplicationController extends Controller
         $list = $this->repo->getListByUserId(Auth::id());
 
         return view('application-list', ['list' => $list]);
+    }
+
+    public function current($id)
+    {
+        return view('application', ['application' => $this->repo->getById($id)]);
     }
 
     public function show()
@@ -36,7 +47,6 @@ class ApplicationController extends Controller
     {
         $data = $request->all();
         $data['delivery_time'] = $data['delivery_from'] . '-' . $data['delivery_till'];
-        $data['elevator'] = false;
         unset($data['delivery_from']);
         unset($data['delivery_till']);
         unset($data['_token']);
@@ -45,11 +55,22 @@ class ApplicationController extends Controller
         if ($newApplication)
             $this->makeCsvAndStore($newApplication);
 
-        return redirect()->back();
+        return response($request->all(), 200);
     }
 
     public function makeCsvAndStore($newApp)
     {
         $this->exportService->store(new ApplicationExport($newApp));
+    }
+
+    public function getAddress(Request $request)
+    {
+
+        return $this->dadataAdapter->getAddress($request->get('data'));
+    }
+
+    public function delete($id)
+    {
+        $this->repo->getById($id)->destroy();
     }
 }

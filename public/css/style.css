@@ -16,7 +16,9 @@ body {
 .profile-section__loading>input {
     display: none;
 }
-
+#app {
+    height: 100%;
+}
 a {
     text-decoration: none;
     color: #0595e6
