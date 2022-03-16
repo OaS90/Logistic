@@ -19,6 +19,10 @@ body {
 #app {
     height: 100%;
 }
+.profile-photo-delete a {
+    color: #888;
+}
+
 a {
     text-decoration: none;
     color: #0595e6
@@ -249,7 +253,7 @@ footer a {
     width: 88px;
     height: 88px;
     border-radius: 50%;
-    background: url(../images/adv_sprite.png);
+    background: url(adv_sprite.png);
     position: absolute;
     top: 0;
     left: calc(50% - 88px / 2)

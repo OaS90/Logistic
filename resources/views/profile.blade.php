@@ -38,7 +38,7 @@
                                     <input type="file" hidden name="avatar" id="file-input">
                                 </span>
                             </label>
-                            <span class="profile-photo-delete"><a href="{{ route('avatar-delete') }}">Удалить</a></span>
+                            <span class="profile-photo-delete"><a class="no-underline" href="{{ route('avatar-delete') }}">Удалить</a></span>
                         </div>
                     </div>
                     <div class="profile-section__data">
