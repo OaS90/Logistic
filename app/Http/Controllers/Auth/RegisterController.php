@@ -83,6 +83,7 @@ class RegisterController extends Controller
             'position' => $data['position'],
             'work_phone' => $data['work_phone'],
             'company' => $data['company'],
+            'mobile_phone' => $data['mobile_phone'],
             'inn' => $data['inn'],
             'kpp' => $data['kpp'],
             'okpo' => $data['okpo'],
