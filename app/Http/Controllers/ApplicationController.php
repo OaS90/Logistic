@@ -46,6 +46,7 @@ class ApplicationController extends Controller
     public function create(Request $request)
     {
         $data = $request->all();
+        $data['user_id'] = Auth::id();
         $data['delivery_time'] = $data['delivery_from'] . '-' . $data['delivery_till'];
         unset($data['delivery_from']);
         unset($data['delivery_till']);

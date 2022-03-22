@@ -231,6 +231,19 @@ footer a {
     display: flex
 }
 
+.time-picker {
+    width: 100%;
+    /*max-width: 310px;*/
+    margin-bottom: 0 !important;
+}
+.justify-unset {
+    justify-content: unset !important;
+}
+.mx-datepicker {
+    width: 310px !important;
+    max-width: 310px !important;
+}
+
 .advantage-content .advantage-item {
     width: 25%;
     padding: 108px 15px 0;

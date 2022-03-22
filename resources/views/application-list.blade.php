@@ -68,19 +68,21 @@
                         </div>
                         <div class="app-filter__wrapper app-filter__wrapper-period">
                             <div class="app-filter__ttl">За период</div>
-                            <div class="field-group">
+                            <div class="field-group justify-unset">
                                 <div class="field-group__label">С</div>
-                                <select class="select select--time">
-                                    <option>01.02.2022</option>
-                                    <option>02.02.2022</option>
-                                    <option>03.02.2022</option>
-                                </select>
+{{--                                <select class="select select--time">--}}
+{{--                                    <option>01.02.2022</option>--}}
+{{--                                    <option>02.02.2022</option>--}}
+{{--                                    <option>03.02.2022</option>--}}
+{{--                                </select>--}}
+                                <date-picker input-class="text time-picker"></date-picker>
                                 <div class="field-group__label">До</div>
-                                <select class="select select--time">
-                                    <option>__.__.___</option>
-                                    <option>04.02.2022</option>
-                                    <option>05.02.2022</option>
-                                </select>
+{{--                                <select class="select select--time">--}}
+{{--                                    <option>__.__.___</option>--}}
+{{--                                    <option>04.02.2022</option>--}}
+{{--                                    <option>05.02.2022</option>--}}
+{{--                                </select>--}}
+                                <date-picker input-class="text time-picker"></date-picker>
                             </div>
                         </div>
                         <input type="submit" value="Найти" class="btn">

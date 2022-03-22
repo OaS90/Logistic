@@ -10,6 +10,7 @@ window.Vue = require('vue').default;
 // import ExampleComponent from "./components/ExampleComponent";
 import ApplicationForm from "./components/ApplicationForm";
 import Popup from "./components/Popup";
+import DatePicker from "vue2-datepicker";
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -33,6 +34,7 @@ const app = new Vue({
     el: '#app',
     components: {
         ApplicationForm,
-        Popup
+        Popup,
+        DatePicker
     }
 });

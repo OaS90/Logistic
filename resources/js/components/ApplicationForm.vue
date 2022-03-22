@@ -57,29 +57,54 @@
                                  valueType="DD.MM.YYYY"
                                  class="delivery-date"
                                  format="DD.MM.YYYY"
+                                 placeholder="Дата доставки"
                         >
                     </date-picker>
 
                     <div class="field-title">Время доставки</div>
                     <div class="field-group field-group--time">
                         <div class="field-group__label">с</div>
-                        <select class="select" name="delivery_from" v-model="fields.delivery_from">
-                            <option>9:00</option>
-                            <option>10:00</option>
-                            <option>11:00</option>
-                        </select>
+<!--                        <select class="select" name="delivery_from" v-model="fields.delivery_from">-->
+<!--                            <option>9:00</option>-->
+<!--                            <option>10:00</option>-->
+<!--                            <option>11:00</option>-->
+<!--                        </select>-->
+                        <date-picker format="H:mm"
+                                     input-class="text time-picker"
+                                     type="time"
+                                     v-model="fields.delivery_from"
+                                     name="delivery_from"
+                                     value-type="H:mm"
+                                     :timePickerOptions="{
+                                        start: '09:00',
+                                        step: '01:00',
+                                        end: '19:00',
+                                     }">
+                        </date-picker>
                         <div class="field-group__label">до</div>
-                        <select class="select" name="delivery_till" v-model="fields.delivery_till">
-                            <option>18:00</option>
-                            <option>19:00</option>
-                            <option>20:00</option>
-                        </select>
+<!--                        <select class="select" name="delivery_till" v-model="fields.delivery_till">-->
+<!--                            <option>18:00</option>-->
+<!--                            <option>19:00</option>-->
+<!--                            <option>20:00</option>-->
+<!--                        </select>-->
+                        <date-picker format="H:mm"
+                                     input-class="text time-picker"
+                                     type="time"
+                                     v-model="fields.delivery_till"
+                                     name="delivery_till"
+                                     value-type="H:mm"
+                                     :timePickerOptions="{
+                                        start: '09:00',
+                                        step: '01:00',
+                                        end: '19:00',
+                                     }">
+                        </date-picker>
                     </div>
                     <div class="field-title">Адрес доставки</div>
 
                     <input type="text" value="" id="address" class="text"
                            placeholder="Московская обл, г Луховицы, деревня Асошники, ул Самара, д 1"
-                           name="delivery_address" v-model="address">
+                           name="delivery_address" v-model="fields.delivery_address">
                     <div class="field-group">
                         <input type="text" value="" id="flat" class="text" placeholder="Квартира" name="flat"
                                v-model="fields.flat">
@@ -170,5 +195,8 @@ export default {
 <style scoped>
 .delivery-date {
     width: 100%;
+}
+.field-group {
+    justify-content: unset;
 }
 </style>
