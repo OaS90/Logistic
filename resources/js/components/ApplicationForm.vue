@@ -70,6 +70,7 @@
 <!--                            <option>11:00</option>-->
 <!--                        </select>-->
                         <date-picker format="H:mm"
+                                     class="date-time"
                                      input-class="text time-picker"
                                      type="time"
                                      v-model="fields.delivery_from"
@@ -88,6 +89,7 @@
 <!--                            <option>20:00</option>-->
 <!--                        </select>-->
                         <date-picker format="H:mm"
+                                     class="date-time"
                                      input-class="text time-picker"
                                      type="time"
                                      v-model="fields.delivery_till"
@@ -195,6 +197,10 @@ export default {
 <style scoped>
 .delivery-date {
     width: 100%;
+}
+.date-time {
+        width: 310px !important;
+        max-width: 310px !important;
 }
 .field-group {
     justify-content: unset;

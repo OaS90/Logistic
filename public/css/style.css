@@ -239,10 +239,6 @@ footer a {
 .justify-unset {
     justify-content: unset !important;
 }
-.mx-datepicker {
-    width: 310px !important;
-    max-width: 310px !important;
-}
 
 .advantage-content .advantage-item {
     width: 25%;
