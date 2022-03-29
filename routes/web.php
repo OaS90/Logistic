@@ -31,3 +31,4 @@ Route::post('profile-save', [UserController::class, 'update'])->name('profile-sa
 Route::get('avatar-delete', [UserController::class, 'avatarDelete'])->name('avatar-delete');
 Route::post('application-create', [ApplicationController::class, 'create'])->name('application-create');
 Route::post('application-address', [ApplicationController::class, 'getAddress']);
+Route::get('application/{id}/sticker', [ApplicationController::class, 'makeSticker'])->name('make-sticker');

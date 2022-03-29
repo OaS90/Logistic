@@ -2,28 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Application\CsvExportService;
 use App\Infrastructure\Exports\ApplicationExport;
 use App\Infrastructure\DadataAdapter;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Picqer\Barcode\BarcodeGeneratorHTML;
+use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 
 class ApplicationController extends Controller
 {
     protected $repo;
     protected $exportService;
     protected $dadataAdapter;
+    protected $codeGenerator;
 
     public function __construct(ApplicationRepository $applicationRepository,
                                 CsvExportService $exportService,
-                                DadataAdapter $dadataAdapter
+                                DadataAdapter $dadataAdapter,
+                                BarcodeGeneratorDynamicHTML $codeGenerator
     )
     {
         $this->repo = $applicationRepository;
         $this->exportService = $exportService;
         $this->dadataAdapter = $dadataAdapter;
+        $this->codeGenerator = $codeGenerator;
     }
 
     public function getList()
@@ -73,5 +78,16 @@ class ApplicationController extends Controller
     public function delete($id)
     {
         $this->repo->getById($id)->destroy();
+    }
+
+    public function makeSticker($applicationId)
+    {
+        // todo перенести в сервис
+        $application = $this->repo->getById($applicationId);
+        $barcode = $this->codeGenerator->getBarcode($application->order_number, $this->codeGenerator::TYPE_EAN_13);
+        $pdf = PDF::loadView('sticker', ['code' => $barcode, 'application' => $application])
+            ->setPaper([30, -30, 280.77, 400.16]);
+
+        return $pdf->download('sticker_' . $application->order_number .'.pdf');
     }
 }
