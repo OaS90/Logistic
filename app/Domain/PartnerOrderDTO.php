@@ -2,6 +2,8 @@
 
 namespace App\Domain;
 
+use Carbon\Carbon;
+
 class PartnerOrderDTO
 {
     private $app;
@@ -17,7 +19,7 @@ class PartnerOrderDTO
             'id' => $this->app->id,
             'paymentMethod' => $this->app->payment_type,
             'comment' => $this->app->comment,
-            'deliveryDate' => $this->app->delivery_date,
+            'deliveryDate' => Carbon::createFromDate($this->app->delivery_date)->format('d.m.Y'),
             'deliveryTimeFrom' => $this->deliveryTime($this->app->delivery_time)[0],
             'deliveryTimeTo' => $this->deliveryTime($this->app->delivery_time)[1],
             'buyer' => [
