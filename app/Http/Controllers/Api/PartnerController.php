@@ -27,7 +27,7 @@ class PartnerController extends Controller
         $apps = [];
 
         foreach ($applications as $app) {
-            $apps[] = (new PartnerOrderDTO($app->toArray()))->make();
+            $apps[] = (new PartnerOrderDTO($app))->make();
         }
 
         return response()->json($apps, 200);

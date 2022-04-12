@@ -103,10 +103,16 @@
                         </date-picker>
                     </div>
                     <div class="field-title">Адрес доставки</div>
-
-                    <input type="text" value="" id="address" class="text"
-                           placeholder="Московская обл, г Луховицы, деревня Асошники, ул Самара, д 1"
-                           name="delivery_address" v-model="fields.delivery_address">
+                    <div>
+                        <input type="text" value="" id="address" class="text"
+                               placeholder="Московская обл, г Луховицы, деревня Асошники, ул Самара, д 1"
+                               name="delivery_address" @keyup="getAddress($event)" v-model="fields.delivery_address">
+                        <div v-if="suggestions.length > 0" class="suggestions-block">
+                            <ul class="suggestions">
+                                <li v-for="(item, index) in suggestions" @click="setAddress(index)">{{ item.value }}</li>
+                            </ul>
+                        </div>
+                    </div>
                     <div class="field-group">
                         <input type="text" value="" id="flat" class="text" placeholder="Квартира" name="flat"
                                v-model="fields.flat">
@@ -169,12 +175,13 @@ export default {
             showModal: false,
             address: null,
             hours: Array.from({ length: 10 }).map((_, i) => i + 8),
+            suggestions: [],
+            selectedAddress: null,
         }
     },
     methods: {
         submit() {
-            console.log(this.showModal)
-            axios.post('application-create', this.fields).then((response) => {
+            axios.post('application-create', {fields: this.fields, address:this.selectedAddress.data}).then((response) => {
                 this.showModal = true
             }).catch((response) => {
                 console.log(response)
@@ -186,7 +193,24 @@ export default {
             // очищаем поля
             Object.assign(this.$data, this.$options.data())
         },
+        setAddress(index) {
+            this.selectedAddress = this.suggestions[index]
+            this.fields.delivery_address = this.selectedAddress.value
+            this.suggestions = []
+        },
+        getAddress(event) {
+            axios.post('get-address', {input: event.target.value}).then((response) => {
+                this.suggestions = response.data
+            })
+        }
     },
+    // watch: {
+    //     "fields.delivery_address": function(newVal, previousVal) {
+    //         axios.post('get-address', {input: newVal}).then((response) => {
+    //             this.suggestions = response.data
+    //         })
+    //     }
+    // },
     components: {
         Popup,
         DatePicker
@@ -204,5 +228,24 @@ export default {
 }
 .field-group {
     justify-content: unset;
+}
+.suggestions {
+    list-style: none;
+    border: 1px solid #ddd;
+    position: absolute;
+    z-index: 10;
+    background-color: white;
+    width: 100%;
+    top:-44px;
+    padding-left: 10px;
+}
+
+.suggestions li:hover {
+    cursor: pointer;
+    background-color: #ddd;
+}
+
+.suggestions-block {
+    position: relative;
 }
 </style>

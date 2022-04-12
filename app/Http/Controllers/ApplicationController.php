@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Infrastructure\Repositories\ApplicationRepository;
@@ -18,17 +19,20 @@ class ApplicationController extends Controller
     protected $exportService;
     protected $dadataAdapter;
     protected $codeGenerator;
+    protected $addressRepository;
 
     public function __construct(ApplicationRepository $applicationRepository,
                                 CsvExportService $exportService,
                                 DadataAdapter $dadataAdapter,
-                                BarcodeGeneratorDynamicHTML $codeGenerator
+                                BarcodeGeneratorDynamicHTML $codeGenerator,
+                                DeliveryAddressRepository $addressRepository
     )
     {
         $this->repo = $applicationRepository;
         $this->exportService = $exportService;
         $this->dadataAdapter = $dadataAdapter;
         $this->codeGenerator = $codeGenerator;
+        $this->addressRepository = $addressRepository;
     }
 
     public function getList()
@@ -50,16 +54,24 @@ class ApplicationController extends Controller
 
     public function create(Request $request)
     {
-        $data = $request->all();
+        $data = $request->get('fields');
+        $address = $request->get('address');
         $data['user_id'] = Auth::id();
         $data['delivery_time'] = $data['delivery_from'] . '-' . $data['delivery_till'];
         unset($data['delivery_from']);
         unset($data['delivery_till']);
         unset($data['_token']);
+        $address['flat'] = $data['flat'];
+        $address['floor'] = $data['floor'];
+        $address['entrance'] = $data['entrance'];
+        $address['postcode'] = $data['postcode'];
+        $address['elevator'] = $data['elevator'];
+        $newAddress = $this->addressRepository->create($address);
+        $data['delivery_address'] = $newAddress->id;
         $newApplication = $this->repo->create($data);
 
-        if ($newApplication)
-            $this->makeCsvAndStore($newApplication);
+//        if ($newApplication)
+//            $this->makeCsvAndStore($newApplication);
 
         return response($request->all(), 200);
     }
@@ -71,8 +83,7 @@ class ApplicationController extends Controller
 
     public function getAddress(Request $request)
     {
-
-        return $this->dadataAdapter->getAddress($request->get('data'));
+        return $this->dadataAdapter->getAddress($request->get('input'));
     }
 
     public function delete($id)
