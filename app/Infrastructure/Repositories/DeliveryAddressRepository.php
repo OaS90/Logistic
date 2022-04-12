@@ -14,7 +14,7 @@ class DeliveryAddressRepository
             'city_fias' => $data['city_fias_id'],
             'street' => $data['street_with_type'],
             'street_fias' => $data['street_fias_id'],
-            'building' => $data['house'] . $data['block_type_full'] . ' ' . $data['block'],
+            'building' => $data['house'] . ' ' . $data['block_type_full'] . ' ' . $data['block'],
             'floor' => $data['floor'],
             'flat' => $data['flat'],
             'entrance' => $data['entrance'],

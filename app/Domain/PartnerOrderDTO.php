@@ -26,7 +26,7 @@ class PartnerOrderDTO
             ],
             'address' => [
                 'regionName'=> $this->app->address->region_name,
-                'cityName'=> $this->app->address,
+                'cityName'=> $this->app->address->city_name,
                 'cityId'=> $this->app->address->city_fias, // ФИАС код города/населенного пункта
                 'street'=> $this->app->address->street,
                 'streetId'=> $this->app->address->street_fias, // ФИАС код улицы
