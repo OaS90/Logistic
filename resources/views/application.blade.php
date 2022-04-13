@@ -132,19 +132,19 @@
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Квартира</div>
-                        <div class="profile-data__value">{{ $application->flat }}</div>
+                        <div class="profile-data__value">{{ $application->address->flat }}</div>
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Этаж</div>
-                        <div class="profile-data__value">{{ $application->floor }}</div>
+                        <div class="profile-data__value">{{ $application->address->floor }}</div>
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Подъезд</div>
-                        <div class="profile-data__value">{{ $application->entrance }}</div>
+                        <div class="profile-data__value">{{ $application->address->entrance }}</div>
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Почтовый индекс</div>
-                        <div class="profile-data__value">{{ $application->postcode }}</div>
+                        <div class="profile-data__value">{{ $application->address->postcode }}</div>
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Коментарии</div>

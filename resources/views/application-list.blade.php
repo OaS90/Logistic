@@ -131,7 +131,8 @@
                                 <td>{{ $application->delivery_date }}</td>
                                 <td>
                                     <div class="hidden-td">
-                                        {{ (strlen($application->delivery_address) > 13) ? substr($application->delivery_address,0,10).'...' : $application->delivery_address }}
+{{--                                        {{ (strlen($application->full_address) > 24) ? substr($application->full_address,0, 24).'...' : $application->full_address }}--}}
+                                        {{ $application->full_address }}
                                     </div>
                                 </td>
                             </tr>

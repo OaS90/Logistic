@@ -18,4 +18,17 @@ class Application extends Model
     {
         return $this->belongsTo(DeliveryAddress::class, 'delivery_address', 'id');
     }
+
+    public function getFullAddressAttribute()
+    {
+        return implode(', ', [
+            $this->address->city_name,
+            $this->address->region_name,
+            $this->address->street,
+            $this->address->building,
+            $this->address->entrance ? 'п. ' . $this->address->entrance : '',
+            $this->address->floor ? 'этаж ' . $this->address->floor : '',
+            $this->address->flat ? 'кв. ' . $this->address->flat : ''
+        ]);
+     }
 }

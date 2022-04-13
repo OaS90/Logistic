@@ -10,7 +10,6 @@ use App\Application\CsvExportService;
 use App\Infrastructure\Exports\ApplicationExport;
 use App\Infrastructure\DadataAdapter;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Picqer\Barcode\BarcodeGeneratorHTML;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 
 class ApplicationController extends Controller
