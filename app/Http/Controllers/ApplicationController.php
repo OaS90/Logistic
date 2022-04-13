@@ -56,19 +56,16 @@ class ApplicationController extends Controller
     {
         $data = $request->get('fields');
         $address = $request->get('address');
+        $addressExtra = $request->get('addressExtraInfo');
+        $addressData = array_merge($address, $addressExtra);
         $data['user_id'] = Auth::id();
         $data['delivery_time'] = $data['delivery_from'] . '-' . $data['delivery_till'];
         unset($data['delivery_from']);
         unset($data['delivery_till']);
         unset($data['_token']);
-        $address['flat'] = $data['flat'];
-        $address['floor'] = $data['floor'];
-        $address['entrance'] = $data['entrance'];
-        $address['postcode'] = $data['postcode'];
-        $address['elevator'] = $data['elevator'];
-        $newAddress = $this->addressRepository->create($address);
+        $newAddress = $this->addressRepository->create($addressData);
         $data['delivery_address'] = $newAddress->id;
-        $newApplication = $this->repo->create($data);
+        $this->repo->create($data);
 
 //        if ($newApplication)
 //            $this->makeCsvAndStore($newApplication);

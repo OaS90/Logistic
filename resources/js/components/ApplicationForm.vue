@@ -5,56 +5,56 @@
             <div class="request-form__wrapper">
                 <form id="request-form" name="request-form" method="post">
                     <input type="text" value="" id="n-order" class="text" placeholder="Номер заказа" name="order_number"
-                           v-model="fields.order_number">
+                           v-model="applicationFields.order_number">
                     <input type="text" value="" id="n-product" class="text" placeholder="Наименование товара" name="product_name"
-                           v-model="fields.product_name">
+                           v-model="applicationFields.product_name">
                     <input type="text" value="" id="vendor" class="text" placeholder="Артикул" name="product_art"
-                           v-model="fields.product_art">
+                           v-model="applicationFields.product_art">
                     <input type="text" value="" id="brand" class="text" placeholder="Бренд" name="product_brand"
-                           v-model="fields.product_brand">
+                           v-model="applicationFields.product_brand">
                     <div class="field-title">Форма оплаты</div>
-                    <select class="select" name="payment_type" v-model="fields.payment_type">
+                    <select class="select" name="payment_type" v-model="applicationFields.payment_type">
                         <option>Онлайн оплата банковской картой</option>
                         <option>Онлайн оплата</option>
                         <option>Онлайн оплата банковской картой</option>
                     </select>
                     <div class="field-title">Ставка НДС</div>
-                    <select class="select" name="vat" v-model="fields.vat">
+                    <select class="select" name="vat" v-model="applicationFields.vat">
                         <option>0%</option>
                         <option>10%</option>
                         <option>15%</option>
                     </select>
                     <div class="field-title field-title--cost">Стоимость</div>
-                        <input type="text" class="field-cost text" value name="cost" v-model="fields.cost">
+                        <input type="text" class="field-cost text" value name="cost" v-model="applicationFields.cost">
                     <div class="field-title">Параметры отправляемого груза</div>
                     <div class="field-group">
                         <input type="text" value="" id="p-width" class="text" placeholder="Ширина, см" name="width"
-                               v-model="fields.width">
+                               v-model="applicationFields.width">
                         <input type="text" value="" id="p-height" class="text" placeholder="Высота, см" name="height"
-                               v-model="fields.height">
+                               v-model="applicationFields.height">
                     </div>
                     <div class="field-group">
                         <input type="text" value="" id="p-depth" class="text" placeholder="Глубина, см" name="depth"
-                               v-model="fields.depth">
+                               v-model="applicationFields.depth">
                         <input type="text" value="" id="p-amount" class="text" placeholder="Количество" name="count"
-                               v-model="fields.count">
+                               v-model="applicationFields.count">
                     </div>
                     <div class="field-group">
                         <input type="text" value="" id="p-volume" class="text" placeholder="Объем, м2" name="volume"
-                               v-model="fields.volume">
+                               v-model="applicationFields.volume">
                         <input type="text" value="" id="est-weight" class="text" placeholder="Расчетный вес, кг" name="weight"
-                               v-model="fields.weight">
+                               v-model="applicationFields.weight">
                     </div>
                     <div class="field-title">Признак склада отгрузки</div>
-                    <select class="select" name="warehouse_address" v-model="fields.warehouse_address">
+                    <select class="select" name="warehouse_address" v-model="applicationFields.warehouse_address">
                         <option>Выберите адрес</option>
                         <option>ул. Ленина</option>
                         <option>ул. Пушкина</option>
                     </select>
 <!--                    <input type="text" value="" id="delivery-date" class="text" placeholder="Дата доставки" name="delivery_date"-->
 <!--                           v-model="fields.delivery_date">-->
-                    <date-picker input-class="text" v-model="fields.delivery_date"
-                                 valueType="DD.MM.YYYY"
+                    <date-picker input-class="text" v-model="applicationFields.delivery_date"
+                                 valueType="YYYY-MM-DD"
                                  class="delivery-date"
                                  format="DD.MM.YYYY"
                                  placeholder="Дата доставки"
@@ -73,7 +73,7 @@
                                      class="date-time"
                                      input-class="text time-picker"
                                      type="time"
-                                     v-model="fields.delivery_from"
+                                     v-model="applicationFields.delivery_from"
                                      name="delivery_from"
                                      value-type="H:mm"
                                      :timePickerOptions="{
@@ -92,7 +92,7 @@
                                      class="date-time"
                                      input-class="text time-picker"
                                      type="time"
-                                     v-model="fields.delivery_till"
+                                     v-model="applicationFields.delivery_till"
                                      name="delivery_till"
                                      value-type="H:mm"
                                      :timePickerOptions="{
@@ -106,7 +106,7 @@
                     <div>
                         <input type="text" value="" id="address" class="text"
                                placeholder="Московская обл, г Луховицы, деревня Асошники, ул Самара, д 1"
-                               name="delivery_address" @keyup="getAddress($event)" v-model="fields.delivery_address">
+                               name="delivery_address" @keyup="getAddress($event)" v-model="addressFields.delivery_address">
                         <div v-if="suggestions.length > 0" class="suggestions-block">
                             <ul class="suggestions">
                                 <li v-for="(item, index) in suggestions" @click="setAddress(index)">{{ item.value }}</li>
@@ -115,35 +115,28 @@
                     </div>
                     <div class="field-group">
                         <input type="text" value="" id="flat" class="text" placeholder="Квартира" name="flat"
-                               v-model="fields.flat">
+                               v-model="addressFields.flat">
                         <input type="text" value="" id="floor" class="text" placeholder="Этаж" name="floor"
-                               v-model="fields.floor">
+                               v-model="addressFields.floor">
                     </div>
                     <div class="field-group">
                         <input type="text" value="" id="entrance" class="text" placeholder="Подъезд" name="entrance"
-                               v-model="fields.entrance">
+                               v-model="addressFields.entrance">
                         <input type="text" value="" id="postcode" class="text" placeholder="Почтовый индекс" name="postcode"
-                               v-model="fields.postcode">
+                               v-model="addressFields.postcode">
                     </div>
                     <div class="field-checkbox">
-                        <input id="remember" type="checkbox" class="field-checkbox__input" name="elevator" v-model="fields.elevator">
+                        <input id="remember" type="checkbox" class="field-checkbox__input" name="elevator" v-model="addressFields.elevator">
                         <label class="field-checkbox__label" for="remember">Возможно ли использование лифта для доставки?</label>
                     </div>
-                    <textarea class="field-textarea" v-model="fields.comment" name="comment"></textarea>
+                    <textarea class="field-textarea" v-model="applicationFields.comment" name="comment"></textarea>
                     <div class="field-title">Информация о покупателе</div>
                     <input type="text" value="" id="user" class="text" placeholder="ФИО покупателя" name="client_name"
-                           v-model="fields.client_name">
+                           v-model="applicationFields.client_name">
                     <input type="text" value="" id="phone" class="text" placeholder="Телефон покупателя" name="client_phone"
-                           v-model="fields.client_phone">
+                           v-model="applicationFields.client_phone">
                 </form>
             </div>
-<!--            <div class="request-form__block">-->
-<!--                <div class="request-form__title">Сумма к получению с покупателя</div>-->
-<!--                <div class="field-cost">33 990 ₽</div>-->
-<!--                <div class="btn request-btn js-open-modal" data-modal="modal-request2">-->
-<!--                    <span>Создать заявку</span>-->
-<!--                </div>-->
-<!--            </div>-->
         </div>
         <div class="request-content">
             <div class="btn request-btn js-open-modal" data-modal="modal-request1" @click="submit">
@@ -171,7 +164,10 @@ export default {
     name: "ApplicationForm",
     data() {
         return {
-            fields: {},
+            applicationFields: {},
+            addressFields: {
+                elevator: false
+            },
             showModal: false,
             address: null,
             hours: Array.from({ length: 10 }).map((_, i) => i + 8),
@@ -181,7 +177,11 @@ export default {
     },
     methods: {
         submit() {
-            axios.post('application-create', {fields: this.fields, address:this.selectedAddress.data}).then((response) => {
+            axios.post('application-create', {
+                fields: this.applicationFields,
+                address:this.selectedAddress.data,
+                addressExtraInfo: this.addressFields
+            }).then((response) => {
                 this.showModal = true
             }).catch((response) => {
                 console.log(response)
@@ -195,7 +195,7 @@ export default {
         },
         setAddress(index) {
             this.selectedAddress = this.suggestions[index]
-            this.fields.delivery_address = this.selectedAddress.value
+            this.addressFields.delivery_address = this.selectedAddress.value
             this.suggestions = []
         },
         getAddress(event) {
@@ -204,13 +204,6 @@ export default {
             })
         }
     },
-    // watch: {
-    //     "fields.delivery_address": function(newVal, previousVal) {
-    //         axios.post('get-address', {input: newVal}).then((response) => {
-    //             this.suggestions = response.data
-    //         })
-    //     }
-    // },
     components: {
         Popup,
         DatePicker
