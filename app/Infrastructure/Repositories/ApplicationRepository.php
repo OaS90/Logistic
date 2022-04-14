@@ -30,9 +30,7 @@ class ApplicationRepository
 
     public function updateStatus(int $orderId, string $status)
     {
-        if ($orderId == 123123)
-            throw new \Exception();
-        $app = Application::where('order_number', $orderId)->first();
+        $app = Application::where('order_number', $orderId)->firstOrFail();
         $app->update(['status' => $status]);
     }
 }

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Api\Exceptions\JsonParseException;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Api\Exceptions\StatusUpdateException;
 
 class ApplicationController
 {
@@ -21,6 +23,12 @@ class ApplicationController
 
        $data = json_decode($request->getContent(), true);
 
+       if (!$data || !is_array($data)) {
+           $exception = new JsonParseException('Ошибка формата json');
+
+           return response()->json(['message' => $exception->getMessage(), 'success' => false], 500);
+       }
+
        foreach ($data as $item) {
            $newStatus = last($item['statuses'])['status'];
 
@@ -32,18 +40,12 @@ class ApplicationController
                    'message' => ""
                ];
            } catch (\Throwable $e) {
-               $errors[] = [
-                   'id' => $item['id'],
-                   'success' => false,
-                   'message' => 'Не найден заказ с номером ' . $item['id']
-               ];
-
+               $exception = new StatusUpdateException();
+               $errors[] = $exception->getError($e, $item['id']);
                $app = $this->repo->getByOrderNumber($item['id']);
 
                if ($app)
-                   $app->update([
-                       'dov_ver' => $app->doc_ver + 1
-                   ]);
+                   $app->update(['doc_ver' => $app->doc_ver + 1]);
            }
        }
 
