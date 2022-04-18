@@ -10,6 +10,7 @@ window.Vue = require('vue').default;
 // import ExampleComponent from "./components/ExampleComponent";
 import ApplicationForm from "./components/ApplicationForm";
 import Popup from "./components/Popup";
+import RegisterForm from './components/RegisterForm'
 import DatePicker from "vue2-datepicker";
 /**
  * The following block of code may be used to automatically register your
@@ -35,6 +36,7 @@ const app = new Vue({
     components: {
         ApplicationForm,
         Popup,
-        DatePicker
+        DatePicker,
+        RegisterForm
     }
 });

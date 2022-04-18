@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -45,24 +46,34 @@ class RegisterController extends Controller
      * Get a validator for an incoming registration request.
      *
      * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
     {
         return Validator::make($data, [
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-//            'firstname' => ['required', 'string'],
-//            'patronymic' => ['required', 'string'],
-//            'lastname' => ['required', 'string'],
-//            'position' => ['required', 'string'],
-//            'work_phone' => ['required', 'string'],
-//            'mobile_phone' => ['required', 'string'],
-//            'company' => ['required', 'string'],
-//            'inn' => ['required', 'string'],
-//            'kpp' => ['required', 'string'],
-//            'okpo' => ['required', 'string'],
-//            'legal_address' => ['required', 'string'],
+            'firstname' => ['required', 'string'],
+            'patronymic' => ['required', 'string'],
+            'lastname' => ['required', 'string'],
+            'position' => ['required', 'string'],
+            'work_phone' => ['required', 'string'],
+            'mobile_phone' => ['required', 'digits:11'],
+            'company' => ['required', 'string'],
+            'inn' => ['required', 'integer', 'digits:10'],
+            'kpp' => ['required', 'integer', 'digits:9'],
+            'okpo' => ['required', 'integer', 'digits_between:8,10'],
+            'legal_address' => ['required', 'string'],
+        ], [
+            'required' => 'Обязательное поле',
+            'password.confirmed' => 'Пароли должны совпадать',
+            'password.min' => 'Пароль должен быть не короче 8 символов',
+            'digits' => 'Поле должно содержать только цифры',
+            'inn.digits' => 'ИНН должен содержать 10 символов',
+            'kpp.digits' => 'КПП должен содержать 9 символов',
+            'mobile_phone.digits' => 'Полу должно содержать 11 символов',
+            'okpo.digits_between' => 'ОКПО должен содержать от 8 до 10 символов',
+            'integer' => 'Поле должно содержать только цифры',
+            'email.unique' => 'Пользователь с таким email уже существует'
         ]);
     }
 
@@ -77,17 +88,17 @@ class RegisterController extends Controller
         return User::create([
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-//            'firstname' => $data['firstname'],
-//            'patronymic' => $data['patronymic'],
-//            'lastname' => $data['lastname'],
-//            'position' => $data['position'],
-//            'work_phone' => $data['work_phone'],
-//            'company' => $data['company'],
-//            'mobile_phone' => $data['mobile_phone'],
-//            'inn' => $data['inn'],
-//            'kpp' => $data['kpp'],
-//            'okpo' => $data['okpo'],
-//            'legal_address' => $data['legal_address']
+            'firstname' => $data['firstname'],
+            'patronymic' => $data['patronymic'],
+            'lastname' => $data['lastname'],
+            'position' => $data['position'],
+            'work_phone' => $data['work_phone'],
+            'company' => $data['company'],
+            'mobile_phone' => $data['mobile_phone'],
+            'inn' => $data['inn'],
+            'kpp' => $data['kpp'],
+            'okpo' => $data['okpo'],
+            'legal_address' => $data['legal_address']
         ]);
     }
 }

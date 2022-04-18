@@ -13,6 +13,9 @@
                 <span class="contacts__text">Служба поддержки клиентов:</span>
                 <a href="tel:+79262910083">+7(926)291-00-83</a>
             </div>
+            <div>
+                <a href="{{ route('register') }}" class="no-underline">Регистрация</a>
+            </div>
         </header>
         <section class="login-section">
             <h1>Добро пожаловать в&nbsp;личный кабинет</h1>
