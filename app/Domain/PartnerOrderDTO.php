@@ -16,7 +16,7 @@ class PartnerOrderDTO
     public function make(): array
     {
         return [
-            'id' => $this->app->id,
+            'id' => $this->app->order_number,
             'paymentMethod' => $this->app->payment_type,
             'comment' => $this->app->comment,
             'deliveryDate' => Carbon::createFromDate($this->app->delivery_date)->format('d.m.Y'),
