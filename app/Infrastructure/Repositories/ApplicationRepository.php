@@ -11,6 +11,11 @@ class ApplicationRepository
         return Application::find($id);
     }
 
+    public function getByOrderNumber(int $orderId)
+    {
+        return Application::where('order_number', $orderId)->first();
+    }
+
     public function getListByUserId($userId)
     {
         return Application::where('user_id', $userId)->get();
@@ -23,8 +28,9 @@ class ApplicationRepository
             return Application::create($data);
     }
 
-    public function update()
+    public function updateStatus(int $orderId, string $status)
     {
-
+        $app = Application::where('order_number', $orderId)->firstOrFail();
+        $app->update(['status' => $status]);
     }
 }

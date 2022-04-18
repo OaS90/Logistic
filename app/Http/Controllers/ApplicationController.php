@@ -37,8 +37,17 @@ class ApplicationController extends Controller
     public function getList()
     {
         $list = $this->repo->getListByUserId(Auth::id());
+        $statuses = [
+            'new' => count($list->where('status', 'new')),
+            'inProgress' => count($list->where('status', 'inProgress')),
+            'loaded' => count($list->where('status', 'loaded')),
+            'postponed' => count($list->where('status', 'postponed')),
+            'refusal' => count($list->where('status', 'refusal')),
+            'completed' => count($list->where('status', 'completed')),
+            'defect' => count($list->where('status', 'defect')),
+        ];
 
-        return view('application-list', ['list' => $list]);
+        return view('application-list', ['list' => $list, 'statuses' => $statuses]);
     }
 
     public function current($id)
@@ -59,6 +68,7 @@ class ApplicationController extends Controller
         $addressData = array_merge($address, $addressExtra);
         $data['user_id'] = Auth::id();
         $data['delivery_time'] = $data['delivery_from'] . '-' . $data['delivery_till'];
+        $data['status'] = 'new';
         unset($data['delivery_from']);
         unset($data['delivery_till']);
         unset($data['_token']);

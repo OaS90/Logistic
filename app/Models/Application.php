@@ -30,5 +30,5 @@ class Application extends Model
             $this->address->floor ? 'этаж ' . $this->address->floor : '',
             $this->address->flat ? 'кв. ' . $this->address->flat : ''
         ]);
-     }
+    }
 }

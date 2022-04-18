@@ -1,12 +1,9 @@
 <?php
 
-use App\Infrastructure\Repositories\ApplicationRepository;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\Api\PartnerController;
-use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +34,4 @@ Route::post('application-create', [ApplicationController::class, 'create'])->nam
 Route::post('get-address', [ApplicationController::class, 'getAddress']);
 Route::get('application/{id}/sticker', [ApplicationController::class, 'makeSticker'])->name('make-sticker');
 
-Route::prefix('v1')->group(function () {
-    Route::get('partners/order', [PartnerController::class, 'getOrders']);
-});
+

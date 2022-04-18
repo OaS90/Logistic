@@ -28,31 +28,31 @@
                     <div class="app-items">
                         <div class="app-item app-item--new">
                             <div class="app-item__ttl">Новый</div>
-                            <div class="app-item__amount">1 заявок</div>
+                            <div class="app-item__amount">{{ $statuses['new'] }} заявок</div>
                         </div>
                         <div class="app-item app-item--in-work">
                             <div class="app-item__ttl">В работе</div>
-                            <div class="app-item__amount">5 заявок</div>
+                            <div class="app-item__amount">{{ $statuses['inProgress'] }} заявок</div>
                         </div>
                         <div class="app-item app-item--loaded">
                             <div class="app-item__ttl">Загружен</div>
-                            <div class="app-item__amount">1 заявок</div>
+                            <div class="app-item__amount">{{ $statuses['loaded'] }} заявок</div>
                         </div>
                         <div class="app-item app-item--aside">
                             <div class="app-item__ttl">Отложен</div>
-                            <div class="app-item__amount">1 заявок</div>
+                            <div class="app-item__amount">{{ $statuses['postponed'] }} заявок</div>
                         </div>
                         <div class="app-item app-item--no">
                             <div class="app-item__ttl">Отказ</div>
-                            <div class="app-item__amount">4 заявок</div>
+                            <div class="app-item__amount">{{ $statuses['refusal'] }} заявок</div>
                         </div>
                         <div class="app-item app-item--completed">
                             <div class="app-item__ttl">Выполнен</div>
-                            <div class="app-item__amount">1 заявок</div>
+                            <div class="app-item__amount">{{ $statuses['completed'] }} заявок</div>
                         </div>
                         <div class="app-item app-item--flaw">
                             <div class="app-item__ttl">Брак</div>
-                            <div class="app-item__amount">1 заявок</div>
+                            <div class="app-item__amount">{{ $statuses['defect'] }} заявок</div>
                         </div>
                     </div>
                 </div>
