@@ -19,6 +19,11 @@ class Application extends Model
         return $this->belongsTo(DeliveryAddress::class, 'delivery_address', 'id');
     }
 
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'app_id', 'id');
+    }
+
     public function getFullAddressAttribute()
     {
         return implode(', ', [
@@ -30,5 +35,16 @@ class Application extends Model
             $this->address->floor ? 'этаж ' . $this->address->floor : '',
             $this->address->flat ? 'кв. ' . $this->address->flat : ''
         ]);
+    }
+
+    public function getTotalCostAttribute()
+    {
+        $total = 0;
+
+        foreach ($this->products as $product) {
+            $total += $product->cost;
+        }
+
+        return $total;
     }
 }

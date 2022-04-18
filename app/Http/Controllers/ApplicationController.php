@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
+use App\Infrastructure\Repositories\ProductRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Infrastructure\Repositories\ApplicationRepository;
@@ -19,12 +20,14 @@ class ApplicationController extends Controller
     protected $dadataAdapter;
     protected $codeGenerator;
     protected $addressRepository;
+    protected $productRepository;
 
     public function __construct(ApplicationRepository $applicationRepository,
                                 CsvExportService $exportService,
                                 DadataAdapter $dadataAdapter,
                                 BarcodeGeneratorDynamicHTML $codeGenerator,
-                                DeliveryAddressRepository $addressRepository
+                                DeliveryAddressRepository $addressRepository,
+                                ProductRepository $productRepository
     )
     {
         $this->repo = $applicationRepository;
@@ -32,6 +35,7 @@ class ApplicationController extends Controller
         $this->dadataAdapter = $dadataAdapter;
         $this->codeGenerator = $codeGenerator;
         $this->addressRepository = $addressRepository;
+        $this->productRepository = $productRepository;
     }
 
     public function getList()
@@ -65,6 +69,8 @@ class ApplicationController extends Controller
         $data = $request->get('fields');
         $address = $request->get('address');
         $addressExtra = $request->get('addressExtraInfo');
+        // todo переделать, когда появится возможность добавлять несколько товаров в заявку, при ручном создании
+        $products = $request->get('products');
         $addressData = array_merge($address, $addressExtra);
         $data['user_id'] = Auth::id();
         $data['delivery_time'] = $data['delivery_from'] . '-' . $data['delivery_till'];
@@ -74,8 +80,10 @@ class ApplicationController extends Controller
         unset($data['_token']);
         $newAddress = $this->addressRepository->create($addressData);
         $data['delivery_address'] = $newAddress->id;
-        $this->repo->create($data);
-
+        $newApp = $this->repo->create($data);
+        $products['app_id'] = $newApp->id;
+        $products[''] =
+        $this->productRepository->create($products);
 //        if ($newApplication)
 //            $this->makeCsvAndStore($newApplication);
 

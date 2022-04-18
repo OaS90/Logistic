@@ -82,11 +82,11 @@
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Наименование товара</div>
-                        <div class="profile-data__value">{{ $application->product_name }}</div>
+                        <div class="profile-data__value">{{ $application->products[0]->name }}</div>
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Бренд</div>
-                        <div class="profile-data__value">{{ $application->product_brand }}</div>
+                        <div class="profile-data__value">{{ $application->products[0]->brand }}</div>
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Форма оплаты</div>
@@ -94,36 +94,36 @@
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Ставка НДС</div>
-                        <div class="profile-data__value">{{ $application->vat }}</div>
+                        <div class="profile-data__value">{{ $application->products[0]->vat }}</div>
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Стоимость</div>
-                        <div class="profile-data__value profile-data__value-cost">{{ $application->cost }} ₽</div>
+                        <div class="profile-data__value profile-data__value-cost">{{ $application->products[0]->cost}} ₽</div>
                     </div>
                     <div class="profile-data__hdr">Параметры отправляемого груза</div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Ширина</div>
-                        <div class="profile-data__value">{{ $application->width }}см</div>
+                        <div class="profile-data__value">{{ $application->products[0]->width }}см</div>
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Высота</div>
-                        <div class="profile-data__value">{{ $application->height }} см</div>
+                        <div class="profile-data__value">{{ $application->products[0]->height }} см</div>
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Глубина</div>
-                        <div class="profile-data__value">{{ $application->depth }} см</div>
+                        <div class="profile-data__value">{{ $application->products[0]->depth }} см</div>
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Количество</div>
-                        <div class="profile-data__value">{{ $application->count }}</div>
+                        <div class="profile-data__value">{{ $application->products[0]->count }}</div>
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Объем</div>
-                        <div class="profile-data__value">{{ $application->volume }} м2</div>
+                        <div class="profile-data__value">{{ $application->products[0]->volume }} м2</div>
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Расчетный вес</div>
-                        <div class="profile-data__value">{{ $application->weight }} кг</div>
+                        <div class="profile-data__value">{{ $application->products[0]->weight }} кг</div>
                     </div>
                     <div class="profile-data profile-data--address">
                         <div class="profile-data__ttl">Адрес склада отгрузки</div>
@@ -163,7 +163,7 @@
                     </div>
                     <div class="total-block">
                         <div class="total-block__ttl">Сумма к получению с покупателя</div>
-                        <div class="total-block__amount">{{ $application->cost }} ₽</div>
+                        <div class="total-block__amount">{{ $application->total_cost }} ₽</div>
                     </div>
                 </div>
             </section>
