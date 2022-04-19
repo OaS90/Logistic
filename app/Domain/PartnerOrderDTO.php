@@ -56,7 +56,7 @@ class PartnerOrderDTO
                     'width' => $this->app->width, // ширина в см
                     'height' => $this->app->height, // высота в м2
                     'depth' => $this->app->depth, // глубина в см
-                    'shipmentCode' => $this->app->id . '-LG-1'
+                    'shipmentCode' => $this->app->order_number . '-LG-1'
                 ]
             ]
         ];
