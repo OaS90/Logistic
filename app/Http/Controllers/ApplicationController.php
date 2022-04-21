@@ -14,6 +14,7 @@ use App\Infrastructure\DadataAdapter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 use App\Application\CsvImportService;
+use App\Application\ApplicationService;
 
 class ApplicationController extends Controller
 {
@@ -24,6 +25,7 @@ class ApplicationController extends Controller
     protected $addressRepository;
     protected $productRepository;
     protected $importService;
+    protected $appService;
 
     public function __construct(ApplicationRepository $applicationRepository,
                                 CsvExportService $exportService,
@@ -31,7 +33,8 @@ class ApplicationController extends Controller
                                 BarcodeGeneratorDynamicHTML $codeGenerator,
                                 DeliveryAddressRepository $addressRepository,
                                 CsvImportService $importService,
-                                ProductRepository $productRepository
+                                ProductRepository $productRepository,
+                                ApplicationService $appService
     )
     {
         $this->repo = $applicationRepository;
@@ -41,6 +44,7 @@ class ApplicationController extends Controller
         $this->addressRepository = $addressRepository;
         $this->productRepository = $productRepository;
         $this->importService = $importService;
+        $this->appService = $appService;
     }
 
     public function getList()
@@ -85,9 +89,17 @@ class ApplicationController extends Controller
         unset($data['_token']);
         $newAddress = $this->addressRepository->create($addressData);
         $data['delivery_address'] = $newAddress->id;
-        $newApp = $this->repo->create($data);
-        $products['app_id'] = $newApp->id;
-        $products[''] = $this->productRepository->create($products);
+        $existApp = $this->repo->getByOrderNumber($data['order_number']);
+
+        if (!$existApp) {
+            $newApp = $this->repo->create($data);
+            $products['app_id'] = $newApp->id;
+            $products[] = $this->productRepository->create($products);
+        } else {
+           $this->appService->checkAppChanges($existApp, $data);
+           $this->appService->checkAppProducts($existApp, $products);
+        }
+
 //        if ($newApplication)
 //            $this->makeCsvAndStore($newApplication);
 

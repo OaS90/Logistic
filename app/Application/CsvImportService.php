@@ -5,11 +5,13 @@ namespace App\Application;
 use App\Domain\ApplicationDTO;
 use App\Domain\DeliveryAddressDTO;
 use App\Domain\ProductDTO;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Infrastructure\Imports\ImportEntity;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Repositories\ProductRepository;
+use App\Application\ApplicationService;
 
 /**
  *
@@ -19,15 +21,18 @@ class CsvImportService
     protected $appRepo;
     protected $productRepo;
     protected $addressRepo;
+    protected $appService;
 
     public function __construct(ApplicationRepository $appRepo,
                                 DeliveryAddressRepository $addressRepository,
-                                ProductRepository $productRepository
+                                ProductRepository $productRepository,
+                                ApplicationService $appService
     )
     {
         $this->appRepo = $appRepo;
         $this->productRepo = $productRepository;
         $this->addressRepo = $addressRepository;
+        $this->appService = $appService;
     }
 
 
@@ -36,17 +41,23 @@ class CsvImportService
         $dataFromCsv = $this->getDataArraysWithDbRows($entity, $file);
 
         foreach ($dataFromCsv as $data) {
-            $address = $this->addressRepo->createFromCsv($data['address']);
-            $data['app']['delivery_address'] = $address->id;
+            $existApp = $this->appRepo->getByOrderNumber($data['app']['order_number']);
             $data['app']['user_id'] = $userId;
             $data['app']['delivery_time'] = $data['app']['delivery_from'] . '-' . $data['app']['delivery_till'];
-            $app = $this->appRepo->create($data['app']);
 
-            foreach ($data['products'] as $dataProduct) {
-                $dataProduct['app_id'] = $app->id;
-                $this->productRepo->create($dataProduct);
+            if (!$existApp) {
+                $address = $this->addressRepo->createFromCsv($data['address']);
+                $data['app']['delivery_address'] = $address->id;
+                $app = $this->appRepo->create($data['app']);
+
+                foreach ($data['products'] as $dataProduct) {
+                    $dataProduct['app_id'] = $app->id;
+                    $this->productRepo->create($dataProduct);
+                }
+            } else {
+                $this->appService->checkAppChanges($existApp, $data['app']);
+                $this->appService->checkAppProducts($existApp, $data['products']);
             }
-
         }
     }
 
@@ -73,6 +84,8 @@ class CsvImportService
                 $apps[$i - 1]['products'][] = (new ProductDTO())->dbRows($appWithDbColumns);
                 continue;
             }
+            $appWithDbColumns['delivery_date'] = Carbon::createFromFormat('d.m.Y', $appWithDbColumns['delivery_date'])
+                ->format('Y-m-d');
 
             $apps[$i]['app'] = (new ApplicationDTO())->dbRows($appWithDbColumns);
             $apps[$i]['address'] = (new DeliveryAddressDTO())->dbRows($appWithDbColumns);

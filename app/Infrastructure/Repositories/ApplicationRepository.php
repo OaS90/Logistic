@@ -23,9 +23,7 @@ class ApplicationRepository
 
     public function create(array $data)
     {
-        // может ли быть две заявки на один заказ?
-        if (!Application::where('order_number', $data['order_number'])->first())
-            return Application::create($data);
+        return Application::create($data);
     }
 
     public function updateStatus(int $orderId, string $status)

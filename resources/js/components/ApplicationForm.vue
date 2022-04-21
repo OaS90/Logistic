@@ -8,7 +8,7 @@
             <span>Создать заявку(ки) из файла csv</span>
 
         </label>
-        <input type="file" hidden id="file-upload" @change="previewFiles">
+        <input type="file" hidden id="file-upload" @change="previewFiles" ref="fileUpload">
 
         <h3>Создание заявки в ручную</h3>
         <div class="request-form">
@@ -160,7 +160,24 @@
                 Возможно инструкция к загрузке?
             </div>
         </div>
-        <popup :show="showModal" @handlerClose="show"></popup>
+        <popup :show="showModal">
+            <svg @click="closeModal('default')" class="modal__cross js-modal-close" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M11.9997 10.586L16.9497 5.63599L18.3637 7.04999L13.4137 12L18.3637 16.95L16.9497 18.364L11.9997 13.414L7.04974 18.364L5.63574 16.95L10.5857 12L5.63574 7.04999L7.04974 5.63599L11.9997 10.586Z" fill="#888888"/>
+            </svg>
+            <div class="modal-title">Спасибо за заявку!</div>
+            <div class="modal-text">Отслеживать статус или редактировать заявку,
+                вы можете в разделе <a href="/application-list">«Список заявок»</a></div>
+            <div class="btn request-btn" @click="closeModal('default')">
+                <span >Создать еще заявку</span>
+            </div>
+        </popup>
+
+        <popup :show="csvModal">
+            <svg @click="closeModal('csv')" class="modal__cross js-modal-close" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M11.9997 10.586L16.9497 5.63599L18.3637 7.04999L13.4137 12L18.3637 16.95L16.9497 18.364L11.9997 13.414L7.04974 18.364L5.63574 16.95L10.5857 12L5.63574 7.04999L7.04974 5.63599L11.9997 10.586Z" fill="#888888"/>
+            </svg>
+            <h3>{{ csvModalText }}</h3>
+        </popup>
     </section>
 </template>
 
@@ -180,10 +197,12 @@ export default {
                 elevator: false
             },
             showModal: false,
+            csvModal: false,
             address: null,
             hours: Array.from({ length: 10 }).map((_, i) => i + 8),
             suggestions: [],
             selectedAddress: null,
+            csvModalText: ''
         }
     },
     methods: {
@@ -218,8 +237,22 @@ export default {
         previewFiles(event) {
             let formData = new FormData()
             formData.append('file', event.target.files[0])
-            console.log(event.target.files[0])
-            axios.post('import-app', formData)
+
+            axios.post('import-app', formData).then((response) => {
+                this.csvModal = true
+                this.csvModalText = 'Файл успешно загружен'
+            }).catch((response) => {
+                this.csvModal = true
+                this.csvModalText = 'Ошибка загрузки файла'
+            })
+
+            this.$refs.fileUpload.value=null;
+        },
+        closeModal(modal) {
+            if (modal === 'csv')
+                this.csvModal = !this.csvModal
+            else
+                this.showModal = !this.showModal
         }
     },
     components: {
