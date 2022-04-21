@@ -7,11 +7,11 @@
                     <input type="text" value="" id="n-order" class="text" placeholder="Номер заказа" name="order_number"
                            v-model="applicationFields.order_number">
                     <input type="text" value="" id="n-product" class="text" placeholder="Наименование товара" name="product_name"
-                           v-model="applicationFields.product_name">
+                           v-model="productFields.name">
                     <input type="text" value="" id="vendor" class="text" placeholder="Артикул" name="product_art"
-                           v-model="applicationFields.product_art">
+                           v-model="productFields.sku">
                     <input type="text" value="" id="brand" class="text" placeholder="Бренд" name="product_brand"
-                           v-model="applicationFields.product_brand">
+                           v-model="productFields.brand">
                     <div class="field-title">Форма оплаты</div>
                     <select class="select" name="payment_type" v-model="applicationFields.payment_type">
                         <option>Онлайн оплата банковской картой</option>
@@ -19,31 +19,31 @@
                         <option>Онлайн оплата банковской картой</option>
                     </select>
                     <div class="field-title">Ставка НДС</div>
-                    <select class="select" name="vat" v-model="applicationFields.vat">
-                        <option>0%</option>
-                        <option>10%</option>
-                        <option>15%</option>
+                    <select class="select" name="vat" v-model="productFields.vat">
+                        <option value="0">0%</option>
+                        <option value="10">10%</option>
+                        <option value="20">20%</option>
                     </select>
                     <div class="field-title field-title--cost">Стоимость</div>
-                        <input type="text" class="field-cost text" value name="cost" v-model="applicationFields.cost">
+                        <input type="text" class="field-cost text" value name="cost" v-model="productFields.cost">
                     <div class="field-title">Параметры отправляемого груза</div>
                     <div class="field-group">
                         <input type="text" value="" id="p-width" class="text" placeholder="Ширина, см" name="width"
-                               v-model="applicationFields.width">
+                               v-model="productFields.width">
                         <input type="text" value="" id="p-height" class="text" placeholder="Высота, см" name="height"
-                               v-model="applicationFields.height">
+                               v-model="productFields.height">
                     </div>
                     <div class="field-group">
                         <input type="text" value="" id="p-depth" class="text" placeholder="Глубина, см" name="depth"
-                               v-model="applicationFields.depth">
+                               v-model="productFields.depth">
                         <input type="text" value="" id="p-amount" class="text" placeholder="Количество" name="count"
-                               v-model="applicationFields.count">
+                               v-model="productFields.count">
                     </div>
                     <div class="field-group">
                         <input type="text" value="" id="p-volume" class="text" placeholder="Объем, м2" name="volume"
-                               v-model="applicationFields.volume">
+                               v-model="productFields.volume">
                         <input type="text" value="" id="est-weight" class="text" placeholder="Расчетный вес, кг" name="weight"
-                               v-model="applicationFields.weight">
+                               v-model="productFields.weight">
                     </div>
                     <div class="field-title">Признак склада отгрузки</div>
                     <select class="select" name="warehouse_address" v-model="applicationFields.warehouse_address">
@@ -165,6 +165,7 @@ export default {
     data() {
         return {
             applicationFields: {},
+            productFields: {},
             addressFields: {
                 elevator: false
             },
@@ -180,7 +181,8 @@ export default {
             axios.post('application-create', {
                 fields: this.applicationFields,
                 address:this.selectedAddress.data,
-                addressExtraInfo: this.addressFields
+                addressExtraInfo: this.addressFields,
+                products: this.productFields
             }).then((response) => {
                 this.showModal = true
             }).catch((response) => {

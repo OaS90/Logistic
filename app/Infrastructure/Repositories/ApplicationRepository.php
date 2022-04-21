@@ -18,7 +18,7 @@ class ApplicationRepository
 
     public function getListByUserId($userId)
     {
-        return Application::where('user_id', $userId)->get();
+        return Application::where('user_id', $userId)->with('products')->get();
     }
 
     public function create(array $data)
