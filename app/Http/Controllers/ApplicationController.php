@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Infrastructure\Imports\ApplicationImport;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,7 @@ use App\Infrastructure\Exports\ApplicationExport;
 use App\Infrastructure\DadataAdapter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
+use App\Application\CsvImportService;
 
 class ApplicationController extends Controller
 {
@@ -19,12 +21,14 @@ class ApplicationController extends Controller
     protected $dadataAdapter;
     protected $codeGenerator;
     protected $addressRepository;
+    protected $importService;
 
     public function __construct(ApplicationRepository $applicationRepository,
                                 CsvExportService $exportService,
                                 DadataAdapter $dadataAdapter,
                                 BarcodeGeneratorDynamicHTML $codeGenerator,
-                                DeliveryAddressRepository $addressRepository
+                                DeliveryAddressRepository $addressRepository,
+                                CsvImportService $importService
     )
     {
         $this->repo = $applicationRepository;
@@ -32,6 +36,7 @@ class ApplicationController extends Controller
         $this->dadataAdapter = $dadataAdapter;
         $this->codeGenerator = $codeGenerator;
         $this->addressRepository = $addressRepository;
+        $this->importService = $importService;
     }
 
     public function getList()
@@ -67,6 +72,7 @@ class ApplicationController extends Controller
         $addressExtra = $request->get('addressExtraInfo');
         $addressData = array_merge($address, $addressExtra);
         $data['user_id'] = Auth::id();
+        // todo refactoring
         $data['delivery_time'] = $data['delivery_from'] . '-' . $data['delivery_till'];
         $data['status'] = 'new';
         unset($data['delivery_from']);
@@ -106,5 +112,10 @@ class ApplicationController extends Controller
             ->setPaper([30, -30, 280.77, 400.16]);
 
         return $pdf->download('sticker_' . $application->order_number .'.pdf');
+    }
+
+    public function import(Request $request)
+    {
+        $this->importService->import($request->file('file'), new ApplicationImport(), Auth::id());
     }
 }
