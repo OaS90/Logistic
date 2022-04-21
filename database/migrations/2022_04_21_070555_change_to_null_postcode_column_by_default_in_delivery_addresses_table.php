@@ -13,6 +13,10 @@ class ChangeToNullPostcodeColumnByDefaultInDeliveryAddressesTable extends Migrat
      */
     public function up()
     {
+        if (!Type::hasType('char')) {
+            Type::addType('char', StringType::class);
+        }
+
         Schema::table('delivery_addresses', function (Blueprint $table) {
             $table->char('postcode', 6)->nullable()->change();
         });
