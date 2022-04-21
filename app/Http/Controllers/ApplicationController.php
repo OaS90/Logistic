@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Infrastructure\Imports\ApplicationImport;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Repositories\ProductRepository;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ use App\Infrastructure\Exports\ApplicationExport;
 use App\Infrastructure\DadataAdapter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
+use App\Application\CsvImportService;
 
 class ApplicationController extends Controller
 {
@@ -21,12 +23,14 @@ class ApplicationController extends Controller
     protected $codeGenerator;
     protected $addressRepository;
     protected $productRepository;
+    protected $importService;
 
     public function __construct(ApplicationRepository $applicationRepository,
                                 CsvExportService $exportService,
                                 DadataAdapter $dadataAdapter,
                                 BarcodeGeneratorDynamicHTML $codeGenerator,
                                 DeliveryAddressRepository $addressRepository,
+                                CsvImportService $importService,
                                 ProductRepository $productRepository
     )
     {
@@ -36,6 +40,7 @@ class ApplicationController extends Controller
         $this->codeGenerator = $codeGenerator;
         $this->addressRepository = $addressRepository;
         $this->productRepository = $productRepository;
+        $this->importService = $importService;
     }
 
     public function getList()
@@ -73,6 +78,7 @@ class ApplicationController extends Controller
         $products = $request->get('products');
         $addressData = array_merge($address, $addressExtra);
         $data['user_id'] = Auth::id();
+        // todo refactoring
         $data['delivery_time'] = $data['delivery_from'] . '-' . $data['delivery_till'];
         unset($data['delivery_from']);
         unset($data['delivery_till']);
@@ -81,8 +87,7 @@ class ApplicationController extends Controller
         $data['delivery_address'] = $newAddress->id;
         $newApp = $this->repo->create($data);
         $products['app_id'] = $newApp->id;
-        $products[''] =
-        $this->productRepository->create($products);
+        $products[''] = $this->productRepository->create($products);
 //        if ($newApplication)
 //            $this->makeCsvAndStore($newApplication);
 
@@ -113,5 +118,10 @@ class ApplicationController extends Controller
             ->setPaper([30, -30, 280.77, 400.16]);
 
         return $pdf->download('sticker_' . $application->order_number .'.pdf');
+    }
+
+    public function import(Request $request)
+    {
+        $this->importService->import($request->file('file'), new ApplicationImport(), Auth::id());
     }
 }

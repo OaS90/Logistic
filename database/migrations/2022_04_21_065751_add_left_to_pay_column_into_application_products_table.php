@@ -14,7 +14,7 @@ class AddLeftToPayColumnIntoApplicationProductsTable extends Migration
     public function up()
     {
         Schema::table('application_products', function (Blueprint $table) {
-            $table->float('left_to_pay')->after('barcode')->comment('доплата');
+            $table->float('left_to_pay')->nullable()->after('barcode')->comment('доплата');
         });
     }
 

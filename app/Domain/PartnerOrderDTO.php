@@ -35,7 +35,6 @@ class PartnerOrderDTO
                 'building'=> $this->app->address->building,
                 'floor'=> $this->app->address->floor, // необязательно
                 'flat'=> $this->app->address->flat // необязательно
-
             ],
             'products' => [
                 [

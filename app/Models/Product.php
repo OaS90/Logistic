@@ -9,5 +9,4 @@ class Product extends Model
 {
     protected $table = 'application_products';
     protected $guarded = ['id'];
-
 }

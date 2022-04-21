@@ -6,7 +6,7 @@ use App\Models\DeliveryAddress;
 
 class DeliveryAddressRepository
 {
-    public function create($data)
+    public function create(array $data)
     {
         return DeliveryAddress::create([
             'city_name' => $data['city'],
@@ -21,5 +21,10 @@ class DeliveryAddressRepository
             'postcode' => $data['postcode'],
             'use_elevator' => $data['elevator']
         ]);
+    }
+
+    public function createFromCsv(array $data)
+    {
+        return DeliveryAddress::create($data);
     }
 }
