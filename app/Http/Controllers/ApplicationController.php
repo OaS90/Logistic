@@ -68,7 +68,6 @@ class ApplicationController extends Controller
         $addressData = array_merge($address, $addressExtra);
         $data['user_id'] = Auth::id();
         $data['delivery_time'] = $data['delivery_from'] . '-' . $data['delivery_till'];
-        $data['status'] = 'new';
         unset($data['delivery_from']);
         unset($data['delivery_till']);
         unset($data['_token']);
