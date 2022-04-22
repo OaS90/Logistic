@@ -121,13 +121,10 @@ class ApplicationController extends Controller
         $this->repo->getById($id)->destroy();
     }
 
-    public function makeSticker($applicationId)
+    public function makeSticker($applicationId): \Illuminate\Http\Response
     {
-        // todo перенести в сервис
         $application = $this->repo->getById($applicationId);
-        $barcode = $this->codeGenerator->getBarcode($application->order_number, $this->codeGenerator::TYPE_EAN_13);
-        $pdf = PDF::loadView('sticker', ['code' => $barcode, 'application' => $application])
-            ->setPaper([30, -30, 280.77, 400.16]);
+        $pdf = $this->appService->makeStickers($application);
 
         return $pdf->download('sticker_' . $application->order_number .'.pdf');
     }

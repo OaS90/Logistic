@@ -4,33 +4,32 @@ namespace App\Application;
 
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\ProductRepository;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 
 class ApplicationService
 {
     protected $appRepo;
     protected $productRepo;
+    protected $codeGenerator;
 
-    public function __construct(ApplicationRepository $appRepo, ProductRepository $productRepo)
+    public function __construct(ApplicationRepository $appRepo,
+                                ProductRepository $productRepo,
+                                BarcodeGeneratorDynamicHTML $codeGenerator
+    )
     {
         $this->appRepo = $appRepo;
         $this->productRepo = $productRepo;
+        $this->codeGenerator = $codeGenerator;
     }
 
     public function checkAppChanges($app, array $data)
     {
-        $differentValues = [];
-        $modelProperties = $app->toArray();
-        unset($modelProperties['id']);
-        unset($modelProperties['status']);
-        unset($modelProperties['created_at']);
-        unset($modelProperties['updated_at']);
-        unset($modelProperties['doc_ver']);
-        $data['delivery_time'] = $data['delivery_from'] . '-' . $data['delivery_till'];
-
-        if ($modelProperties != $data) {
+        if ($app->status != 'new' ) {
             $data['doc_ver'] = $app->doc_ver + 1;
             $app->update($data);
         }
+
 
         return null;
     }
@@ -48,5 +47,20 @@ class ApplicationService
                 $this->productRepo->update($csvProduct, $appProduct);
             }
         }
+    }
+
+    public function makeStickers($app)
+    {
+
+        $barcodes = [];
+
+        foreach ($app->products as $product) {
+            $barcodes[] = $this->codeGenerator->getBarcode($product->barcode, $this->codeGenerator::TYPE_EAN_13);
+        }
+
+        $pdf = PDF::loadView('sticker', ['codes' => $barcodes, 'application' => $app, 'products' => $app->products])
+            ->setPaper([30, -30, 280.77, 320.16]);
+
+        return $pdf;
     }
 }
