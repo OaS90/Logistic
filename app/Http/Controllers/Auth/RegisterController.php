@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Infrastructure\Repositories\WarehouseRepository;
 
 class RegisterController extends Controller
 {
@@ -31,15 +32,16 @@ class RegisterController extends Controller
      * @var string
      */
     protected $redirectTo = RouteServiceProvider::HOME;
-
+    protected $warehouseRepository;
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(WarehouseRepository $warehouseRepository)
     {
         $this->middleware('guest');
+        $this->warehouseRepository = $warehouseRepository;
     }
 
     /**
@@ -63,6 +65,7 @@ class RegisterController extends Controller
             'kpp' => ['required', 'integer', 'digits:9'],
             'okpo' => ['required', 'integer', 'digits_between:8,10'],
             'legal_address' => ['required', 'string'],
+            'warehouses' => ['required', 'min:1', 'array']
         ], [
             'required' => 'Обязательное поле',
             'password.confirmed' => 'Пароли должны совпадать',
@@ -73,7 +76,8 @@ class RegisterController extends Controller
             'mobile_phone.digits' => 'Полу должно содержать 11 символов',
             'okpo.digits_between' => 'ОКПО должен содержать от 8 до 10 символов',
             'integer' => 'Поле должно содержать только цифры',
-            'email.unique' => 'Пользователь с таким email уже существует'
+            'email.unique' => 'Пользователь с таким email уже существует',
+            'warehouses.min' => 'Обязательно указать хотя бы один склад'
         ]);
     }
 
@@ -85,7 +89,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'firstname' => $data['firstname'],
@@ -100,5 +104,12 @@ class RegisterController extends Controller
             'okpo' => $data['okpo'],
             'legal_address' => $data['legal_address']
         ]);
+
+        foreach ($data['warehouses'] as $warehouse) {
+            $warehouse['user_id'] = $user->id;
+            $this->warehouseRepository->create($warehouse);
+        }
+
+        return $user;
     }
 }

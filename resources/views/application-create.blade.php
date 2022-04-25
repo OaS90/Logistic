@@ -18,7 +18,7 @@
         @include('header')
         <section class="request-section">
             <h3>Создание заявки на доставку</h3>
-            <application-form></application-form>
+            <application-form :warehouses="{{ $warehouses }}"></application-form>
         </section>
 
     </div>

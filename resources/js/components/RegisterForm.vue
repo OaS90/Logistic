@@ -22,6 +22,12 @@
             <input type="text" id="dob" name="additional_number" class="text text--small" placeholder="доб.">
             <span class="error" v-if="errors.work_phone">{{ errors['work_phone'][0] }}</span>
         </div>
+        <div class="field-group input-wrap" v-for="(input, k) in fields.warehouses" :key="k">
+            <input type="text" name="warehouse" class="text text--middle"
+                   placeholder="Адрес склада"  v-model="fields.warehouses[k].address">
+            <span @click="addWarehouse(k)" v-show="k == fields.warehouses.length - 1"
+                class="add_warehouse">Добавить склад <b>+</b></span>
+        </div>
         <div class="input-wrap">
             <input type="text" id="timezone" name="timezone" class="text" placeholder="Часовой пояс" v-model="fields.timezone">
             <span class="error" v-if="errors.timezone">{{ errors['timezone'][0] }}</span>
@@ -81,8 +87,10 @@ export default {
     name: "RegisterForm",
     data() {
         return {
-            fields: {},
-            errors: []
+            fields: {
+                warehouses: [{ address: '',}]
+            },
+            errors: [],
         }
     },
     methods: {
@@ -93,11 +101,22 @@ export default {
             }).catch((err) => {
                 this.errors = err.response.data.errors
             })
+        },
+        addWarehouse() {
+            this.fields.warehouses.push({
+                address: '',
+            })
         }
     }
 }
 </script>
 
 <style scoped>
+.add_warehouse b {
+    font-size: 20px;
 
+}
+.add_warehouse:hover {
+    cursor: pointer;
+}
 </style>

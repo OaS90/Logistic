@@ -70,7 +70,7 @@ class ApplicationController extends Controller
 
     public function show()
     {
-        return view('application-create', ['userId' => Auth::id()]);
+        return view('application-create', ['userId' => Auth::id(), 'warehouses' => Auth::user()->warehouses]);
     }
 
     public function create(Request $request)

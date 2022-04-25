@@ -24,9 +24,9 @@
                            v-model="productFields.brand">
                     <div class="field-title">Форма оплаты</div>
                     <select class="select" name="payment_type" v-model="applicationFields.payment_type">
-                        <option>Онлайн оплата банковской картой</option>
+                        <option>Оплата наличными</option>
                         <option>Онлайн оплата</option>
-                        <option>Онлайн оплата банковской картой</option>
+                        <option>Оплата на дому</option>
                     </select>
                     <div class="field-title">Ставка НДС</div>
                     <select class="select" name="vat" v-model="productFields.vat">
@@ -58,11 +58,8 @@
                     <div class="field-title">Признак склада отгрузки</div>
                     <select class="select" name="warehouse_address" v-model="applicationFields.warehouse_address">
                         <option>Выберите адрес</option>
-                        <option>ул. Ленина</option>
-                        <option>ул. Пушкина</option>
+                        <option v-for="(warehouse, k) in warehouses" :key="k">{{ warehouse.address }}</option>
                     </select>
-<!--                    <input type="text" value="" id="delivery-date" class="text" placeholder="Дата доставки" name="delivery_date"-->
-<!--                           v-model="fields.delivery_date">-->
                     <date-picker input-class="text" v-model="applicationFields.delivery_date"
                                  valueType="YYYY-MM-DD"
                                  class="delivery-date"
@@ -74,11 +71,6 @@
                     <div class="field-title">Время доставки</div>
                     <div class="field-group field-group--time">
                         <div class="field-group__label">с</div>
-<!--                        <select class="select" name="delivery_from" v-model="fields.delivery_from">-->
-<!--                            <option>9:00</option>-->
-<!--                            <option>10:00</option>-->
-<!--                            <option>11:00</option>-->
-<!--                        </select>-->
                         <date-picker format="H:mm"
                                      class="date-time"
                                      input-class="text time-picker"
@@ -93,11 +85,6 @@
                                      }">
                         </date-picker>
                         <div class="field-group__label">до</div>
-<!--                        <select class="select" name="delivery_till" v-model="fields.delivery_till">-->
-<!--                            <option>18:00</option>-->
-<!--                            <option>19:00</option>-->
-<!--                            <option>20:00</option>-->
-<!--                        </select>-->
                         <date-picker format="H:mm"
                                      class="date-time"
                                      input-class="text time-picker"
@@ -189,6 +176,7 @@ import 'vue2-datepicker/locale/ru';
 
 export default {
     name: "ApplicationForm",
+    props: ['warehouses'],
     data() {
         return {
             applicationFields: {},

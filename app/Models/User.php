@@ -41,6 +41,11 @@ class User extends Authenticatable
         return $this->hasMany(Application::class);
     }
 
+    public function warehouses()
+    {
+        return $this->hasMany(Warehouse::class, 'user_id', 'id');
+    }
+
     public function getFullNameAttribute(): string
     {
         return $this->firstname . ' ' . $this->patronymic . ' ' . $this->lastname;
