@@ -62,7 +62,7 @@
                         @endif
                         <div class="profile-data">
                             <div class="profile-data__ttl">Телефон мобильный:</div>
-                            <div class="profile-data__value">{{ $user->mobile_phone }}</div>
+                            <div class="profile-data__value">{{ $user->phone }}</div>
                         </div>
                         @if($user->email)
                             <div class="profile-email">

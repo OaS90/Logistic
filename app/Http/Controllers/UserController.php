@@ -29,14 +29,16 @@ class UserController extends Controller
     {
         $user = Auth::user();
         $data = $request->except(['_token']);
+        $userData = json_decode($data['user'], true);
+        $userData['mobile_phone'] = parse_phone($data['phone']);
 
         if ($request->hasFile('avatar')) {
             $fileName = $request->file('avatar')->getClientOriginalName();
             $avatarPath = $request->file('avatar')->storeAs('avatars', $fileName, 'public');
-            $data['avatar'] = $avatarPath;
+            $userData['avatar'] = $avatarPath;
         }
 
-        $this->repo->update($data, $user);
+        $this->repo->update($userData, $user);
         // нужно ли будет выводить попап?
         return redirect()->back();
     }

@@ -12,6 +12,8 @@ import ApplicationForm from "./components/ApplicationForm";
 import Popup from "./components/Popup";
 import RegisterForm from './components/RegisterForm'
 import DatePicker from "vue2-datepicker";
+import MaskedInput from "vue-masked-input";
+import ProfileForm from "./components/ProfileForm";
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -37,6 +39,8 @@ const app = new Vue({
         ApplicationForm,
         Popup,
         DatePicker,
-        RegisterForm
+        RegisterForm,
+        MaskedInput,
+        ProfileForm
     }
 });

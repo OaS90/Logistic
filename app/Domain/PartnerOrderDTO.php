@@ -24,7 +24,7 @@ class PartnerOrderDTO
             'deliveryTimeTo' => $this->deliveryTime($this->app->delivery_time)[1],
             'buyer' => [
                 'fio' => $this->app->client_name,
-                'phone' => $this->app->client_phone
+                'phone' => $this->app->mobile_phone
             ],
             'address' => [
                 'regionName'=> $this->app->address->region_name,

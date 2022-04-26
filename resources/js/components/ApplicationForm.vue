@@ -130,8 +130,10 @@
                     <div class="field-title">Информация о покупателе</div>
                     <input type="text" value="" id="user" class="text" placeholder="ФИО покупателя" name="client_name"
                            v-model="applicationFields.client_name">
-                    <input type="text" value="" id="phone" class="text" placeholder="Телефон покупателя" name="client_phone"
-                           v-model="applicationFields.client_phone">
+<!--                    <input type="text" value="" id="phone" class="text" placeholder="Телефон покупателя" name="client_phone"-->
+<!--                           v-model="applicationFields.client_phone">-->
+                    <masked-input mask="\+7 (111) 111-11-11" class="text" placeholder="Телефон покупателя"
+                                  v-model="applicationFields.client_phone"  autocomplete="tel-national"></masked-input>
                 </form>
             </div>
         </div>
@@ -171,8 +173,10 @@
 <script>
 import Popup from "./Popup";
 import DatePicker from 'vue2-datepicker'
+import MaskedInput from 'vue-masked-input'
 import 'vue2-datepicker/index.css';
 import 'vue2-datepicker/locale/ru';
+
 
 export default {
     name: "ApplicationForm",
@@ -245,7 +249,8 @@ export default {
     },
     components: {
         Popup,
-        DatePicker
+        DatePicker,
+        MaskedInput
     }
 }
 </script>

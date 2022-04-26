@@ -87,6 +87,7 @@ class ApplicationController extends Controller
         unset($data['delivery_from']);
         unset($data['delivery_till']);
         unset($data['_token']);
+        $data['client_phone'] = parse_phone($data['client_phone']);
         $newAddress = $this->addressRepository->create($addressData);
         $data['delivery_address'] = $newAddress->id;
         $existApp = $this->repo->getByOrderNumber($data['order_number']);

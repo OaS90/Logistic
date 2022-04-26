@@ -159,7 +159,7 @@
                     </div>
                     <div class="profile-data">
                         <div class="profile-data__ttl">Телефон покупателя</div>
-                        <div class="profile-data__value">{{ $application->client_phone }}</div>
+                        <div class="profile-data__value">{{ $application->mobile_phone }}</div>
                     </div>
                     <div class="total-block">
                         <div class="total-block__ttl">Сумма к получению с покупателя</div>

@@ -50,4 +50,12 @@ class User extends Authenticatable
     {
         return $this->firstname . ' ' . $this->patronymic . ' ' . $this->lastname;
     }
+
+    public function getPhoneAttribute(): string
+    {
+        return '+7 (' . substr($this->mobile_phone, 0, 3) . ') ' .
+            substr($this->mobile_phone, 3, 3) . '-' .
+            substr($this->mobile_phone, 6, 2) . '-' .
+            substr($this->mobile_phone, 8);
+    }
 }
