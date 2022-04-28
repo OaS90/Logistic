@@ -26,6 +26,10 @@
                 <h3>Список заявок</h3>
                 <div class="app-list">
                     <div class="app-items">
+                        <div class="app-item app-item--created">
+                            <div class="app-item__ttl">Создано</div>
+                            <div class="app-item__amount">{{ $statuses['created'] }} заявок</div>
+                        </div>
                         <div class="app-item app-item--new">
                             <div class="app-item__ttl">Новый</div>
                             <div class="app-item__amount">{{ $statuses['new'] }} заявок</div>
@@ -56,46 +60,46 @@
                         </div>
                     </div>
                 </div>
-                <div class="app-filter">
-                    <div class="app-filter__options">
-                        <div class="app-filter__wrapper">
-                            <div class="app-filter__ttl">Номер договора</div>
-                            <select class="select">
-                                <option>Все</option>
-                                <option>1</option>
-                                <option>2</option>
-                            </select>
-                        </div>
-                        <div class="app-filter__wrapper app-filter__wrapper-period">
-                            <div class="app-filter__ttl">За период</div>
-                            <div class="field-group justify-unset">
-                                <div class="field-group__label">С</div>
+{{--                <div class="app-filter">--}}
+{{--                    <div class="app-filter__options">--}}
+{{--                        <div class="app-filter__wrapper">--}}
+{{--                            <div class="app-filter__ttl">Номер договора</div>--}}
+{{--                            <select class="select">--}}
+{{--                                <option>Все</option>--}}
+{{--                                <option>1</option>--}}
+{{--                                <option>2</option>--}}
+{{--                            </select>--}}
+{{--                        </div>--}}
+{{--                        <div class="app-filter__wrapper app-filter__wrapper-period">--}}
+{{--                            <div class="app-filter__ttl">За период</div>--}}
+{{--                            <div class="field-group justify-unset">--}}
+{{--                                <div class="field-group__label">С</div>--}}
 {{--                                <select class="select select--time">--}}
 {{--                                    <option>01.02.2022</option>--}}
 {{--                                    <option>02.02.2022</option>--}}
 {{--                                    <option>03.02.2022</option>--}}
 {{--                                </select>--}}
-                                <date-picker input-class="text time-picker"></date-picker>
-                                <div class="field-group__label">До</div>
+{{--                                <date-picker input-class="text time-picker"></date-picker>--}}
+{{--                                <div class="field-group__label">До</div>--}}
 {{--                                <select class="select select--time">--}}
 {{--                                    <option>__.__.___</option>--}}
 {{--                                    <option>04.02.2022</option>--}}
 {{--                                    <option>05.02.2022</option>--}}
 {{--                                </select>--}}
-                                <date-picker input-class="text time-picker"></date-picker>
-                            </div>
-                        </div>
-                        <input type="submit" value="Найти" class="btn">
-                    </div>
-                </div>
-                <div class="extra-options">
-                    <div class="extra-options__nav">
-                        Дополнительные параметры
-                    </div>
-                    <div class="extra-options__content">
-                        Какие-то параметры...
-                    </div>
-                </div>
+{{--                                <date-picker input-class="text time-picker"></date-picker>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                        <input type="submit" value="Найти" class="btn">--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--                <div class="extra-options">--}}
+{{--                    <div class="extra-options__nav">--}}
+{{--                        Дополнительные параметры--}}
+{{--                    </div>--}}
+{{--                    <div class="extra-options__content">--}}
+{{--                        Какие-то параметры...--}}
+{{--                    </div>--}}
+{{--                </div>--}}
             </section>
             <section class="report-section">
                 <div class="report-section__hdr">

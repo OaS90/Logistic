@@ -73,7 +73,7 @@ export default {
             formData.append('avatar', this.avatar)
 
             axios.post('profile-save', formData).then((response) => {
-                console.log('ok')
+                window.location = '/'
             }).catch((res) => {
                 console.log(res.response)
             })

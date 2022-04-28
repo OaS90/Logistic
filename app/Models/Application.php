@@ -8,6 +8,16 @@ class Application extends Model
 {
     protected $table = 'applications';
     protected $guarded = ['id'];
+    const STATUSES = [
+        'created' => 'В работе',
+        'new' => 'Новый',
+        'inProgress' => 'В работе',
+        'loaded' => 'Загружен',
+        'postponed' => 'Отложен',
+        'refusal' => 'Отказ',
+        'completed' => 'Выполнен',
+        'defect' => 'Брак'
+    ];
 
     public function user()
     {
@@ -54,5 +64,10 @@ class Application extends Model
             substr($this->client_phone, 3, 3) . '-' .
             substr($this->client_phone, 6, 2) . '-' .
             substr($this->client_phone, 8);
+    }
+
+    public function getStatus($status): string
+    {
+        return self::STATUSES[$status];
     }
 }

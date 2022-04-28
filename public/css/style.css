@@ -127,7 +127,11 @@ footer {
     align-items: flex-end;
     justify-content: space-between;
     font-size: 14px;
-    font-size: 1.5
+    font-size: 1.5;
+    /* временно, пока не заполнится контентом страница логина */
+    position: absolute;
+    bottom: 0;
+    min-width: 1280px;
 }
 a.no-underline:hover {
     text-decoration: none !important;

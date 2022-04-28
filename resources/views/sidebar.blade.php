@@ -39,10 +39,10 @@
             </nav>
         </div>
         <div class="sidebar-footer">
-            <div class="user-agreement">
-                <a href="/" class="" target="_blank">Пользовательское соглашение</a>
-                <a href="/" class="" target="_blank">Обработка персональных данных</a>
-            </div>
+{{--            <div class="user-agreement">--}}
+{{--                <a href="/" class="" target="_blank">Пользовательское соглашение</a>--}}
+{{--                <a href="/" class="" target="_blank">Обработка персональных данных</a>--}}
+{{--            </div>--}}
             <div class="copyright">
                 ©2022, ООО<br> «Транспорт Логистика»
             </div>

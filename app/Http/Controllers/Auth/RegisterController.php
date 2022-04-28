@@ -105,6 +105,8 @@ class RegisterController extends Controller
             'legal_address' => $data['legal_address']
         ]);
 
+        $user->update(['id_1c' => str_pad($user->id,9,"0",STR_PAD_LEFT)]);
+
         foreach ($data['warehouses'] as $warehouse) {
             $warehouse['user_id'] = $user->id;
             $this->warehouseRepository->create($warehouse);

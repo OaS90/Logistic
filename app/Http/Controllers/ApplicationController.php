@@ -51,6 +51,7 @@ class ApplicationController extends Controller
     {
         $list = $this->repo->getListByUserId(Auth::id());
         $statuses = [
+            'created' => count($list->where('status', null)),
             'new' => count($list->where('status', 'new')),
             'inProgress' => count($list->where('status', 'inProgress')),
             'loaded' => count($list->where('status', 'loaded')),

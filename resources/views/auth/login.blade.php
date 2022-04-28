@@ -42,82 +42,82 @@
                 </div>
             </div>
         </section>
-        <section class="advantage-section">
-            <h3>Преимущества компании</h3>
-            <div class="advantage-content">
-                <div class="advantage-item item1">
-                    <div class="advantage-item__hdr">Удобный способ доставки</div>
-                    Lorem Ipsum is simply dummy text of
-                    the printing and typesetting
-                </div>
-                <div class="advantage-item item2">
-                    <div class="advantage-item__hdr">Качественная доставка в срок</div>
-                    Lorem Ipsum is simply dummy text of
-                    the printing and typesetting
-                </div>
-                <div class="advantage-item item3">
-                    <div class="advantage-item__hdr">Преимущество № 3</div>
-                    Lorem Ipsum is simply dummy text of
-                    the printing and typesetting
-                </div>
-                <div class="advantage-item item4">
-                    <div class="advantage-item__hdr">Широкая география доставки</div>
-                    Lorem Ipsum is simply dummy text of
-                    the printing and typesetting
-                </div>
-            </div>
-        </section>
-        <section class="wmode-section">
-            <div class="wmode-bg">
-                <img src="{{ asset('images/car.jpg') }}" alt="">
-            </div>
-            <div class="wmode-content">
-                <h3>Как мы работаем</h3>
-                <div class="wmode-items">
-                    <div class="wmode-item">
-                        <span class="number">01</span>
-                        <span class="text">Вы оставляете заявку или
-                            звоните нам</span>
-                    </div>
-                    <div class="wmode-item">
-                        <span class="number">02</span>
-                        <span class="text">Заполняете опросник</span>
-                    </div>
-                    <div class="wmode-item">
-                        <span class="number">03</span>
-                        <span class="text">Получаете коммерческое предложение</span>
-                    </div>
-                    <div class="wmode-item">
-                        <span class="number">04</span>
-                        <span class="text">Заключаете с нами договор</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="partners-section">
-            <h3>Наши партнёры</h3>
-            <div class="partner-block">
-                <div class="partner-item">
-                    <img src="{{ asset('images/yandex-logo.png') }}" alt="Yandex">
-                </div>
-                <div class="partner-item">
-                    <img src="{{ asset('images/yandex-logo.png') }}" alt="Yandex">
-                </div>
-                <div class="partner-item">
-                    <img src="{{ asset('images/yandex-logo.png') }}" alt="Yandex">
-                </div>
-                <div class="partner-item">
-                    <img src="{{ asset('images/yandex-logo.png') }}" alt="Yandex">
-                </div>
-                <div class="partner-item">
-                    <img src="{{ asset('images/yandex-logo.png') }}" alt="Yandex">
-                </div>
-            </div>
-        </section>
+{{--        <section class="advantage-section">--}}
+{{--            <h3>Преимущества компании</h3>--}}
+{{--            <div class="advantage-content">--}}
+{{--                <div class="advantage-item item1">--}}
+{{--                    <div class="advantage-item__hdr">Удобный способ доставки</div>--}}
+{{--                    Lorem Ipsum is simply dummy text of--}}
+{{--                    the printing and typesetting--}}
+{{--                </div>--}}
+{{--                <div class="advantage-item item2">--}}
+{{--                    <div class="advantage-item__hdr">Качественная доставка в срок</div>--}}
+{{--                    Lorem Ipsum is simply dummy text of--}}
+{{--                    the printing and typesetting--}}
+{{--                </div>--}}
+{{--                <div class="advantage-item item3">--}}
+{{--                    <div class="advantage-item__hdr">Преимущество № 3</div>--}}
+{{--                    Lorem Ipsum is simply dummy text of--}}
+{{--                    the printing and typesetting--}}
+{{--                </div>--}}
+{{--                <div class="advantage-item item4">--}}
+{{--                    <div class="advantage-item__hdr">Широкая география доставки</div>--}}
+{{--                    Lorem Ipsum is simply dummy text of--}}
+{{--                    the printing and typesetting--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </section>--}}
+{{--        <section class="wmode-section">--}}
+{{--            <div class="wmode-bg">--}}
+{{--                <img src="{{ asset('images/car.jpg') }}" alt="">--}}
+{{--            </div>--}}
+{{--            <div class="wmode-content">--}}
+{{--                <h3>Как мы работаем</h3>--}}
+{{--                <div class="wmode-items">--}}
+{{--                    <div class="wmode-item">--}}
+{{--                        <span class="number">01</span>--}}
+{{--                        <span class="text">Вы оставляете заявку или--}}
+{{--                            звоните нам</span>--}}
+{{--                    </div>--}}
+{{--                    <div class="wmode-item">--}}
+{{--                        <span class="number">02</span>--}}
+{{--                        <span class="text">Заполняете опросник</span>--}}
+{{--                    </div>--}}
+{{--                    <div class="wmode-item">--}}
+{{--                        <span class="number">03</span>--}}
+{{--                        <span class="text">Получаете коммерческое предложение</span>--}}
+{{--                    </div>--}}
+{{--                    <div class="wmode-item">--}}
+{{--                        <span class="number">04</span>--}}
+{{--                        <span class="text">Заключаете с нами договор</span>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </section>--}}
+{{--        <section class="partners-section">--}}
+{{--            <h3>Наши партнёры</h3>--}}
+{{--            <div class="partner-block">--}}
+{{--                <div class="partner-item">--}}
+{{--                    <img src="{{ asset('images/yandex-logo.png') }}" alt="Yandex">--}}
+{{--                </div>--}}
+{{--                <div class="partner-item">--}}
+{{--                    <img src="{{ asset('images/yandex-logo.png') }}" alt="Yandex">--}}
+{{--                </div>--}}
+{{--                <div class="partner-item">--}}
+{{--                    <img src="{{ asset('images/yandex-logo.png') }}" alt="Yandex">--}}
+{{--                </div>--}}
+{{--                <div class="partner-item">--}}
+{{--                    <img src="{{ asset('images/yandex-logo.png') }}" alt="Yandex">--}}
+{{--                </div>--}}
+{{--                <div class="partner-item">--}}
+{{--                    <img src="{{ asset('images/yandex-logo.png') }}" alt="Yandex">--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </section>--}}
         <footer>
-            <div class="user-agreement">
-                <a href="/" class="" target="_blank">Пользовательское соглашение</a>
-            </div>
+{{--            <div class="user-agreement">--}}
+{{--                <a href="/" class="" target="_blank">Пользовательское соглашение</a>--}}
+{{--            </div>--}}
             <div class="copyright">
                 ©2022, ООО «Транспорт Логистика»
             </div>
