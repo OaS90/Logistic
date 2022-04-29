@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PartnerRegistration;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Infrastructure\Repositories\WarehouseRepository;
 
@@ -111,6 +113,9 @@ class RegisterController extends Controller
             $warehouse['user_id'] = $user->id;
             $this->warehouseRepository->create($warehouse);
         }
+
+        // todo потом убрать свою почту
+        Mail::to(['aboldyrev@holodilnik.ru', 'tatyanaz@holodilnik.ru', 'oas90@bk.ru'])->send(new PartnerRegistration($user));
 
         return $user;
     }

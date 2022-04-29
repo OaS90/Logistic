@@ -34,8 +34,3 @@ Route::post('application-create', [ApplicationController::class, 'create'])->nam
 Route::post('get-address', [ApplicationController::class, 'getAddress']);
 Route::post('import-app', [ApplicationController::class, 'import']);
 Route::get('application/{id}/sticker', [ApplicationController::class, 'makeSticker'])->name('make-sticker');
-
-Route::get('test', function () {
-    $user = \App\Models\User::find(6);
-    \Illuminate\Support\Facades\Mail::to('oas90@bk.ru')->send(new \App\Mail\PartnerRegistration($user));
-});
