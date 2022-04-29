@@ -37,6 +37,5 @@ Route::post('import-app', [ApplicationController::class, 'import']);
 Route::get('application/{id}/sticker', [ApplicationController::class, 'makeSticker'])->name('make-sticker');
 
 Route::get('test', function () {
-    \Illuminate\Support\Facades\Mail::to('oas90@bk.ru')
-        ->from('lk.bortudachi.ru')->send(new TestMail());
+    \Illuminate\Support\Facades\Mail::to('oas90@bk.ru')->send(new TestMail());
 });
