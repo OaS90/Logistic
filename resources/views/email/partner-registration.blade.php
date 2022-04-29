@@ -17,6 +17,7 @@
 @endforeach
 </ul>
 
+{{ \Illuminate\Support\Facades\Log::info($partner) }}
 
 
 
