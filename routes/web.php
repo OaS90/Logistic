@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\UserController;
+use App\Mail\TestMail;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,4 +36,6 @@ Route::post('get-address', [ApplicationController::class, 'getAddress']);
 Route::post('import-app', [ApplicationController::class, 'import']);
 Route::get('application/{id}/sticker', [ApplicationController::class, 'makeSticker'])->name('make-sticker');
 
-
+Route::get('test', function () {
+    \Illuminate\Support\Facades\Mail::to('oas90@bk.ru')->send(new TestMail);
+});
