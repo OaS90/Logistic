@@ -31,6 +31,7 @@
                             <img class="profile-photo" src="{{ asset('storage/' . $user->avatar) }}"
                                  alt="{{ $user->full_name }}">
                         </div>
+
                         <div class="profile-section__photo-control">
                             <label for="file-input">
                                 <span class="profile-photo-change">
@@ -43,6 +44,7 @@
                     </div>
                     <div class="profile-section__data">
                         <h3>{{ $user->full_name }}</h3>
+                        <p>Ваш идентификатор: {{ $user->id_1c }}</p>
                         @if($user->position)
                             <div class="profile-position">
                                 {{ $user->position }}

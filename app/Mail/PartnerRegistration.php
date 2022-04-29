@@ -30,6 +30,6 @@ class PartnerRegistration extends Mailable
      */
     public function build()
     {
-        return $this->view('email.partner-registration');
+        return $this->subject('Регистрация нового партнёра')->view('email.partner-registration');
     }
 }
