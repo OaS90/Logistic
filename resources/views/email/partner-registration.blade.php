@@ -3,7 +3,7 @@
 <p>Фамилия: {{ $partner->lastname }}</p>
 <p>Мобильный телефон: {{ $partner->phone }}</p>
 <p>Должность: {{ $partner->position }}</p>
-<p>Рабочий телефон: {{ $partner_working_phone . ' ' . $partner->additional_number ? 'доб. ' . $partner->additional_number : ''}}</p>
+<p>Рабочий телефон: {{ $partner->work_phone . ' ' . $partner->additional_number ? 'доб. ' . $partner->additional_number : ''}}</p>
 <p>Название компании: {{ $partner->company }}</p>
 <p>ИНН {{ $partner->inn }}</p>
 <p>КПП {{ $partner->kpp }}</p>
