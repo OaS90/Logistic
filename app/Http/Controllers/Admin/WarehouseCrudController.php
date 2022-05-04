@@ -39,7 +39,22 @@ class WarehouseCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::setFromDb();
+//        CRUD::setFromDb();
+        $this->crud->addColumn([
+            'name' => 'user_id',
+            'label' => 'Идентификатор партнёра'
+        ]);
+
+        $this->crud->addColumn([
+            'name' => 'address',
+            'label' => 'Адрес склада'
+        ]);
+
+        $this->crud->addColumn([
+            'name' => 'store_id',
+            'label' => 'Идентификатор склада'
+        ]);
+
         $this->crud->denyAccess(['delete', 'show']);
         $this->crud->removeButton('create');
         /**
