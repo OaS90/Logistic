@@ -29,6 +29,8 @@
                 <a href="{{ route('application-list') }}" class="no-underline">
                     <div class="sidebar-nav__item">Список заявок</div>
                 </a>
+                <a href="{{ route('api-description') }}" class="no-underline">
+                    <div class="sidebar-nav__item">Описание Api</div></a>
                 <a class="no-underline" id="logout">
                     <div class="sidebar-nav__item"
                         href="{{ route('logout') }}"

@@ -34,3 +34,6 @@ Route::post('application-create', [ApplicationController::class, 'create'])->nam
 Route::post('get-address', [ApplicationController::class, 'getAddress']);
 Route::post('import-app', [ApplicationController::class, 'import']);
 Route::get('application/{id}/sticker', [ApplicationController::class, 'makeSticker'])->name('make-sticker');
+Route::get('api-description', function () {
+    return view('api-description');
+})->name('api-description');
