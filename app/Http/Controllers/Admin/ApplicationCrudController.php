@@ -81,7 +81,11 @@ class ApplicationCrudController extends CrudController
 
         $this->crud->addColumn([
             'label' => "Адрес склада", // Table column heading
-            'name' => 'warehouse_address'
+            'name' => 'warehouse_id',
+            'type'  => 'closure',
+            'function' => function ($entry) {
+                return $entry->warehouse->address;
+            }
         ]);
 
         $this->crud->addColumn([

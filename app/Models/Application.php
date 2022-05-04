@@ -32,6 +32,11 @@ class Application extends Model
         return $this->belongsTo(DeliveryAddress::class, 'delivery_address', 'id');
     }
 
+    public function warehouse()
+    {
+        return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');
+    }
+
     public function products()
     {
         return $this->hasMany(Product::class, 'app_id', 'id');

@@ -130,7 +130,7 @@
                                 <td>{{ $application->products[0]->vat }}</td>
                                 <td>{{ $application->products[0]->cost }} ₽</td>
                                 <td>
-                                    <div class="hidden-td">{{ $application->warehouse_address }}</div>
+                                    <div class="hidden-td">{{ $application->warehouse->address }}</div>
                                 </td>
                                 <td>{{ $application->delivery_date }}</td>
                                 <td>

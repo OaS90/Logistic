@@ -8,7 +8,7 @@
             <div style="font-size: 12px">{{ $application->order_number . '-LG-'  . $i}}</div>
             <p class="address" style="font-size: 12px">{{ $application->full_address }}</p>
             <div class="client"><b>{{ $application->client_name }}</b></div>
-            <div class="warehouse-code">{{ $application->warehouse_address }}</div>
+            <div class="warehouse-code">{{ $application->warehouse->address }}</div>
             <div style="position: absolute; bottom: 10px; width: 95%; text-align: center; font-size: 12px">
                 <p>{{ $application->full_address . ',  Тел. ' . $application->client_phone }}</p>
                     <hr style="margin-top: 10px;">

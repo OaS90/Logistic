@@ -130,7 +130,7 @@
                     </div>
                     <div class="profile-data profile-data--address">
                         <div class="profile-data__ttl">Адрес склада отгрузки</div>
-                        <div class="profile-data__value">{{ $application->warehouse_address }}
+                        <div class="profile-data__value">{{ $application->warehouse->address }}
                         </div>
                     </div>
                     <div class="profile-data profile-data--all">
