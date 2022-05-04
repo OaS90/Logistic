@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 
 class Application extends Model
 {
+    use CrudTrait;
+
     protected $table = 'applications';
     protected $guarded = ['id'];
     const STATUSES = [
@@ -68,6 +71,9 @@ class Application extends Model
 
     public function getStatus($status): string
     {
-        return self::STATUSES[$status];
+        if ($status)
+            return self::STATUSES[$status];
+
+        return '';
     }
 }
