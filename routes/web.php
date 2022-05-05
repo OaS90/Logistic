@@ -22,18 +22,21 @@ use App\Http\Controllers\UserController;
 
 Auth::routes();
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('application-list', [ApplicationController::class, 'getList'])->name('application-list');
-Route::get('application', [ApplicationController::class, 'show'])->name('application');
-Route::get('application/{id}', [ApplicationController::class, 'current'])->name('application-show');
-Route::get('profile', [UserController::class, 'show'])->name('profile');
-Route::get('profile-edit', [UserController::class, 'editForm'])->name('profile-edit-form');
-Route::post('profile-save', [UserController::class, 'update'])->name('profile-save');
-Route::get('avatar-delete', [UserController::class, 'avatarDelete'])->name('avatar-delete');
-Route::post('application-create', [ApplicationController::class, 'create'])->name('application-create');
-Route::post('get-address', [ApplicationController::class, 'getAddress']);
-Route::post('import-app', [ApplicationController::class, 'import']);
-Route::get('application/{id}/sticker', [ApplicationController::class, 'makeSticker'])->name('make-sticker');
-Route::get('api-description', function () {
-    return view('api-description');
-})->name('api-description');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('application-list', [ApplicationController::class, 'getList'])->name('application-list');
+    Route::get('application', [ApplicationController::class, 'show'])->name('application');
+    Route::get('application/{id}', [ApplicationController::class, 'current'])->name('application-show');
+    Route::get('profile', [UserController::class, 'show'])->name('profile');
+    Route::get('profile-edit', [UserController::class, 'editForm'])->name('profile-edit-form');
+    Route::post('profile-save', [UserController::class, 'update'])->name('profile-save');
+    Route::get('avatar-delete', [UserController::class, 'avatarDelete'])->name('avatar-delete');
+    Route::post('application-create', [ApplicationController::class, 'create'])->name('application-create');
+    Route::post('get-address', [ApplicationController::class, 'getAddress']);
+    Route::post('import-app', [ApplicationController::class, 'import']);
+    Route::get('application/{id}/sticker', [ApplicationController::class, 'makeSticker'])->name('make-sticker');
+    Route::get('api-description', function () {
+        return view('api-description');
+    })->name('api-description');
+});
+

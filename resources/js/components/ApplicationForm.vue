@@ -24,9 +24,9 @@
                            v-model="productFields.brand">
                     <div class="field-title">Форма оплаты</div>
                     <select class="select" name="payment_type" v-model="applicationFields.payment_type">
-                        <option>Оплата наличными</option>
-                        <option>Онлайн оплата</option>
-                        <option>Оплата на дому</option>
+                        <option value="Оплата наличными" selected>Оплата наличными</option>
+                        <option value="Онлайн оплата">Онлайн оплата</option>
+                        <option value="Оплата на дому">Оплата на дому</option>
                     </select>
                     <div class="field-title">Ставка НДС</div>
                     <select class="select" name="vat" v-model="productFields.vat">
@@ -55,9 +55,9 @@
                                v-model="productFields.weight">
                     </div>
                     <div class="field-title">Признак склада отгрузки</div>
-                    <select class="select" name="warehouse_address" v-model="applicationFields.warehouse_address">
-                        <option>Выберите адрес</option>
-                        <option v-for="(warehouse, k) in warehouses" :key="k">{{ warehouse.address }}</option>
+                    <select class="select" name="warehouse_address" v-model="applicationFields.warehouse_id">
+                        <option selected="selected" value="0" hidden>Выберите адрес</option>
+                        <option :value="warehouse.id" v-for="(warehouse, k) in warehouses" :key="k">{{ warehouse.address }}</option>
                     </select>
                     <date-picker input-class="text" v-model="applicationFields.delivery_date"
                                  valueType="YYYY-MM-DD"
@@ -80,7 +80,7 @@
                                      :timePickerOptions="{
                                         start: '09:00',
                                         step: '01:00',
-                                        end: '19:00',
+                                        end: '23:00',
                                      }">
                         </date-picker>
                         <div class="field-group__label">до</div>
@@ -94,7 +94,7 @@
                                      :timePickerOptions="{
                                         start: '09:00',
                                         step: '01:00',
-                                        end: '19:00',
+                                        end: '23:00',
                                      }">
                         </date-picker>
                     </div>
@@ -182,8 +182,14 @@ export default {
     props: ['warehouses'],
     data() {
         return {
-            applicationFields: {},
+            applicationFields: {
+                warehouse_id: '0',
+                payment_type: 'Оплата наличными',
+                delivery_from: '9:00',
+                delivery_till: '18:00'
+            },
             productFields: {
+                vat: '0',
                 volume: 0
             },
             addressFields: {
@@ -250,8 +256,8 @@ export default {
     },
     computed: {
         vol() {
-            if (this.productFields.width && this.productFields.height && parseInt(this.productFields.depth)) {
-                let volume = (parseInt(this.productFields.width) * parseInt(this.productFields.height) * parseInt(this.productFields.depth)) * 0.0000001
+            if (this.productFields.width && this.productFields.height && this.productFields.depth && this.productFields.count) {
+                let volume = (parseInt(this.productFields.width) * parseInt(this.productFields.height) * parseInt(this.productFields.depth)) * parseInt(this.productFields.count) * 0.0000001
                 this.productFields.volume = volume.toFixed(7)
 
                 return volume.toFixed(7)
