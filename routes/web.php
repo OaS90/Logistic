@@ -38,5 +38,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('api-description', function () {
         return view('api-description');
     })->name('api-description');
+    Route::get('download-csv-example', [ApplicationController::class, 'downloadFileExample']);
 });
 

@@ -15,6 +15,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 use App\Application\CsvImportService;
 use App\Application\ApplicationService;
+use Illuminate\Support\Facades\Response;
 
 class ApplicationController extends Controller
 {
@@ -134,5 +135,10 @@ class ApplicationController extends Controller
     public function import(Request $request)
     {
         $this->importService->import($request->file('file'), new ApplicationImport(), Auth::id());
+    }
+
+    public function downloadFileExample(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        return Response::download(storage_path('app/public/orders_example.csv'));
     }
 }
