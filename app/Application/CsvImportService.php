@@ -5,6 +5,7 @@ namespace App\Application;
 use App\Domain\ApplicationDTO;
 use App\Domain\DeliveryAddressDTO;
 use App\Domain\ProductDTO;
+use App\Models\Warehouse;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Infrastructure\Imports\ImportEntity;
@@ -47,7 +48,10 @@ class CsvImportService
 
             if (!$existApp) {
                 $address = $this->addressRepo->createFromCsv($data['address']);
+                $warehouse = Warehouse::create(['address' => $data['app']['warehouse_id'], 'user_id' => $userId]);
                 $data['app']['delivery_address'] = $address->id;
+                $data['app']['warehouse_id'] = $warehouse->id;
+
                 $app = $this->appRepo->create($data['app']);
 
                 foreach ($data['products'] as $dataProduct) {
