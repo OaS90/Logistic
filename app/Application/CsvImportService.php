@@ -5,6 +5,7 @@ namespace App\Application;
 use App\Domain\ApplicationDTO;
 use App\Domain\DeliveryAddressDTO;
 use App\Domain\ProductDTO;
+use App\Infrastructure\Repositories\WarehouseRepository;
 use App\Models\Warehouse;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
@@ -23,17 +24,20 @@ class CsvImportService
     protected $productRepo;
     protected $addressRepo;
     protected $appService;
+    protected $warehouseRepo;
 
     public function __construct(ApplicationRepository $appRepo,
                                 DeliveryAddressRepository $addressRepository,
                                 ProductRepository $productRepository,
-                                ApplicationService $appService
+                                ApplicationService $appService,
+                                WarehouseRepository $warehouseRepository
     )
     {
         $this->appRepo = $appRepo;
         $this->productRepo = $productRepository;
         $this->addressRepo = $addressRepository;
         $this->appService = $appService;
+        $this->warehouseRepo = $warehouseRepository;
     }
 
 
@@ -45,10 +49,14 @@ class CsvImportService
             $existApp = $this->appRepo->getByOrderNumber($data['app']['order_number']);
             $data['app']['user_id'] = $userId;
             $data['app']['delivery_time'] = $data['app']['delivery_from'] . '-' . $data['app']['delivery_till'];
+            $warehouse = $this->warehouseRepo->findByAddressOrStoreId($data['app']['warehouse_id'], $data['app']['storeId'] ?? null);
 
             if (!$existApp) {
                 $address = $this->addressRepo->createFromCsv($data['address']);
-                $warehouse = Warehouse::create(['address' => $data['app']['warehouse_id'], 'user_id' => $userId]);
+
+                if (!$warehouse)
+                    $warehouse = $this->warehouseRepo->create(['address' => $data['app']['warehouse_id'], 'user_id' => $userId]);
+
                 $data['app']['delivery_address'] = $address->id;
                 $data['app']['warehouse_id'] = $warehouse->id;
 
@@ -59,6 +67,7 @@ class CsvImportService
                     $this->productRepo->create($dataProduct);
                 }
             } else {
+                $data['app']['warehouse_id'] = $warehouse->id;
                 $this->appService->checkAppChanges($existApp, $data['app']);
                 $this->appService->checkAppProducts($existApp, $data['products']);
             }
