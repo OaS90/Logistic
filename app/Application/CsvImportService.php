@@ -59,10 +59,12 @@ class CsvImportService
 
                 $data['app']['delivery_address'] = $address->id;
                 $data['app']['warehouse_id'] = $warehouse->id;
-
                 $app = $this->appRepo->create($data['app']);
 
                 foreach ($data['products'] as $dataProduct) {
+                    $dataProduct['cost'] = floatval(str_replace(' ', '', $dataProduct['cost']));
+                    $dataProduct['discount_cost'] = floatval(str_replace(' ', '', $dataProduct['discount_cost']));
+                    $dataProduct['volume'] = floatval(str_replace(' ', '', $dataProduct['volume']));
                     $dataProduct['app_id'] = $app->id;
                     $this->productRepo->create($dataProduct);
                 }
