@@ -38,6 +38,9 @@ class ApplicationService
     {
         foreach ($data as $csvProduct) {
             $appProduct = $this->productRepo->getByAppIdSkuBrand($csvProduct['brand'], $csvProduct['sku'], $app->id);
+            $csvProduct['cost'] = floatval(str_replace(' ', '', $csvProduct['cost']));
+            $csvProduct['discount_cost'] = floatval(str_replace(' ', '', $csvProduct['discount_cost']));
+            $csvProduct['volume'] = floatval(str_replace(' ', '', $csvProduct['volume']));
 
             if (!$appProduct) {
                 $app->update(['doc_ver' => $app->doc_ver + 1]);
