@@ -141,20 +141,30 @@
                         <div class="profile-data__ttl">Этаж</div>
                         <div class="profile-data__value">{{ $application->address->floor }}</div>
                     </div>
-                    <div class="profile-data profile-data--all">
-                        <div class="profile-data__ttl">Подъезд</div>
-                        <div class="profile-data__value">{{ $application->address->entrance }}</div>
-                    </div>
-                    <div class="profile-data profile-data--all">
-                        <div class="profile-data__ttl">Почтовый индекс</div>
-                        <div class="profile-data__value">{{ $application->address->postcode }}</div>
-                    </div>
-                    <div class="profile-data profile-data--all">
-                        <div class="profile-data__ttl">Коментарии</div>
-                        <div class="profile-data__value">
-                            {{ $application->comment }}
+
+                    @if($application->address->entrance)
+                        <div class="profile-data profile-data--all">
+                            <div class="profile-data__ttl">Подъезд</div>
+                            <div class="profile-data__value">{{ $application->address->entrance }}</div>
                         </div>
-                    </div>
+                    @endif
+
+                    @if($application->address->postcode)
+                        <div class="profile-data profile-data--all">
+                            <div class="profile-data__ttl">Почтовый индекс</div>
+                            <div class="profile-data__value">{{ $application->address->postcode }}</div>
+                        </div>
+                    @endif
+
+                    @if($application->comment)
+                        <div class="profile-data profile-data--all">
+                            <div class="profile-data__ttl">Коментарии</div>
+                            <div class="profile-data__value">
+                                {{ $application->comment }}
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="profile-data__hdr">Информация о покупателе</div>
                     <div class="profile-data">
                         <div class="profile-data__ttl">ФИО покупателя</div>
