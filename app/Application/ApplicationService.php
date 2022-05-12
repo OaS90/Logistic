@@ -2,6 +2,7 @@
 
 namespace App\Application;
 
+use App\Domain\ProductDTO;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\ProductRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -38,16 +39,11 @@ class ApplicationService
     {
         foreach ($data as $csvProduct) {
             $appProduct = $this->productRepo->getByAppIdSkuBrand($csvProduct['brand'], $csvProduct['sku'], $app->id);
-            $csvProduct['cost'] = floatval(str_replace(' ', '', $csvProduct['cost']));
-            $csvProduct['discount_cost'] = floatval(str_replace(' ', '', $csvProduct['discount_cost']));
-            $csvProduct['volume'] = floatval(str_replace(' ', '', $csvProduct['volume']));
-
             if (!$appProduct) {
                 $app->update(['doc_ver' => $app->doc_ver + 1]);
-                $this->productRepo->create($csvProduct);
+                $this->productRepo->create((new ProductDTO())->toArray($app->id, $csvProduct));
             } else {
-                $csvProduct['app_id'] = $app->id;
-                $this->productRepo->update($csvProduct, $appProduct);
+                $this->productRepo->update((new ProductDTO())->toArray($app->id, $csvProduct), $appProduct);
             }
         }
     }
