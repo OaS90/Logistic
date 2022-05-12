@@ -14,7 +14,7 @@
                     <hr style="margin-top: 10px;">
                     {{
                         $products[$i -1]->width . ' x ' . $products[$i -1]->height . ' x ' . $products[$i -1]->depth . ' мм | ' .
-                        $products[$i -1]->count . ' экз.' . $products[$i -1]->weight . 'г'
+                        $products[$i -1]->count . ' экз.' . $products[$i -1]->weight . 'кг'
                     }}
 
             </div>
