@@ -11,7 +11,7 @@ class ApplicationRepository
         return Application::find($id);
     }
 
-    public function getByOrderNumber(int $orderId)
+    public function getByOrderNumber(string $orderId)
     {
         return Application::where('order_number', $orderId)->first();
     }
