@@ -15,6 +15,8 @@ class PartnerOrderDTO
 
     public function make(): array
     {
+        $products = $this->products($this->app);
+
         return [
             'id' => $this->app->order_number,
             'paymentMethod' => $this->app->payment_type,
@@ -36,28 +38,7 @@ class PartnerOrderDTO
                 'floor'=> $this->app->address->floor, // необязательно
                 'flat'=> $this->app->address->flat // необязательно
             ],
-            'products' => [
-                [
-                    'name' => $this->app->product_name, // Товар
-                    'vendorCode' => $this->app->product_art, // Артикул
-                    'count' => $this->app->count, // Количество
-                    'cost' => $this->app->cost, // Оценочная стоимость
-                    'costAfterDiscounts' => 10000, // Стоимость с учетом скидки
-                    'VATRate' => $this->app->vat, // Ставка НДС
-                    'leftToPay' => 0, // Сумма к получению
-                    'weight' => $this->app->weight, // Расчетный вес (кг)
-                    'setId' => $this->app->product_art . '_1',
-                    'brand' => $this->app->product_brand, // Бренд
-                    'tnved' => '8516609000', // Код ТНВЭД
-                    'country' => '643', // код страны происхождения по ОКСМ
-                    'barcode' => '8699272141521', // EAN
-                    'volume' => $this->app->volume, // объем в м2
-                    'width' => $this->app->width, // ширина в см
-                    'height' => $this->app->height, // высота в м2
-                    'depth' => $this->app->depth, // глубина в см
-                    'shipmentCode' => $this->app->order_number . '-LG-1'
-                ]
-            ]
+            'products' => $products
         ];
     }
 
@@ -66,8 +47,34 @@ class PartnerOrderDTO
         return explode('-', $time);
     }
 
-    public function products()
+    public function products($app)
     {
+        $products = [];
 
+        foreach ($app->products as $index => $product) {
+            $i = $index + 1;
+            $products[] = [
+                'name' => $product->name, // Товар
+                'vendorCode' => $product->sku, // Артикул
+                'count' => $product->count, // Количество
+                'cost' => $product->cost, // Оценочная стоимость
+                'costAfterDiscounts' => 10000, // Стоимость с учетом скидки
+                'VATRate' => $product->vat, // Ставка НДС
+                'leftToPay' => $product->left_to_pay, // Сумма к получению
+                'weight' => $product->weight, // Расчетный вес (кг)
+                'setId' => $product->sku . '_' . $i,
+                'brand' => $product->brand, // Бренд
+                'tnved' => $product->tnved, // Код ТНВЭД
+                'country' => $product->country_code, // код страны происхождения по ОКСМ
+                'barcode' => $product->barcode, // EAN
+                'volume' => $product->volume, // объем в м2
+                'width' => $product->width, // ширина в см
+                'height' => $product->height, // высота в м2
+                'depth' => $product->depth, // глубина в см
+                'shipmentCode' => $app->order_number . '-LG-' . $i
+            ];
+        }
+
+        return $products;
     }
 }
