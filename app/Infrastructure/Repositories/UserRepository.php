@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Repositories;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
 class UserRepository
@@ -15,5 +16,10 @@ class UserRepository
     {
         Storage::delete('public/' . $user->avatar);
         $user->update(['avatar' => '']);
+    }
+
+    public function getBy1cId($id)
+    {
+        return User::where('id_1c', $id)->first();
     }
 }
