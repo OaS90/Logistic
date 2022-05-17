@@ -26,7 +26,7 @@ class ApplicationRepository
         return Application::create($data);
     }
 
-    public function updateStatus(int $orderId, string $status)
+    public function updateStatus(string $orderId, string $status)
     {
         $app = Application::where('order_number', $orderId)->firstOrFail();
         $app->update(['status' => $status]);
