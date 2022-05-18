@@ -28,8 +28,8 @@
                 Настройки:
             </p>
             <ul>
-                <li>Host: </li>
-                <li>Port: 15672</li>
+                <li>Host: 83.69.203.14</li>
+                <li>Port: 5672</li>
                 <li>User: partners</li>
                 <li>Password: NeFHCp6KUre3</li>
                 <li>Queue: partners</li>
