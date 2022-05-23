@@ -8,4 +8,19 @@ class DeliveryAddressDTO
     {
         return array_slice($allRows, 9, 8);
     }
+
+    public function apiRows(array $data): array
+    {
+        $data['city_name'] = $data['cityName'];
+        $data['region_name'] = $data['regionName'];
+        $data['city_fias'] = $data['cityId'];
+        $data['street_fias'] = $data['streetId'];
+
+        unset($data['cityName']);
+        unset($data['regionName']);
+        unset($data['cityId']);
+        unset($data['streetId']);
+
+        return $data;
+    }
 }

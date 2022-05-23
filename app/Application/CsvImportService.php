@@ -53,9 +53,12 @@ class CsvImportService
 
             if (!$existApp) {
                 $address = $this->addressRepo->createFromCsv($data['address']);
-
+                // создавать ли новый склад или выдавать ошибку, что склад не найден ?
                 if (!$warehouse)
-                    $warehouse = $this->warehouseRepo->create(['address' => $data['app']['warehouse_id'], 'user_id' => $userId]);
+                    $warehouse = $this->warehouseRepo->create([
+                        'storeId' => $data['app']['warehouse_id'],
+                        'userId' => $userId,
+                    ]);
 
                 $data['app']['delivery_address'] = $address->id;
                 $data['app']['warehouse_id'] = $warehouse->id;

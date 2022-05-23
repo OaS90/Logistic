@@ -2,18 +2,42 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Domain\ApplicationDTO;
+use App\Domain\DeliveryAddressDTO;
+use App\Domain\ProductDTO;
 use App\Http\Controllers\Api\Exceptions\JsonParseException;
 use App\Infrastructure\Repositories\ApplicationRepository;
+use App\Infrastructure\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\Exceptions\StatusUpdateException;
+use App\Infrastructure\Repositories\ProductRepository;
+use App\Infrastructure\Repositories\DeliveryAddressRepository;
+use App\Infrastructure\Repositories\WarehouseRepository;
+use App\Application\ApplicationService;
 
 class ApplicationController
 {
     protected $repo;
+    protected $addressRepo;
+    protected $productRepo;
+    protected $warehouseRepo;
+    protected $userRepo;
+    protected $appService;
 
-    public function __construct(ApplicationRepository $repository)
+    public function __construct(ApplicationRepository $repository,
+                                DeliveryAddressRepository $addressRepo,
+                                ProductRepository $productRepo,
+                                WarehouseRepository $warehouseRepo,
+                                UserRepository $userRepo,
+                                ApplicationService $appService
+    )
     {
         $this->repo = $repository;
+        $this->productRepo = $productRepo;
+        $this->addressRepo = $addressRepo;
+        $this->warehouseRepo = $warehouseRepo;
+        $this->userRepo = $userRepo;
+        $this->appService = $appService;
     }
 
     public function setStatus(Request $request): \Illuminate\Http\JsonResponse
@@ -51,4 +75,37 @@ class ApplicationController
 
        return response()->json(array_merge($statuses, $errors));
     }
+
+    public function create(Request $request)
+    {
+        $data = $request->all();
+        $user = $this->userRepo->getBy1cId($data[0]['userId']);
+
+        foreach ($data as $app) {
+            $app['user_id'] = $user->id;
+            $warehouse = $this->warehouseRepo->findByAddressOrStoreId($app['storeAddress'], $app['storeId']);
+            // создавать ли новый склад или выдавать ошибку, что склад не найден ?
+            if (!$warehouse)
+                $warehouse = $this->warehouseRepo->create($app);
+
+            $app['storeId'] = $warehouse->id;
+            $address = $this->addressRepo->createFromCsv((new DeliveryAddressDTO())->apiRows($app['address']));
+            $newApp = $this->repo->create((new ApplicationDTO())->apiRows($app, $address->id));
+
+            foreach ($app['products'] as $product) {
+                $this->productRepo->create((new ProductDTO())->apiRows($product, $newApp->id));
+            }
+        }
+
+        return response(['message' => 'success', 'code' => 200], 200);
+    }
+
+    public function getSticker($appId): \Illuminate\Http\Response
+    {
+        $app = $this->repo->getById($appId);
+        $stickers = $this->appService->makeStickers($app);
+
+        return $stickers->download();
+    }
+
 }

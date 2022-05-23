@@ -2,6 +2,8 @@
 
 namespace App\Domain;
 
+use Illuminate\Support\Carbon;
+
 class ApplicationDTO
 {
     public function dbRowsFromCsv(): array
@@ -46,5 +48,23 @@ class ApplicationDTO
     public function dbRows(array $allRows): array
     {
         return array_slice($allRows, 0, 9);
+    }
+
+    public function apiRows(array $data, int $addressId): array
+    {
+        $data['client_phone'] = parse_phone($data['buyer']['phone']);
+        $data['client_name'] = $data['buyer']['fio'];
+        $data['order_number'] = $data['id'];
+        $data['delivery_time'] = $data['deliveryTimeFrom'] . '-' . $data['deliveryTimeTo'];
+        $data['delivery_date'] = Carbon::parse($data['deliveryDate'])->format('Y-m-d');
+        $data['payment_type'] = $data['paymentMethod'];
+        $data['delivery_address'] = $addressId;
+        $data['warehouse_id'] = $data['storeId'];
+        unset($data['products']);
+        unset($data['address']);
+        unset($data['buyer']);
+        unset($data['id']);
+
+        return $data;
     }
 }

@@ -22,5 +22,7 @@ use App\Http\Controllers\Api\ApplicationController;
 Route::prefix('v1')->group(function () {
     Route::get('partners/order', [PartnerController::class, 'getOrders']);
     Route::post('set-status', [ApplicationController::class, 'setStatus']);
+    Route::post('order/create', [ApplicationController::class, 'create']);
+    Route::get('order/{id}/stickers', [ApplicationController::class, 'getSticker']);
 });
 

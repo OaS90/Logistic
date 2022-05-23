@@ -8,7 +8,11 @@ class WarehouseRepository
 {
     public function create(array $data)
     {
-         return Warehouse::create($data);
+         return Warehouse::create([
+             'store_id' => $data['storeId'],
+             'address' => $data['storeAddress'],
+             'user_id' => $data['userId']
+         ]);
     }
 
     public function findByAddressOrStoreId($address, $storeId = null)
