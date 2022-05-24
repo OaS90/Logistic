@@ -50,11 +50,13 @@ class ApplicationService
 
     public function makeStickers($app)
     {
-
         $barcodes = [];
 
         foreach ($app->products as $product) {
-            $barcodes[] = $this->codeGenerator->getBarcode($product->barcode, $this->codeGenerator::TYPE_EAN_13);
+            if ($product->barcode)
+                $barcodes[] = $this->codeGenerator->getBarcode($product->barcode, $this->codeGenerator::TYPE_EAN_13);
+            else
+                return response(['message' => 'У товара ' . $product->name . ' отсутствует баркод'], 400);
         }
 
         $pdf = PDF::loadView('sticker', ['codes' => $barcodes, 'application' => $app, 'products' => $app->products])

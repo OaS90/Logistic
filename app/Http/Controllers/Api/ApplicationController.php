@@ -8,6 +8,7 @@ use App\Domain\ProductDTO;
 use App\Http\Controllers\Api\Exceptions\JsonParseException;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\UserRepository;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\Exceptions\StatusUpdateException;
 use App\Infrastructure\Repositories\ProductRepository;
@@ -103,9 +104,13 @@ class ApplicationController
     public function getSticker($partnerOrderId): \Illuminate\Http\Response
     {
         $app = $this->repo->getByOrderNumber($partnerOrderId);
+
+        if (!$app)
+            return response(['message' => 'Не найдена заявка с номером заказа ' . $partnerOrderId], 400);
+
         $stickers = $this->appService->makeStickers($app);
 
-        return $stickers->download();
+        return $stickers instanceof PDF ? $stickers->download() : $stickers;
     }
 
 }
