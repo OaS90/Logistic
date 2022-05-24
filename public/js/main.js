@@ -4,16 +4,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /* Navigation */
     var x = document.getElementById("navbar-button");
-    
+
     x.addEventListener("click", myFunction);
-    
+
     function myFunction() {
       var element = document.getElementById("contain");
       element.classList.toggle("sidebar-open");
-      
+
       x.classList.toggle("change");
     }
-    
+
     /* Modal popup */
 
     var modalButtons = document.querySelectorAll('.js-open-modal'),
@@ -64,4 +64,15 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.modal.active').classList.remove('active');
         this.classList.remove('active');
     });
-}); 
+
+
+});
+function openRequest(classElement) {
+    var element = document.getElementsByClassName(classElement)[0];
+
+    if (element.style.display === "none") {
+        element.style.display = "block";
+    } else {
+        element.style.display = "none";
+    }
+}

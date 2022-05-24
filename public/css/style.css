@@ -26,7 +26,9 @@ body {
 .post-api {
     background-color: #6bf58e;
 }
-
+.request-button:hover {
+    cursor: pointer;
+}
 .input-wrap {
     position: relative;
 }
