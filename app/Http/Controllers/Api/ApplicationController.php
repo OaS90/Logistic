@@ -83,10 +83,10 @@ class ApplicationController
 
         foreach ($data as $app) {
             $app['user_id'] = $user->id;
-            $warehouse = $this->warehouseRepo->findByAddressOrStoreId($app['storeAddress'], $app['storeId']);
-            // создавать ли новый склад или выдавать ошибку, что склад не найден ?
+            $warehouse = $this->warehouseRepo->findByStoreId($app['storeId']);
+
             if (!$warehouse)
-                $warehouse = $this->warehouseRepo->create($app);
+                return response(['message' => 'Не найден склад'], 400);
 
             $app['storeId'] = $warehouse->id;
             $address = $this->addressRepo->createFromCsv((new DeliveryAddressDTO())->apiRows($app['address']));

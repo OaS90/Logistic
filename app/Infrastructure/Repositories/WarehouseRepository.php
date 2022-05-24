@@ -8,16 +8,11 @@ class WarehouseRepository
 {
     public function create(array $data)
     {
-         return Warehouse::create([
-             'store_id' => $data['storeId'],
-             'address' => $data['storeAddress'],
-             'user_id' => $data['userId']
-         ]);
+         return Warehouse::create($data);
     }
 
-    public function findByAddressOrStoreId($address, $storeId = null)
+    public function findByStoreId($storeId)
     {
-        return Warehouse::where('address', 'LIKE', '%' . $address . '%')
-            ->where('store_id', $storeId)->first();
+        return Warehouse::where('store_id', $storeId)->first();
     }
 }

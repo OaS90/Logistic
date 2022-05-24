@@ -134,7 +134,7 @@ class ApplicationController extends Controller
 
     public function import(Request $request)
     {
-        $this->importService->import($request->file('file'), new ApplicationImport(), Auth::id());
+        return $this->importService->import($request->file('file'), new ApplicationImport(), Auth::id());
     }
 
     public function downloadFileExample(): \Symfony\Component\HttpFoundation\BinaryFileResponse

@@ -49,17 +49,13 @@ class CsvImportService
             $existApp = $this->appRepo->getByOrderNumber($data['app']['order_number']);
             $data['app']['user_id'] = $userId;
             $data['app']['delivery_time'] = $data['app']['delivery_from'] . '-' . $data['app']['delivery_till'];
-            $warehouse = $this->warehouseRepo->findByAddressOrStoreId($data['app']['warehouse_id'], $data['app']['storeId'] ?? null);
+            $warehouse = $this->warehouseRepo->findByStoreId($data['app']['store_id']);
+
+            if (!$warehouse)
+                return response(['message' => 'Не найден склад'], 400);
 
             if (!$existApp) {
                 $address = $this->addressRepo->createFromCsv($data['address']);
-                // создавать ли новый склад или выдавать ошибку, что склад не найден ?
-                if (!$warehouse)
-                    $warehouse = $this->warehouseRepo->create([
-                        'storeId' => $data['app']['warehouse_id'],
-                        'userId' => $userId,
-                    ]);
-
                 $data['app']['delivery_address'] = $address->id;
                 $data['app']['warehouse_id'] = $warehouse->id;
                 $app = $this->appRepo->create($data['app']);
@@ -73,6 +69,8 @@ class CsvImportService
                 $this->appService->checkAppProducts($existApp, $data['products']);
             }
         }
+
+        return response(['message' => 'success'], 200);
     }
 
     /**

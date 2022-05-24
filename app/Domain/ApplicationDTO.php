@@ -11,7 +11,7 @@ class ApplicationDTO
         return [
             "Номер заказа" => 'order_number',
             "Тип оплаты" => 'payment_type',
-            "Адрес склада" =>  'warehouse_id',
+            "Id склада" =>  'store_id',
             "Комментарий" => 'comment',
             "Дата доставки" => 'delivery_date',
             "Время доствки с" => 'delivery_from',
