@@ -100,9 +100,9 @@ class ApplicationController
         return response(['message' => 'success', 'code' => 200], 200);
     }
 
-    public function getSticker($appId): \Illuminate\Http\Response
+    public function getSticker($partnerOrderId): \Illuminate\Http\Response
     {
-        $app = $this->repo->getById($appId);
+        $app = $this->repo->getByOrderNumber($partnerOrderId);
         $stickers = $this->appService->makeStickers($app);
 
         return $stickers->download();
