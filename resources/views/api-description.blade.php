@@ -332,107 +332,107 @@
                     URL: <span class="post-api"><strong>https://lk.bortudachi.ru/api/v1/order/{orderId}/stickers</strong></span>
                 </p>
                 <p>Метод возвращает готовый PDF файл (Content-Type:	application/pdf)</p>
-                <table class="api-table">
-                    <thead>
-                    <tr role="row" class="tablesorter-headerRow">
-                        <th>Название параметра</th>
-                        <th>Описание параметра</th>
-                        <th>Признак обязательности</th>
-                    </tr>
-                    </thead>
-                    <tbody aria-live="polite" aria-relevant="all">
-                        <tr>
-                            <td><strong>code</strong></td>
-                            <td>код заказа</td>
-                            <td>обязательный параметр</td>
-                        </tr>
-                    </tbody>
-                </table>
+{{--                <table class="api-table">--}}
+{{--                    <thead>--}}
+{{--                    <tr role="row" class="tablesorter-headerRow">--}}
+{{--                        <th>Название параметра</th>--}}
+{{--                        <th>Описание параметра</th>--}}
+{{--                        <th>Признак обязательности</th>--}}
+{{--                    </tr>--}}
+{{--                    </thead>--}}
+{{--                    <tbody aria-live="polite" aria-relevant="all">--}}
+{{--                        <tr>--}}
+{{--                            <td><strong>code</strong></td>--}}
+{{--                            <td>код заказа</td>--}}
+{{--                            <td>обязательный параметр</td>--}}
+{{--                        </tr>--}}
+{{--                    </tbody>--}}
+{{--                </table>--}}
 
-                <br>
+{{--                <br>--}}
 
-                <div class="request-button" onclick="openRequest('sticker-request')">Пример запроса <strong>+</strong></div>
-                <div class="sticker-request" style="display:none;">
-                    <pre style="background-color: #dddddd">
-                        {
-                            "code": "pl-025376-45688333HOL",
-                        }
-                    </pre>
-                </div>
+{{--                <div class="request-button" onclick="openRequest('sticker-request')">Пример запроса <strong>+</strong></div>--}}
+{{--                <div class="sticker-request" style="display:none;">--}}
+{{--                    <pre style="background-color: #dddddd">--}}
+{{--                        {--}}
+{{--                            "code": "pl-025376-45688333HOL",--}}
+{{--                        }--}}
+{{--                    </pre>--}}
+{{--                </div>--}}
 
-                <br>
+{{--                <br>--}}
 
-                <h2>Описание ответа</h2>
-                <table class="api-table">
-                    <thead>
-                    <tr>
-                        <th>Название параметра</th>
-                        <th>Описание параметра</th>
-                        <th>Признак обязательности</th>
-                    </tr>
-                    </thead>
-                    <tbody aria-live="polite" aria-relevant="all">
-                    <tr>
-                        <td><strong>parcel</strong></td>
-                        <td>код отправления. Содержит:&nbsp; номер отправления
-                            заказчика, номер отправления исполнителя, номер места. Под номером места понимается
-                            номенклатурная позиция в заказе.
-                        </td>
-                        <td>обязательный параметр</td>
-                    </tr>
-                    <tr>
-                        <td><strong>name</strong></td>
-                        <td><p><span
-                                    style="color: rgb(51,51,51);">Наименование товара</span></p></td>
-                        <td>обязательный параметр</td>
-                    </tr>
-                    <tr>
-                        <td ><strong>fio</strong></td>
-                        <td>ФИО получателя</td>
-                        <td>обязательный параметр</td>
-                    </tr>
-                    <tr>
-                        <td><strong>address</strong></td>
-                        <td>адрес доставки</td>
-                        <td>обязательный параметр</td>
-                    </tr>
-                    <tr>
-                        <td><strong>storeID</strong></td>
-                        <td>Признак склада отгрузки. Строка до 15 символов.</td>
-                        <td>обязательный параметр</td>
-                    </tr>
-                    </tbody>
-                </table>
-                <br>
+{{--                <h2>Описание ответа</h2>--}}
+{{--                <table class="api-table">--}}
+{{--                    <thead>--}}
+{{--                    <tr>--}}
+{{--                        <th>Название параметра</th>--}}
+{{--                        <th>Описание параметра</th>--}}
+{{--                        <th>Признак обязательности</th>--}}
+{{--                    </tr>--}}
+{{--                    </thead>--}}
+{{--                    <tbody aria-live="polite" aria-relevant="all">--}}
+{{--                    <tr>--}}
+{{--                        <td><strong>parcel</strong></td>--}}
+{{--                        <td>код отправления. Содержит:&nbsp; номер отправления--}}
+{{--                            заказчика, номер отправления исполнителя, номер места. Под номером места понимается--}}
+{{--                            номенклатурная позиция в заказе.--}}
+{{--                        </td>--}}
+{{--                        <td>обязательный параметр</td>--}}
+{{--                    </tr>--}}
+{{--                    <tr>--}}
+{{--                        <td><strong>name</strong></td>--}}
+{{--                        <td><p><span--}}
+{{--                                    style="color: rgb(51,51,51);">Наименование товара</span></p></td>--}}
+{{--                        <td>обязательный параметр</td>--}}
+{{--                    </tr>--}}
+{{--                    <tr>--}}
+{{--                        <td ><strong>fio</strong></td>--}}
+{{--                        <td>ФИО получателя</td>--}}
+{{--                        <td>обязательный параметр</td>--}}
+{{--                    </tr>--}}
+{{--                    <tr>--}}
+{{--                        <td><strong>address</strong></td>--}}
+{{--                        <td>адрес доставки</td>--}}
+{{--                        <td>обязательный параметр</td>--}}
+{{--                    </tr>--}}
+{{--                    <tr>--}}
+{{--                        <td><strong>storeID</strong></td>--}}
+{{--                        <td>Признак склада отгрузки. Строка до 15 символов.</td>--}}
+{{--                        <td>обязательный параметр</td>--}}
+{{--                    </tr>--}}
+{{--                    </tbody>--}}
+{{--                </table>--}}
+{{--                <br>--}}
 
-                <div class="request-button" onclick="openRequest('sticker-response')">Пример ответа <strong>+</strong></div>
-                <div class="sticker-response" style="display:none;">
-                    <pre style="background-color: #dddddd">
-                        {
-                             "codes_success": [
-                              {
-                               "code": "pl-025376-45688333HOL",
-                                "parcels":
-                                    [
-                                    {
-                                     "parcel": "pl-025376-45688333HOL-1",
-                                     "name": "Газовая панель"
-                                    },
-                                    {
-                                     "parcel": "pl-025376-45688333HOL-2",
-                                     "name": "Стиральная машина"
-                                    },
-                                    ]
-                                "fio": "Иванов Иван Иванович",
-                                "address": "Москва, ул.Октябрьская, д.1к6, кв.55, эт.5, под.3"
-                                "storeID": "11ff000000fff01"
-                                }
-                             ],
-                             "success": true,
-                             "message": null
-                        }
-                    </pre>
-                </div>
+{{--                <div class="request-button" onclick="openRequest('sticker-response')">Пример ответа <strong>+</strong></div>--}}
+{{--                <div class="sticker-response" style="display:none;">--}}
+{{--                    <pre style="background-color: #dddddd">--}}
+{{--                        {--}}
+{{--                             "codes_success": [--}}
+{{--                              {--}}
+{{--                               "code": "pl-025376-45688333HOL",--}}
+{{--                                "parcels":--}}
+{{--                                    [--}}
+{{--                                    {--}}
+{{--                                     "parcel": "pl-025376-45688333HOL-1",--}}
+{{--                                     "name": "Газовая панель"--}}
+{{--                                    },--}}
+{{--                                    {--}}
+{{--                                     "parcel": "pl-025376-45688333HOL-2",--}}
+{{--                                     "name": "Стиральная машина"--}}
+{{--                                    },--}}
+{{--                                    ]--}}
+{{--                                "fio": "Иванов Иван Иванович",--}}
+{{--                                "address": "Москва, ул.Октябрьская, д.1к6, кв.55, эт.5, под.3"--}}
+{{--                                "storeID": "11ff000000fff01"--}}
+{{--                                }--}}
+{{--                             ],--}}
+{{--                             "success": true,--}}
+{{--                             "message": null--}}
+{{--                        }--}}
+{{--                    </pre>--}}
+{{--                </div>--}}
 
             </section>
         </div>
