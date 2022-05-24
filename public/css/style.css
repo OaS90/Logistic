@@ -13,6 +13,20 @@ body {
     height: 100%;
     min-height: 100%;
 }
+
+.api-table, td, th {
+    border: 1px solid #ddd;
+    border-collapse: collapse;
+}
+
+.api-table td, th {
+    padding: 5px;
+}
+
+.post-api {
+    background-color: #6bf58e;
+}
+
 .input-wrap {
     position: relative;
 }

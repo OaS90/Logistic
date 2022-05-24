@@ -98,7 +98,7 @@ class ApplicationController
             }
         }
 
-        return response(['message' => 'success', 'code' => 200], 200);
+        return response(['code' => $newApp->order_number . '-' . $newApp->id, 'success' => true, 'message' => ''], 200);
     }
 
     public function getSticker($partnerOrderId): \Illuminate\Http\Response
