@@ -3,15 +3,12 @@
 namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class AdminUser extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, CrudTrait;
+    use CrudTrait, HasRoles;
 
     protected $table = 'admin_users';
     protected $guarded = ['id'];
