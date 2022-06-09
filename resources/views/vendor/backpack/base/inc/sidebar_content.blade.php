@@ -12,6 +12,7 @@
 @endif
 
 @if(backpack_user()->hasRole('admin'))
+    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quotes') }}'><i class="las la-user-tie"></i> Квоты</a></li>
     <li class="nav-item nav-dropdown">
     <a class="nav-link nav-dropdown-toggle" href="#"><i class="nav-icon la la-users"></i>Настройки ролей</a>
     <ul class="nav-dropdown-items">

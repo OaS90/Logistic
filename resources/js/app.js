@@ -7,6 +7,8 @@
 require('./bootstrap');
 
 window.Vue = require('vue').default;
+import vuetify from './vuetify';
+
 // import ExampleComponent from "./components/ExampleComponent";
 import ApplicationForm from "./components/ApplicationForm";
 import Popup from "./components/Popup";
@@ -14,6 +16,7 @@ import RegisterForm from './components/RegisterForm'
 import DatePicker from "vue2-datepicker";
 import MaskedInput from "vue-masked-input";
 import ProfileForm from "./components/ProfileForm";
+import QuotesTable from "./components/Admin/QuotesTable";
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -33,14 +36,27 @@ import ProfileForm from "./components/ProfileForm";
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const app = new Vue({
-    el: '#app',
-    components: {
-        ApplicationForm,
-        Popup,
-        DatePicker,
-        RegisterForm,
-        MaskedInput,
-        ProfileForm
-    }
-});
+if (document.getElementById('app')) {
+    const app = new Vue({
+        el: '#app',
+        components: {
+            ApplicationForm,
+            Popup,
+            DatePicker,
+            RegisterForm,
+            MaskedInput,
+            ProfileForm
+        }
+    });
+}
+
+if (document.getElementById('admin-app')) {
+    const adminApp = new Vue({
+        el: '#admin-app',
+        vuetify,
+        components: {
+            QuotesTable,
+            DatePicker
+        }
+    })
+}

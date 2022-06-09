@@ -34,4 +34,6 @@ Route::group([
     Route::crud('partners', 'PartnerCrudController');
     Route::crud('applications', 'ApplicationCrudController');
     Route::crud('warehouses', 'WarehouseCrudController');
+    Route::get('quotes', [QuotesController::class, 'show']);
+    Route::post('save-quotes', [QuotesController::class, 'save']);
 }); // this should be the absolute last line of this file
