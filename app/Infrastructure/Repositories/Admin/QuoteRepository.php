@@ -13,13 +13,11 @@ class QuoteRepository
 
         foreach ($quotes as $quote) {
             $quoteEntry = Quote::find($quote['id']);
-            $availableFromDate = $quote['tmp_date'][0];
-            $availableUntilDate = $quote['tmp_date'][1];
             $quoteEntry->update([
                 'quote' => $quote['quote'],
-                'tmp_quote' => $quote['tmp_quote'],
-                'available_from_date' => Carbon::parse($availableFromDate)->format('Y-m-d'),
-                'available_until_date' => Carbon::parse($availableUntilDate)->format('Y-m-d'),
+                'tmp_quote' => $quote['tmp_quote'] ?? null,
+                'available_from_date' => $quote['tmp_date'][0] ? Carbon::parse(['tmp_date'][0])->format('Y-m-d') : null,
+                'available_until_date' => $quote['tmp_date'][1]? Carbon::parse(['tmp_date'][1])->format('Y-m-d') : null,
             ]);
 
             $updatedQuotes = $quoteEntry;
