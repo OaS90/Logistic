@@ -40,7 +40,7 @@
                         <td>{{ $interval->active ? 'Да' : 'Нет' }}</td>
                     @elseif($interval->period == 'inHour' || $interval->period == 'inDay')
 {{--                        <td></td>--}}
-                        <td>{{ $interval->active ? 'Да' : 'Нет' }}</td>
+                        <td>{{ $interval->active ? 'Да' : '' }}</td>
                     @else
                         <td></td>
                         <td></td>
