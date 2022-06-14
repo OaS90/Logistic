@@ -38,6 +38,12 @@
                     @if($interval->percent)
                         <td>{{ $interval->percent }}</td>
                         <td>{{ $interval->active ? 'Да' : 'Нет' }}</td>
+                    @elseif($interval->period == 'inHour' || $interval->period == 'inDay')
+{{--                        <td></td>--}}
+                        <td>{{ $interval->active ? 'Да' : 'Нет' }}</td>
+                    @else
+                        <td></td>
+                        <td></td>
                     @endif
                 @endforeach
             @else
