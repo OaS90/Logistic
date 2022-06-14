@@ -7,7 +7,7 @@
 require('./bootstrap');
 
 window.Vue = require('vue').default;
-import vuetify from './vuetify';
+// import vuetify from './vuetify';
 
 // import ExampleComponent from "./components/ExampleComponent";
 import ApplicationForm from "./components/ApplicationForm";
@@ -53,7 +53,6 @@ if (document.getElementById('app')) {
 if (document.getElementById('admin-app')) {
     const adminApp = new Vue({
         el: '#admin-app',
-        vuetify,
         components: {
             QuotesTable,
             DatePicker

@@ -2,6 +2,7 @@
 
     <div>
         <button type="button" class="btn btn-outline-success" @click="save">Сохранить</button>
+        <button type="button" class="btn btn btn-info" @click="excel">Выгрузить Excel</button>
         <input type="text" class="form-control col-4 filter" v-model="filter" placeholder="Поиск...">
         <table class="table table-bordered" id="quotes">
             <thead>
@@ -54,20 +55,19 @@
         <p>
             <button type="button" class="btn btn-secondary" @click="prevPage">Предыдущая</button>
             <button type="button" class="btn btn-secondary" @click="nextPage">Следующая</button>
+            <span style="padding-left: 5px">{{ currentPage }} из {{ totalPage }}</span>
         </p>
 
-        <modal :show="showModal">
-            <svg @click="closeModal('csv')" class="modal__cross js-modal-close" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M11.9997 10.586L16.9497 5.63599L18.3637 7.04999L13.4137 12L18.3637 16.95L16.9497 18.364L11.9997 13.414L7.04974 18.364L5.63574 16.95L10.5857 12L5.63574 7.04999L7.04974 5.63599L11.9997 10.586Z" fill="#888888"/>
-            </svg>
-            <h3>{{ modalText }}</h3>
+        <modal v-if="showModal" @close="showModal = false">
+            <span slot="body">{{ modalText }}</span>
+            <span slot="footer"></span>
         </modal>
     </div>
 </template>
 
 <script>
 import DatePicker from "vue2-datepicker";
-import Modal from "../Popup";
+import Modal from "./Modal";
 
 export default {
     name: "QuotesTable",
@@ -94,6 +94,9 @@ export default {
                 if (this.filter !== '') return division.includes(searchTerm)
                 if (index >= start && index < end) return true;
             });
+        },
+        totalPage() {
+            return Math.ceil(this.dataQuotes.length / this.pageSize)
         }
     },
     beforeMount() {
@@ -110,16 +113,30 @@ export default {
     methods: {
         save() {
             if (this.quotesToSave.length === 0) {
-                this.showModal = true
+                this.showModal = !this.showModal
                 this.modalText = 'Не выбрано ни одного филиала для обновления'
             } else {
                 axios.post('save-quotes', this.quotesToSave).then(response => {
-                    console.log(response)
-                }).catch()
+                    this.showModal = !this.showModal
+                    this.modalText = 'Данные сохранены'
+                }).catch(errors => {
+                    this.showModal = !this.showModal
+                    this.modalText = errors.response.data.message
+                })
             }
         },
+        excel() {
+            axios.get('download-excel', { responseType: 'blob' }).then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'quotes.xlsx');
+                document.body.appendChild(link);
+                link.click();
+            })
+        },
         nextPage() {
-            if((this.currentPage*this.pageSize) < this.dataQuotes.length) this.currentPage++;
+            if((this.currentPage * this.pageSize) < this.dataQuotes.length) this.currentPage++;
         },
         prevPage() {
             if(this.currentPage > 1) this.currentPage--;
@@ -148,8 +165,13 @@ export default {
 </script>
 
 <style scoped>
+    #quotes thead {
+        background-color: #0d4f6f;
+    }
     #quotes {
         margin-top: 15px;
+        background-color: #0f74a8;
+        color: white;
     }
     .filter {
         margin-top: 15px;

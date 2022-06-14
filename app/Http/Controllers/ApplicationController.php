@@ -8,7 +8,7 @@ use App\Infrastructure\Repositories\ProductRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Infrastructure\Repositories\ApplicationRepository;
-use App\Application\CsvExportService;
+use App\Application\ExcelExportService;
 use App\Infrastructure\Exports\ApplicationExport;
 use App\Infrastructure\DadataAdapter;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -29,7 +29,7 @@ class ApplicationController extends Controller
     protected $appService;
 
     public function __construct(ApplicationRepository $applicationRepository,
-                                CsvExportService $exportService,
+                                ExcelExportService $exportService,
                                 DadataAdapter $dadataAdapter,
                                 BarcodeGeneratorDynamicHTML $codeGenerator,
                                 DeliveryAddressRepository $addressRepository,

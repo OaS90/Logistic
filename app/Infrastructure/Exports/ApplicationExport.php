@@ -7,11 +7,11 @@ use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use App\Domain\CsvEntity;
+use App\Domain\ExcelEntity;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class ApplicationExport implements FromQuery, WithHeadings, WithCustomCsvSettings, CsvEntity, WithMapping
+class ApplicationExport implements FromQuery, WithHeadings, WithCustomCsvSettings, ExcelEntity, WithMapping
 {
     use Exportable;
 

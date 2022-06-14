@@ -22,8 +22,7 @@ class QuotesSeeder extends Seeder
         $intervals = ['10-14', '14-18', '18-22', 'inDay', 'inHour'];
 
         foreach ($dataFromFile as $divisionName) {
-            $division = Division::create(['name' => $divisionName[0]]);
-
+            $division = Division::create(['name' => $divisionName[0], 'region_id' => $divisionName[1]]);
             $quote = Quote::create(['division_id' => $division->id]);
 
             foreach ($intervals as $period) {

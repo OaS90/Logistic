@@ -36,4 +36,6 @@ Route::group([
     Route::crud('warehouses', 'WarehouseCrudController');
     Route::get('quotes', [QuotesController::class, 'show']);
     Route::post('save-quotes', [QuotesController::class, 'save']);
+    Route::get('download-excel', [QuotesController::class, 'download']);
 }); // this should be the absolute last line of this file
+

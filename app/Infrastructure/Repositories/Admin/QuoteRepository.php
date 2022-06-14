@@ -7,12 +7,18 @@ use Illuminate\Support\Carbon;
 
 class QuoteRepository
 {
+    /**
+     * @throws \Exception
+     */
     public function update($quotes)
     {
         $updatedQuotes = [];
 
         foreach ($quotes as $quote) {
             $quoteEntry = Quote::find($quote['id']);
+
+            if (isset($quote['tmp_quote']) && !isset($quote['tmp_date']))
+                throw new \Exception('Не задан период для временной квоты');
 
             $quoteEntry->update([
                 'quote' => $quote['quote'],
@@ -25,5 +31,10 @@ class QuoteRepository
         }
 
         return $updatedQuotes;
+    }
+
+    public function getAll()
+    {
+        return Quote::all();
     }
 }
