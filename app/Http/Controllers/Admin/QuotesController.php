@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Quote;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Domain\Admin\QuoteDTO;
 use App\Infrastructure\Repositories\Admin\QuoteRepository;
@@ -17,6 +18,7 @@ class QuotesController extends Controller
     protected $repo;
     protected $intervalRepo;
     protected $exportService;
+    protected const API_URL = 'http://api.test4.testh.ru/vtb/delivery_proxy.php?q=Holodilnik/SetIntervalSetting';
 
     public function __construct(QuoteRepository $repo, IntervalQuoteRepository $intervalRepo, ExcelExportService $exportService)
     {
@@ -36,6 +38,12 @@ class QuotesController extends Controller
     {
         $this->intervalRepo->update($request->all());
         $updatedQuotes = $this->repo->update($request->all());
+        $client = new Client();
+        $client->post(self::API_URL, [
+            'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'],
+            'json' => (new QuoteDTO())->makeDataForApiHru($this->repo->getAll())
+
+        ]);
 
         return response($updatedQuotes);
     }
