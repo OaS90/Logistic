@@ -18,8 +18,8 @@ class Quote extends Model
         return $this->hasMany(IntervalQuote::class, 'quote_id', 'id');
     }
 
-    public function division(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function region(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasOne(Division::class, 'id', 'division_id');
+        return $this->hasOne(Region::class, 'id', 'division_id');
     }
 }

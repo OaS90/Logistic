@@ -1,7 +1,8 @@
 <table>
     <thead>
     <tr>
-        <th>Филиал</th>
+        <th>Склад</th>
+        <th>Регионы России</th>
         <th>Дневная квота</th>
         <th>Временная квота</th>
         <th>Срок действия</th>
@@ -12,6 +13,7 @@
         <th>Доставка в указанный час</th>
     </tr>
     <tr>
+        <th></th>
         <th></th>
         <th></th>
         <th></th>
@@ -29,7 +31,8 @@
     <tbody>
     @foreach($quotes as $quote)
         <tr>
-            <td>{{ $quote->division->name }}</td>
+            <td>{{ $quote->region->warehouse->warehouse_name }}</td>
+            <td>{{ $quote->region->name }}</td>
             <td>{{ $quote->quote }}</td>
             <td>{{ $quote->tmp_quote }}</td>
             <td>{{ $quote->available_from_date ? $quote->available_from_date . ' - ' . $quote->available_until_date : ''}}</td>

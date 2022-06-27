@@ -10,7 +10,12 @@ class Warehouse extends Model
 {
     use CrudTrait;
 
-    protected $table = 'warehouses';
+    protected $table = 'region_warehouse';
     protected $guarded = ['id'];
     public $timestamps = false;
+
+    public function regions()
+    {
+        return $this->hasMany(Region::class, 'region_id', 'id');
+    }
 }

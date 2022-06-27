@@ -29,7 +29,7 @@ class QuotesController extends Controller
 
     public function show()
     {
-        $quotes = (new QuoteDTO())->toArrayForVue(Quote::with(['intervals', 'division'])->get());
+        $quotes = (new QuoteDTO())->toArrayForVue(Quote::with(['intervals', 'region'])->get());
 
         return view('vendor.backpack.quotes', ['quotes' => collect($quotes)]);
     }

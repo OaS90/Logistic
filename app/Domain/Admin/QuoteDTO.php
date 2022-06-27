@@ -23,7 +23,8 @@ class QuoteDTO
             $quoteInfo = [
                 'id' => $quote->id,
                 'to_save' => false,
-                'division' => $quote->division->name,
+                'division' => $quote->region->name,
+                'warehouse' => $quote->region->warehouse->warehouse_name,
                 'quote' => $quote->quote,
                 'tmp_quote' => $quote->tmp_quote,
                 'tmp_date' => $tmpQuoteDate,

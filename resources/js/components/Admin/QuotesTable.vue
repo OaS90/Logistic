@@ -4,14 +4,15 @@
         <button type="button" class="btn btn-outline-success" @click="save">Сохранить</button>
         <button type="button" class="btn btn btn-info" @click="excel">Выгрузить Excel</button>
         <input type="text" class="form-control col-4 filter" v-model="filter" placeholder="Поиск...">
-        <table class="table table-bordered" id="quotes">
+        <table id="quotes" >
             <thead>
             <tr align="center">
                 <th>Выбрать</th>
-                <th>Филиал</th>
-                <th>Дневная квота</th>
-                <th>Временная квота</th>
-                <th>Срок действия</th>
+                <th class="store">Склад</th>
+                <th class="regions">Регионы России</th>
+                <th class="quote">Дневная квота</th>
+                <th class="tmp_quote">Временная квота</th>
+                <th class="tmp_period">Срок действия</th>
                 <th colspan="2">10-14</th>
                 <th colspan="2">14-18</th>
                 <th colspan="2">18-22</th>
@@ -19,6 +20,7 @@
                 <th>Доставка в указанный час</th>
             </tr>
             <tr align="center">
+                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -37,26 +39,27 @@
             <tbody>
                 <tr v-for="(item, id) in filteredRows" align="center" :key="`division-${id}`">
                     <td><input type="checkbox" v-model="item.to_save" @change="quoteToSave(item, id)"></td>
+                    <td>{{ item.warehouse }}</td>
                     <td>{{ item.division }}</td>
                     <td><input type="text" class="form-control" v-model="item.quote" @keypress="onlyNumber"></td>
                     <td><input type="text" class="form-control" v-model="item.tmp_quote" @keypress="onlyNumber"></td>
                     <td><date-picker range type="date" v-model="item.tmp_date"></date-picker></td>
-                    <td><input type="text" class="form-control" v-model="item.periodTenTwo.percent" @keypress="onlyNumber"></td>
+                    <td><input type="text" class="form-control" v-model="item.periodTenTwo.percent" @keypress="onlyNumber" maxlength=3></td>
                     <td><input type="checkbox" v-model="item.periodTenTwo.active"></td>
-                    <td><input type="text" class="form-control" v-model="item.periodTwoSix.percent" @keypress="onlyNumber"></td>
+                    <td><input type="text" class="form-control" v-model="item.periodTwoSix.percent" @keypress="onlyNumber" maxlength=3></td>
                     <td><input type="checkbox" v-model="item.periodTwoSix.active"></td>
-                    <td><input type="text" class="form-control" v-model="item.periodSixTen.percent" @keypress="onlyNumber"></td>
+                    <td><input type="text" class="form-control" v-model="item.periodSixTen.percent" @keypress="onlyNumber" maxlength=3></td>
                     <td><input type="checkbox" v-model="item.periodSixTen.active"></td>
                     <td><input type="checkbox" v-model="item.inDay"></td>
                     <td><input type="checkbox" v-model="item.inHour"></td>
                 </tr>
             </tbody>
         </table>
-        <p>
-            <button type="button" class="btn btn-secondary" @click="prevPage">Предыдущая</button>
-            <button type="button" class="btn btn-secondary" @click="nextPage">Следующая</button>
-            <span style="padding-left: 5px">{{ currentPage }} из {{ totalPage }}</span>
-        </p>
+<!--        <p>-->
+<!--            <button type="button" class="btn btn-secondary" @click="prevPage">Предыдущая</button>-->
+<!--            <button type="button" class="btn btn-secondary" @click="nextPage">Следующая</button>-->
+<!--            <span style="padding-left: 5px">{{ currentPage }} из {{ totalPage }}</span>-->
+<!--        </p>-->
 
         <modal v-if="showModal" @close="showModal = false">
             <span slot="body">{{ modalText }}</span>
@@ -86,18 +89,19 @@ export default {
     computed: {
         filteredRows() {
             return this.dataQuotes.filter((quote, index) => {
-                const division = quote.division.toLowerCase();
+                const division = quote.warehouse.toLowerCase();
                 const searchTerm = this.filter.toLowerCase();
-                let start = (this.currentPage - 1) * this.pageSize;
-                let end = this.currentPage * this.pageSize;
+                // let start = (this.currentPage - 1) * this.pageSize;
+                // let end = this.currentPage * this.pageSize;
 
                 if (this.filter !== '') return division.includes(searchTerm)
-                if (index >= start && index < end) return true;
+                // if (index >= start && index < end)
+                return true
             });
         },
-        totalPage() {
-            return Math.ceil(this.dataQuotes.length / this.pageSize)
-        }
+        // totalPage() {
+        //     return Math.ceil(this.dataQuotes.length / this.pageSize)
+        // }
     },
     beforeMount() {
         // парсим даты для того, чтобы нормально отображались в datepickere
@@ -135,12 +139,12 @@ export default {
                 link.click();
             })
         },
-        nextPage() {
-            if((this.currentPage * this.pageSize) < this.dataQuotes.length) this.currentPage++;
-        },
-        prevPage() {
-            if(this.currentPage > 1) this.currentPage--;
-        },
+        // nextPage() {
+        //     if((this.currentPage * this.pageSize) < this.dataQuotes.length) this.currentPage++;
+        // },
+        // prevPage() {
+        //     if(this.currentPage > 1) this.currentPage--;
+        // },
         quoteToSave(quote) {
             if (quote.to_save) {
                 this.quotesToSave.push(quote)
@@ -166,14 +170,44 @@ export default {
 
 <style scoped>
     #quotes thead {
-        background-color: #0d4f6f;
+        background-color: #136d99;
     }
     #quotes {
         margin-top: 15px;
-        background-color: #0f74a8;
+        background-color: #4fa7d7;
         color: white;
     }
     .filter {
         margin-top: 15px;
+    }
+
+    input[type=checkbox] {
+        transform: scale(2);
+    }
+
+    #quotes {
+        width: 100%;
+    }
+    #quotes th, td {
+        border: 1px solid #ddd;
+        padding: 15px;
+    }
+    th.store {
+        width: 15%
+    }
+    th.regions {
+        width: 15%
+    }
+    th.quote {
+        width: 5%;
+    }
+    th.tmp_quote {
+        width: 5%;
+    }
+    th.tmp_period {
+        width:8%;
+    }
+    .mx-datepicker-range {
+        width:280px !important;
     }
 </style>
