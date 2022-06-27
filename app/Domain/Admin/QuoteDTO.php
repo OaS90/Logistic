@@ -83,7 +83,7 @@ class QuoteDTO
 
             if (count($periods) > 0) {
                 $mainQuote = [
-                    'id' => $quote->division->region_id,
+                    'id' => $quote->region->region_id,
                     'limit' => $quote->quote,
                     'interval_percent' => $periods
                 ];
