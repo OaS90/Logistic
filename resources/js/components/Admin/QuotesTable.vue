@@ -13,9 +13,9 @@
                 <th class="quote">Дневная квота</th>
                 <th class="tmp_quote">Временная квота</th>
                 <th class="tmp_period">Срок действия</th>
-                <th colspan="2">10-14</th>
-                <th colspan="2">14-18</th>
-                <th colspan="2">18-22</th>
+                <th colspan="2" class="percent">10-14</th>
+                <th colspan="2" class="percent">14-18</th>
+                <th colspan="2" class="percent">18-22</th>
                 <th>День в день</th>
                 <th>Доставка в указанный час</th>
             </tr>
@@ -188,15 +188,18 @@ export default {
     #quotes {
         width: 100%;
     }
-    #quotes th, td {
+    #quotes td {
+        border: 1px solid #ddd;
+    }
+    #quotes th {
         border: 1px solid #ddd;
         padding: 15px;
     }
     th.store {
-        width: 15%
+        width: 20%
     }
     th.regions {
-        width: 15%
+        width: 20%
     }
     th.quote {
         width: 5%;
@@ -206,6 +209,9 @@ export default {
     }
     th.tmp_period {
         width:8%;
+    }
+    th.percent {
+        width: 20%;
     }
     .mx-datepicker-range {
         width:280px !important;
