@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'api_hru_token' => env('API_HRU_TOKEN'),
+    'api_hru' => env('API_HRU'),
     /*
     |--------------------------------------------------------------------------
     | Application Environment

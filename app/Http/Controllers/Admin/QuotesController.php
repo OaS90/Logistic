@@ -11,14 +11,14 @@ use App\Infrastructure\Repositories\Admin\QuoteRepository;
 use App\Infrastructure\Repositories\Admin\IntervalQuoteRepository;
 use App\Application\ExcelExportService;
 use App\Infrastructure\Exports\Admin\QuoteExport;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
+use GuzzleHttp\Exception\BadResponseException;
 
 class QuotesController extends Controller
 {
     protected $repo;
     protected $intervalRepo;
     protected $exportService;
-    protected const API_URL = 'http://api.test4.testh.ru/vtb/delivery_proxy.php?q=Holodilnik/SetIntervalSetting';
 
     public function __construct(QuoteRepository $repo, IntervalQuoteRepository $intervalRepo, ExcelExportService $exportService)
     {
@@ -39,11 +39,19 @@ class QuotesController extends Controller
         $this->intervalRepo->update($request->all());
         $updatedQuotes = $this->repo->update($request->all());
         $client = new Client();
-        $client->post(self::API_URL, [
-            'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'],
-            'json' => (new QuoteDTO())->makeDataForApiHru($this->repo->getAll())
 
-        ]);
+        try {
+            $client->post(config('app.api_hru'), [
+                'headers' => [
+                    'Content-Type' => 'application/json', 'Accept' => 'application/json',
+                    'Authorization' => config('app.api_hru_token')
+                ],
+                'json' => (new QuoteDTO())->makeDataForApiHru($this->repo->getAll())
+
+            ]);
+        } catch (BadResponseException $e) {
+            Log::info($e->getMessage());
+        }
 
         return response($updatedQuotes);
     }
