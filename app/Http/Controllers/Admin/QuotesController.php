@@ -41,7 +41,7 @@ class QuotesController extends Controller
         $client = new Client();
 
         try {
-            $client->post(config('app.api_hru'), [
+            $response = $client->post(config('app.api_hru'), [
                 'headers' => [
                     'Content-Type' => 'application/json', 'Accept' => 'application/json',
                     'Authorization' => config('app.api_hru_token')
@@ -49,6 +49,7 @@ class QuotesController extends Controller
                 'json' => (new QuoteDTO())->makeDataForApiHru($this->repo->getAll())
 
             ]);
+            Log::info('Отправка квот на HRU: response(): ' . $response->getBody()->getContents() . ', код ответа:' . $response->getStatusCode());
         } catch (BadResponseException $e) {
             Log::info($e->getMessage());
         }
