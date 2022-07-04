@@ -39,6 +39,7 @@ class QuotesController extends Controller
         $this->intervalRepo->update($request->all());
         $updatedQuotes = $this->repo->update($request->all());
         $client = new Client();
+        $message = 'Данные сохранены.';
 
         try {
             $response = $client->post(config('app.api_hru'), [
@@ -49,12 +50,18 @@ class QuotesController extends Controller
                 'json' => (new QuoteDTO())->makeDataForApiHru($this->repo->getAll())
 
             ]);
+
+            if ($response->getStatusCode() == 200 && $response->getBody()->getContents() == 'success')
+                $message .= ' Квоты отправлены на сайт HRU';
+            else
+                $message .= ' Ошибка отправки квот на сайт!';
+
             Log::info('Отправка квот на HRU: response(): ' . $response->getBody()->getContents() . ', код ответа:' . $response->getStatusCode());
         } catch (BadResponseException $e) {
             Log::info($e->getMessage());
         }
 
-        return response($updatedQuotes);
+        return response(['message' => $message]);
     }
 
     public function download(): \Symfony\Component\HttpFoundation\BinaryFileResponse

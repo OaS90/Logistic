@@ -122,7 +122,7 @@ export default {
             } else {
                 axios.post('save-quotes', this.quotesToSave).then(response => {
                     this.showModal = !this.showModal
-                    this.modalText = 'Данные сохранены'
+                    this.modalText = response.data.message
                 }).catch(errors => {
                     this.showModal = !this.showModal
                     this.modalText = errors.response.data.message

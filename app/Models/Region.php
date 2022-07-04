@@ -12,6 +12,6 @@ class Region extends Model
 
     public function warehouse()
     {
-        return $this->hasOne(Warehouse::class, 'region_id', 'id');
+        return $this->hasOne(WarehouseRegion::class, 'region_id', 'id');
     }
 }
