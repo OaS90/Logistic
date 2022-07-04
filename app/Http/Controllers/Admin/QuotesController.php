@@ -58,7 +58,7 @@ class QuotesController extends Controller
             else
                 $message .= ' Ошибка отправки квот на сайт!';
 
-            Log::info('Response(): ' . $response->getBody()->getContents() . ', code:' . $response->getStatusCode());
+            Log::info('Response(): ' . json_encode($responseContents) . ', code:' . $response->getStatusCode());
         } catch (BadResponseException $e) {
             Log::info($e->getMessage());
         }
