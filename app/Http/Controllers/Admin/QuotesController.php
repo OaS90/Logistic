@@ -51,12 +51,14 @@ class QuotesController extends Controller
 
             ]);
 
-            if ($response->getStatusCode() == 200 && $response->getBody()->getContents() == 'success')
+            $responseContents = json_decode($response->getBody()->getContents(), true);
+
+            if ($response->getStatusCode() == 200 && (isset($responseContents['success']) && $responseContents['success']))
                 $message .= ' Квоты отправлены на сайт HRU';
             else
                 $message .= ' Ошибка отправки квот на сайт!';
 
-            Log::info('Отправка квот на HRU: response(): ' . $response->getBody()->getContents() . ', код ответа:' . $response->getStatusCode());
+            Log::info('Response(): ' . $response->getBody()->getContents() . ', code:' . $response->getStatusCode());
         } catch (BadResponseException $e) {
             Log::info($e->getMessage());
         }
