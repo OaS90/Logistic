@@ -34,14 +34,12 @@ class ProductDTO
 
     public function apiRows(array $data, int $appId): array
     {
-        $data['sku'] = $data['vendorCode'];
         $data['discount_cost'] = $data['costAfterDiscounts'];
         $data['vat'] = $data['VATRate'];
         $data['left_to_pay'] = $data['leftToPay'];
         $data['country_code'] = $data['country'];
         $data['app_id'] = $appId;
 
-        unset($data['vendorCode']);
         unset($data['costAfterDiscounts']);
         unset($data['VATRate']);
         unset($data['leftToPay']);
