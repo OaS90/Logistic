@@ -39,6 +39,10 @@ class ProductDTO
         $data['left_to_pay'] = $data['leftToPay'];
         $data['country_code'] = $data['country'] ?? null;
         $data['app_id'] = $appId;
+        // TODO потом убрать, когда протестируем
+        $data['width'] = !$data['width'] ? rand(1, 5) : $data['width'];
+        $data['height'] = !$data['height'] ? rand(1, 5) : $data['height'];
+        $data['depth'] = !$data['depth'] ? rand(1, 5) : $data['depth'];
 
         unset($data['costAfterDiscounts']);
         unset($data['VATRate']);
