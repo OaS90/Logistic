@@ -79,10 +79,10 @@ class ApplicationController
 
     public function create(Request $request)
     {
-        $data = $request->all();
-        $user = $this->userRepo->getBy1cId($data[0]['userId']);
+        $data = json_decode($request->getContent(), true);
 
         foreach ($data as $app) {
+            $user = $this->userRepo->getBy1cId($app['partnerId']);
             $app['user_id'] = $user->id;
             $warehouse = $this->warehouseRepo->findByStoreId($app['storeId']);
 
