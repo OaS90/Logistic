@@ -123,12 +123,12 @@
                         @foreach($list as $application)
                             <tr>
                                 <td><a href="{{ route('application-show', ['id' => $application->id]) }}">{{ $application->order_number }}</a></td>
-                                <td>{{ $application->products[0]->name }}</td>
-                                <td>{{ $application->products[0]->sku }}</td>
-                                <td>{{ $application->products[0]->brand }}</td>
+                                <td>{{ $application->products->first()->name }}</td>
+                                <td>{{ $application->products->first()->sku }}</td>
+                                <td>{{ $application->products->first()->brand }}</td>
                                 <td>{{ $application->payment_type }}</td>
-                                <td>{{ $application->products[0]->vat }}</td>
-                                <td>{{ $application->products[0]->cost }} ₽</td>
+                                <td>{{ $application->products->first()->vat }}</td>
+                                <td>{{ $application->products->first()->cost }} ₽</td>
                                 <td>
                                     <div class="hidden-td">{{ $application->warehouse->address }}</div>
                                 </td>
