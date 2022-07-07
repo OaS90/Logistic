@@ -33,7 +33,8 @@ class PartnerController extends Controller
             $apps = [];
 
             foreach ($applications as $app) {
-                $apps[] = (new PartnerOrderDTO($app))->make();
+                if ($app->status != null)
+                    $apps[] = (new PartnerOrderDTO($app))->make();
             }
 
             return response()->json($apps, 200);
