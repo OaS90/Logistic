@@ -60,9 +60,10 @@ class QuotesController extends Controller
             else
                 $message .= ' Ошибка отправки квот на сайт!';
 
-            foreach ($updatedQuotes as $quote) {
-                Mail::to(config('quote_emails'))->send(new QuotesChange($quote));
-            }
+            // временно выключил. Дописать, чтобы можно было в админке включать и выключать.
+//            foreach ($updatedQuotes as $quote) {
+//                Mail::to(config('quote_emails'))->send(new QuotesChange($quote));
+//            }
 
             Log::info('Response(): ' . json_encode($responseContents) . ', code:' . $response->getStatusCode());
         } catch (BadResponseException $e) {
