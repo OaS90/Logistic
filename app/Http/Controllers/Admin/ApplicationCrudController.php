@@ -47,7 +47,8 @@ class ApplicationCrudController extends CrudController
         $this->crud->addColumn([
             'label' => "Партнёр", // Table column heading
             'type' => 'text',
-            'name' => 'user_id'
+            'name' => 'user_id',
+            'priority' => 2,
         ]);
 
         $this->crud->addColumn([
@@ -57,17 +58,20 @@ class ApplicationCrudController extends CrudController
 
         $this->crud->addColumn([
             'label' => "Тип оплаты", // Table column heading
-            'name' => 'payment_type'
+            'name' => 'payment_type',
+            'priority' => 2,
         ]);
 
         $this->crud->addColumn([
             'label' => "Дата доставки", // Table column heading
-            'name' => 'delivery_date'
+            'name' => 'delivery_date',
+            'priority' => 1,
         ]);
 
         $this->crud->addColumn([
             'label' => "Время доставки", // Table column heading
-            'name' => 'delivery_time'
+            'name' => 'delivery_time',
+            'priority' => 2,
         ]);
 
         $this->crud->addColumn([
@@ -76,7 +80,8 @@ class ApplicationCrudController extends CrudController
             'type' => 'closure',
             'function' => function ($entry) {
                 return $entry->full_address;
-            }
+            },
+            'priority' => 2,
         ]);
 
         $this->crud->addColumn([
@@ -85,12 +90,14 @@ class ApplicationCrudController extends CrudController
             'type'  => 'closure',
             'function' => function ($entry) {
                 return $entry->warehouse->address;
-            }
+            },
+            'priority' => 2,
         ]);
 
         $this->crud->addColumn([
             'label' => "Комментарий", // Table column heading
-            'name' => 'comment'
+            'name' => 'comment',
+            'priority' => 4,
         ]);
 
         $this->crud->addColumn([
@@ -99,14 +106,16 @@ class ApplicationCrudController extends CrudController
             'type'  => 'closure',
             'function' => function ($entry) {
                 return $entry->getStatus($entry->status);
-            }
+            },
+            'priority' => 1,
         ]);
 
         $this->crud->addColumn([
             'label' => "Дата создания", // Table column heading
             'type' => 'datetime',
             'name' => 'created_at',
-            'format' => 'DD.MM.Y H:mm:s'
+            'format' => 'DD.MM.Y H:mm:s',
+            'priority' => 1,
         ]);
 
         /**
