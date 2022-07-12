@@ -102,6 +102,13 @@ class ApplicationCrudController extends CrudController
             }
         ]);
 
+        $this->crud->addColumn([
+            'label' => "Дата создания", // Table column heading
+            'type' => 'datetime',
+            'name' => 'created_at',
+            'format' => 'DD.MM.Y H:mm:s'
+        ]);
+
         /**
          * Columns can be defined using the fluent syntax or array syntax:
          * - CRUD::column('price')->type('number');
