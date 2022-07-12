@@ -13,6 +13,8 @@ use App\Application\ExcelExportService;
 use App\Infrastructure\Exports\Admin\QuoteExport;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Exception\BadResponseException;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\QuotesChange;
 
 class QuotesController extends Controller
 {
@@ -57,6 +59,10 @@ class QuotesController extends Controller
                 $message .= ' Квоты отправлены на сайт HRU';
             else
                 $message .= ' Ошибка отправки квот на сайт!';
+
+            foreach ($updatedQuotes as $quote) {
+                Mail::to(config('quote_emails'))->send(new QuotesChange($quote));
+            }
 
             Log::info('Response(): ' . json_encode($responseContents) . ', code:' . $response->getStatusCode());
         } catch (BadResponseException $e) {
