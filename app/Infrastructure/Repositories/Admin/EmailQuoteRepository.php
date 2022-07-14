@@ -38,4 +38,9 @@ class EmailQuoteRepository
     {
         return EmailQuote::where('active', true)->get()->pluck('email')->all();
     }
+
+    public function delete($id)
+    {
+        return EmailQuote::find($id)->delete();
+    }
 }

@@ -10,18 +10,17 @@
             <tr>
                 <td>Email</td>
                 <td>Активность</td>
+                <td></td>
             </tr>
 
             <tr v-if="newRows.length > 0" v-for="(row, index) in newRows" :id="index">
                 <td class="email">
-                    <div class="input-group w-50">
-                        <input class="form-control" type="text" v-model="newRows[index].email">
-                        <button class="btn btn-outline-danger ml-3" @click="deleteNewRow(index)">Удалить</button>
-                    </div>
+                    <input class="form-control" type="text" v-model="newRows[index].email">
                 </td>
                 <td class="active"><input type="checkbox" v-model="newRows[index].active" @click="activeEmail(index, 'new')"></td>
+                <td><button class="btn btn-outline-danger ml-3" @click="deleteNewRow(index)">Удалить</button></td>
             </tr>
-            <tr v-for="(email, index) in emails" :key="index" :id="index">
+            <tr v-for="(email, index) in emailsArr" :key="index" :id="index">
                 <td class="email">{{ email.email }}</td>
                 <td class="active">
                     <input type="checkbox"
@@ -29,6 +28,7 @@
                            :value="email.id"
                            @click="activeEmail(index)">
                 </td>
+                <td><button class="btn btn-danger" @click="deleteEmail(email.id, index)">Удалить</button></td>
             </tr>
         </table>
 
@@ -50,7 +50,8 @@ export default {
             selected: [],
             newRows: [],
             showModal: false,
-            modalText: ''
+            modalText: '',
+            emailsArr: this.emails
         }
     },
     methods: {
@@ -98,10 +99,13 @@ export default {
             var lastIndex = this.emails.length - 1
             this.newRows.splice(lastIndex + 1, 0, {id: lastIndex + 2, active: false});
         },
-        deleteNewRow(index)
-        {
+        deleteNewRow(index) {
             this.$delete(this.newRows, index)
         },
+        deleteEmail(id, index) {
+            this.$delete(this.emailsArr, index)
+            axios.post('delete-quote-email/' + id, )
+        }
     },
     components: {
         Modal

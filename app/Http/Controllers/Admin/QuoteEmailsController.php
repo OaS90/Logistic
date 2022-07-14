@@ -31,4 +31,9 @@ class QuoteEmailsController extends Controller
 
          return response(['message' => 'ok'], 200);
      }
+
+     public function delete($id)
+     {
+        $this->repo->delete($id);
+     }
 }

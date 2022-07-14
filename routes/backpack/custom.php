@@ -39,6 +39,7 @@ Route::group([
     Route::post('save-quotes', [QuotesController::class, 'save']);
     Route::get('quote-emails', [QuoteEmailsController::class, 'show']);
     Route::post('save-quote-emails', [QuoteEmailsController::class, 'save']);
+    Route::post('delete-quote-email/{id}', [QuoteEmailsController::class, 'delete']);
     Route::get('download-excel', [QuotesController::class, 'download']);
 }); // this should be the absolute last line of this file
 
