@@ -15,18 +15,25 @@ use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Exception\BadResponseException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\QuotesChange;
+use App\Infrastructure\Repositories\Admin\EmailQuoteRepository;
 
 class QuotesController extends Controller
 {
     protected $repo;
     protected $intervalRepo;
     protected $exportService;
+    protected $emailQuoteRepo;
 
-    public function __construct(QuoteRepository $repo, IntervalQuoteRepository $intervalRepo, ExcelExportService $exportService)
+    public function __construct(QuoteRepository $repo,
+                                IntervalQuoteRepository $intervalRepo,
+                                ExcelExportService $exportService,
+                                EmailQuoteRepository $emailQuoteRepository
+    )
     {
         $this->repo = $repo;
         $this->intervalRepo = $intervalRepo;
         $this->exportService = $exportService;
+        $this->emailQuoteRepo = $emailQuoteRepository;
     }
 
     public function show()
@@ -61,9 +68,9 @@ class QuotesController extends Controller
                 $message .= ' Ошибка отправки квот на сайт!';
 
             // временно выключил. Дописать, чтобы можно было в админке включать и выключать.
-//            foreach ($updatedQuotes as $quote) {
-//                Mail::to(config('quote_emails'))->send(new QuotesChange($quote));
-//            }
+            foreach ($updatedQuotes as $quote) {
+                Mail::to($this->emailQuoteRepo->getAllActiveEmails())->send(new QuotesChange($quote));
+            }
 
             Log::info('Response(): ' . json_encode($responseContents) . ', code:' . $response->getStatusCode());
         } catch (BadResponseException $e) {

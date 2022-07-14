@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\Auth\RegisterController;
 use App\Http\Controllers\Admin\QuotesController;
+use App\Http\Controllers\Admin\QuoteEmailsController;
 // --------------------------
 // Custom Backpack Routes
 // --------------------------
@@ -36,6 +37,8 @@ Route::group([
     Route::crud('warehouses', 'WarehouseCrudController');
     Route::get('quotes', [QuotesController::class, 'show']);
     Route::post('save-quotes', [QuotesController::class, 'save']);
+    Route::get('quote-emails', [QuoteEmailsController::class, 'show']);
+    Route::post('save-quote-emails', [QuoteEmailsController::class, 'save']);
     Route::get('download-excel', [QuotesController::class, 'download']);
 }); // this should be the absolute last line of this file
 
