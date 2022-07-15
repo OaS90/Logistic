@@ -97,7 +97,7 @@ export default {
         },
         add() {
             var lastIndex = this.emails.length - 1
-            this.newRows.splice(lastIndex + 1, 0, {id: lastIndex + 2, active: false});
+            this.newRows.splice(lastIndex + 2, 0, {id: lastIndex + 2, active: false});
         },
         deleteNewRow(index) {
             this.$delete(this.newRows, index)
