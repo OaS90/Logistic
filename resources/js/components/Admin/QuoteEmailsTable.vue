@@ -90,14 +90,17 @@ export default {
             axios.post('save-quote-emails', this.emails).then(response => {
                 this.showModal = !this.showModal
                 this.modalText = 'Данные сохранены!'
+                this.newRows = []
             }).catch(errors => {
                 this.showModal = !this.showModal
                 this.modalText = 'Ошибка сохранения!'
             })
         },
         add() {
-            var lastIndex = this.emails.length - 1
-            this.newRows.splice(lastIndex + 2, 0, {id: lastIndex + 2, active: false});
+            var lastIndex = this.emails.length - 1,
+                lastEmail = this.emails[lastIndex]
+
+            this.newRows.splice(lastIndex + 1, 0, {id: lastEmail.id + 1, active: false});
         },
         deleteNewRow(index) {
             this.$delete(this.newRows, index)

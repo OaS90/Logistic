@@ -43,7 +43,7 @@
                     <td>{{ item.division }}</td>
                     <td><input type="text" class="form-control" v-model="item.quote" @keypress="onlyNumber"></td>
                     <td><input type="text" class="form-control" v-model="item.tmp_quote" @keypress="onlyNumber"></td>
-                    <td><date-picker range type="date" v-model="item.tmp_date"></date-picker></td>
+                    <td><date-picker range type="date" v-model="item.tmp_date" format="MM.DD.YYYY"></date-picker></td>
                     <td><input type="text" class="form-control" v-model="item.periodTenTwo.percent" @keypress="onlyNumber" maxlength=3></td>
                     <td><input type="checkbox" v-model="item.periodTenTwo.active"></td>
                     <td><input type="text" class="form-control" v-model="item.periodTwoSix.percent" @keypress="onlyNumber" maxlength=3></td>
@@ -120,6 +120,16 @@ export default {
                 this.showModal = !this.showModal
                 this.modalText = 'Не выбрано ни одного филиала для обновления'
             } else {
+                var date = new Date()
+
+                this.quotesToSave.forEach(item => {
+                    if (item.tmp_date && item.tmp_date.length > 0) {
+                        // console.log(new Date(item.tmp_date[0].toString()).toISOString().slice(0,10))
+                        item.tmp_date[0] = new Date(item.tmp_date[0]).toDateString()
+                        item.tmp_date[1] = new Date(item.tmp_date[1]).toDateString()
+                    }
+                })
+
                 axios.post('save-quotes', this.quotesToSave).then(response => {
                     this.showModal = !this.showModal
                     this.modalText = response.data.message
