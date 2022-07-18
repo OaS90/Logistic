@@ -92,7 +92,6 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-        if ($user->hasRole('logist'))
-            return redirect(backpack_url('quotes'));
+        return redirect(backpack_url());
     }
 }
