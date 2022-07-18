@@ -11,6 +11,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300&family=Montserrat:wght@400;700&display=swap"
         rel="stylesheet">
+    <link rel="icon" href="{{ asset('images/icon.png') }}" type="image/icon type">
 </head>
 <body id="main">
     <div id="app">
