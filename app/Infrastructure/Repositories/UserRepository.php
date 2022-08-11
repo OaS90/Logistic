@@ -22,4 +22,12 @@ class UserRepository
     {
         return User::where('id_1c', $id)->first();
     }
+
+    public function getOrderByNumberAndUser1cId($userId, $orderId)
+    {
+        return User::where('id_1c', $userId)->first()
+            ->applications()
+            ->where('order_number', $orderId)
+            ->first();
+    }
 }

@@ -24,13 +24,15 @@ class ApplicationController
     protected $warehouseRepo;
     protected $userRepo;
     protected $appService;
+    protected $appRepo;
 
     public function __construct(ApplicationRepository $repository,
                                 DeliveryAddressRepository $addressRepo,
                                 ProductRepository $productRepo,
                                 WarehouseRepository $warehouseRepo,
                                 UserRepository $userRepo,
-                                ApplicationService $appService
+                                ApplicationService $appService,
+                                ApplicationRepository $appRepo
     )
     {
         $this->repo = $repository;
@@ -39,6 +41,7 @@ class ApplicationController
         $this->warehouseRepo = $warehouseRepo;
         $this->userRepo = $userRepo;
         $this->appService = $appService;
+        $this->appRepo = $appRepo;
     }
 
     public function setStatus(Request $request): \Illuminate\Http\JsonResponse
@@ -113,4 +116,21 @@ class ApplicationController
         return $stickers instanceof PDF ? $stickers->download() : $stickers;
     }
 
+    public function getOrderStatus(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $order = $this->userRepo->getOrderByNumberAndUser1cId(
+                $request->get('partnerId'),
+                $request->get('orderId')
+            );
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Не удалось найти заказ с номер ' . $request->get('orderId')]);
+        }
+
+        return response()->json([
+            'message' => 'success',
+            'orderNumber' => $order->order_number,
+            'orderStatus' => $order->status
+        ]);
+    }
 }

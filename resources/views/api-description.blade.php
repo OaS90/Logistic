@@ -332,6 +332,56 @@
                     URL: <span class="post-api"><strong>https://lk.bortudachi.ru/api/v1/order/{orderId}/stickers</strong></span>
                 </p>
                 <p>Метод возвращает готовый PDF файл (Content-Type:	application/pdf)</p>
+
+                <hr style="margin: 15px 0">
+
+                <h2>Обновление статуса</h2>
+                <p>Получение статуса по заказу осуществляется методом GET по
+                    URL: <span class="post-api">
+                        <strong>http://logistic.loc/api/v1/order/get-status?partnerId=000000004&orderId=ALI-007783</strong>
+                    </span>
+                </p>
+
+                <p>Параметры запроса:</p>
+                <table class="api-table">
+                    <thead>
+                    <tr>
+                        <th>Название параметра</th>
+                        <th>Описание параметра</th>
+                        <th>Признак обязательности</th>
+                    </tr>
+                    </thead>
+                    <tbody aria-live="polite" aria-relevant="all">
+                        <tr>
+                            <td><strong>partnerId</strong></td>
+                            <td>Идентификатор заказчика в личном кабинете</td>
+                            <td>обязательный</td>
+                        </tr>
+                        <tr>
+                            <td><strong>orderId</strong></td>
+                            <td>Номер заказа в системе заказчика</td>
+                            <td>обязательный</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="request-button" onclick="openRequest('order-status-response')">Пример ответа <strong>+</strong></div>
+                <div class="order-status-response" style="display:none;">
+                    <pre style="background-color: #dddddd">
+                        {
+                             "message": success,
+                             "orderNumber": "Номер заказа"
+                             "orderStatus": "Статус заказа",
+                        },
+                    </pre>
+                    <p>При ошибке:</p>
+                    <pre style="background-color: #dddddd">
+                        {
+                            "message": "Сообщение об ошибке",
+                            "orderNumber": "Номер заказа"
+                        }
+                    </pre>
+                </div>
 {{--                <table class="api-table">--}}
 {{--                    <thead>--}}
 {{--                    <tr role="row" class="tablesorter-headerRow">--}}
