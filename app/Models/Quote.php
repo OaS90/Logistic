@@ -12,6 +12,9 @@ class Quote extends Model
 
     protected $table = 'quotes';
     protected $guarded = ['id'];
+    protected $casts = [
+        'days' => 'array'
+    ];
 
     public function intervals(): \Illuminate\Database\Eloquent\Relations\HasMany
     {

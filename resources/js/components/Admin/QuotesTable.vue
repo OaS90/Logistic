@@ -18,6 +18,7 @@
                 <th colspan="2" class="percent">18-22</th>
                 <th>День в день</th>
                 <th>Доставка в указанный час</th>
+                <th colspan="8"></th>
             </tr>
             <tr align="center">
                 <th></th>
@@ -34,6 +35,14 @@
                 <th>Активно</th>
                 <th></th>
                 <th></th>
+                <th>Пн</th>
+                <th>Вт</th>
+                <th>Ср</th>
+                <th>Чт</th>
+                <th>Пт</th>
+                <th>Сб</th>
+                <th>Вс</th>
+                <th>Ограничение по времени оформления</th>
             </tr>
             </thead>
             <tbody>
@@ -52,6 +61,26 @@
                     <td><input type="checkbox" v-model="item.periodSixTen.active"></td>
                     <td><input type="checkbox" v-model="item.inDay"></td>
                     <td><input type="checkbox" v-model="item.inHour"></td>
+                    <td><input type="checkbox" v-model="item.days[1]"></td>
+                    <td><input type="checkbox" v-model="item.days[2]"></td>
+                    <td><input type="checkbox" v-model="item.days[3]"></td>
+                    <td><input type="checkbox" v-model="item.days[4]"></td>
+                    <td><input type="checkbox" v-model="item.days[5]"></td>
+                    <td><input type="checkbox" v-model="item.days[6]"></td>
+                    <td><input type="checkbox" v-model="item.days[7]"></td>
+                    <td><date-picker format="H:mm"
+                                     class="date-time"
+                                     v-model="item.time_last"
+                                     type="time"
+                                     name="delivery_till"
+                                     value-type="H:mm"
+                                     :timePickerOptions="{
+                                        start: '00:00',
+                                        step: '01:00',
+                                        end: '23:00',
+                                     }">
+                        </date-picker>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -225,5 +254,18 @@ export default {
     }
     .mx-datepicker-range {
         width:280px !important;
+    }
+    input.time-picker {
+        display: block;
+        width: 100%;
+        height: 50px;
+        padding: 0 16px;
+        transition: border-color .15s ease-in-out;
+        color: #464b51;
+        background: #fff;
+        border: 1px solid #ced8e1;
+        border-radius: 8px;
+        outline: 0 none;
+        margin-bottom: 30px;
     }
 </style>

@@ -67,7 +67,6 @@ class QuotesController extends Controller
             else
                 $message .= ' Ошибка отправки квот на сайт!';
 
-            // временно выключил. Дописать, чтобы можно было в админке включать и выключать.
             foreach ($updatedQuotes as $quote) {
                 Mail::to($this->emailQuoteRepo->getAllActiveEmails())->send(new QuotesChange($quote));
             }

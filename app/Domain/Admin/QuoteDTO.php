@@ -28,6 +28,16 @@ class QuoteDTO
                 'quote' => $quote->quote,
                 'tmp_quote' => $quote->tmp_quote,
                 'tmp_date' => $tmpQuoteDate,
+                'days' => $quote->days ?? [
+                    1 => null, //пн
+                    2 => null, //вт
+                    3 => null, //ср
+                    4 => null, //чт
+                    5 => null, //пт
+                    6 => null, //сб
+                    7 => null //вс
+                ],
+                'time_last' => $quote->time_last
             ];
 
             $data[] = array_merge($quoteInfo, $intervals);
@@ -71,6 +81,7 @@ class QuoteDTO
             $periods = [];
             $tmpPeriods = [];
             $dayHourPeriods = [];
+            $days = [];
 
             foreach ($quote->intervals as $interval) {
                 if ($interval->active && $interval->percent )
@@ -81,12 +92,25 @@ class QuoteDTO
                     $dayHourPeriods['hour'] = 1;
             }
 
+            if ($quote->days > 0) {
+                foreach ($quote->days as $day => $isActive) {
+                    if ($isActive)
+                        $days[] = $day;
+                }
+            }
+
             if (count($periods) > 0) {
                 $mainQuote = [
                     'id' => $quote->region->region_id,
                     'limit' => $quote->quote,
                     'interval_percent' => $periods
                 ];
+
+                if ($days)
+                    $mainQuote['days'] = $days;
+
+                if ($quote->time_last)
+                    $mainQuote['time_last'] = $quote->time_last;
 
                 if ($quote->tmp_quote) {
                     $tmpPeriods = [

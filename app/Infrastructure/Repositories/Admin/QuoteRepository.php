@@ -25,6 +25,8 @@ class QuoteRepository
                 'tmp_quote' => $quote['tmp_quote']  ?? null,
                 'available_from_date' => isset($quote['tmp_date'][0]) ? Carbon::parse($quote['tmp_date'][0])->format('Y-m-d') : null,
                 'available_until_date' => isset($quote['tmp_date'][1]) ? Carbon::parse($quote['tmp_date'][1])->format('Y-m-d') : null,
+                'days' => $quote['days'],
+                'time_last' => $quote['time_last']
             ]);
 
             $updatedQuotes[] = $quoteEntry;
