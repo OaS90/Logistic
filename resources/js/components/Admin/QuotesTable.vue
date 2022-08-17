@@ -226,6 +226,9 @@ export default {
 
     #quotes {
         width: 100%;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
     }
     #quotes td {
         border: 1px solid #ddd;
