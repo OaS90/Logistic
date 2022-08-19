@@ -22,6 +22,48 @@
 
             @include('header')
             <section class="applications-section">
+                <h2>Статусы заказов</h2>
+                <table class="api-table">
+                    <thead>
+                        <tr>
+                            <th>Статус заказа в ЛК</th>
+                            <th>Код статуса</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Новый</td>
+                        <td>new</td>
+                    </tr>
+                    <tr>
+                        <td>В работе</td>
+                        <td>inProgress</td>
+                    </tr>
+                    <tr>
+                        <td>Загружен</td>
+                        <td>loaded</td>
+                    </tr>
+                    <tr>
+                        <td>Отложен</td>
+                        <td>postponed</td>
+                    </tr>
+                    <tr>
+                        <td>Отказ</td>
+                        <td>refusal</td>
+                    </tr>
+                    <tr>
+                        <td>Выполнен</td>
+                        <td>completed</td>
+                    </tr>
+                    <tr>
+                        <td>Брак</td>
+                        <td>defect</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <hr style="margin: 15px 0">
+
                 <h2>Загрузка заказов</h2>
                 <p>Сервис принимает на вход данные в формате JSON, как результат сервис возвращает детальный ответ с результатом загрузки по каждому заказу, также в формате JSON.</p>
                 <p>Доступ к функции осуществляется методом POST по URL: <span class="post-api"><strong>https://lk.bortudachi.ru/api/v1/order/create</strong></span></p>
