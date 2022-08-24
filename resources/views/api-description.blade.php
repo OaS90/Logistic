@@ -74,6 +74,7 @@
                             <th>Название параметра</th>
                             <th>Описание параметра</th>
                             <th>Признак обязательности</th>
+                            <th>Тип</th>
                         </tr>
                     </thead>
                     <tbody aria-live="polite" aria-relevant="all">
@@ -81,11 +82,13 @@
                             <td><strong>partnerId</strong></td>
                             <td>Идентификатор заказчика в личном кабинете</td>
                             <td>обязательный</td>
+                            <td>integer</td>
                         </tr>
                         <tr>
                             <td style="text-align: left;" ><strong>id</strong></td>
                             <td >Номер заказа в системе заказчика</td>
                             <td >обязательный</td>
+                            <td>integer</td>
                         </tr>
                         <tr>
                             <td ><strong>storeId</strong></td>
@@ -93,6 +96,7 @@
                                 Согласовывается до старта/подключения каждого нового склада.
                             </td>
                             <td >обязательный</td>
+                            <td>integer</td>
                         </tr>
                         <tr>
                             <td ><strong>paymentMethod</strong></td>
@@ -100,31 +104,37 @@
                                 "Оплачен".
                             </td>
                             <td >обязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td ><strong>comment</strong></td>
                             <td >Строка до 160 символов</td>
                             <td >необязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td ><strong>deliveryDate</strong></td>
-                            <td >Дата доставки</td>
+                            <td >Дата доставки - формат YYYY-mm-dd</td>
                             <td >обязательный</td>
+                            <td>Date</td>
                         </tr>
                         <tr>
                             <td ><strong>deliveryTimeFrom</strong></td>
-                            <td >Время доставки "с"</td>
+                            <td >Время доставки "с" - формат 10:00</td>
                             <td >обязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td ><strong>deliveryTimeTo</strong></td>
-                            <td >Время доставки "до"</td>
+                            <td >Время доставки "до" - формат 18:00</td>
                             <td >обязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td ><strong>buyer</strong></td>
                             <td >Информация о покупателе</td>
                             <td >обязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >fio</td>
@@ -132,6 +142,7 @@
                                 символов
                             </td>
                             <td >обязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >phone</td>
@@ -139,121 +150,145 @@
                                 "+NNNNNNNNNN"
                             </td>
                             <td >обязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td ><strong>address</strong></td>
                             <td >Адрес доставки</td>
                             <td >обязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >regionName</td>
                             <td >Название региона</td>
                             <td >обязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >cityName</td>
                             <td >Название населённого пункта</td>
                             <td >обязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >cityId</td>
                             <td >Код ФИАС населённого пункта</td>
                             <td >обязательный</td>
+                            <td>integer</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >street</td>
                             <td >Название улицы</td>
                             <td >обязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >streetId</td>
                             <td >Код ФИАС улицы</td>
                             <td >обязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >building</td>
                             <td >Номер дома</td>
                             <td >обязательный</td>
+                            <td>integer</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >floor</td>
                             <td >Этаж</td>
                             <td >необязательный</td>
+                            <td>integer</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >entrance</td>
                             <td >Номер подъезда</td>
                             <td >необязательный</td>
+                            <td>integer</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >flat</td>
                             <td >Номер квартиры</td>
                             <td >необязательный</td>
+                            <td>integer</td>
                         </tr>
                         <tr>
                             <td ><strong>products (array)</strong></td>
                             <td >Параметры отправляемого груза</td>
                             <td >обязательный</td>
+                            <td>array</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >name</td>
                             <td >Наименование товара</td>
                             <td >обязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >brand</td>
                             <td >Бренд</td>
                             <td >необязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >sku</td>
                             <td >Артикул</td>
                             <td >необязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >count</td>
                             <td >Количество</td>
                             <td >обязательный</td>
+                            <td>integer</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >cost</td>
                             <td >Стоимость</td>
                             <td >обязательный</td>
+                            <td>float</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >VATRate</td>
                             <td >Ставка НДС</td>
                             <td >обязательный</td>
+                            <td>integer</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >leftToPay</td>
                             <td >Сумма к получению с покупателя</td>
                             <td >обязательный</td>
+                            <td>float</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >weight</td>
                             <td >Расчетный вес, кг</td>
                             <td >обязательный</td>
+                            <td>float</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >volume</td>
                             <td >Объем, м2</td>
                             <td >обязательный</td>
+                            <td>float</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >width</td>
                             <td >Ширина, см</td>
                             <td >обязательный</td>
+                            <td>float</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >height</td>
                             <td >Высота, см</td>
                             <td >обязательный</td>
+                            <td>float</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >depth</td>
                             <td >Глубина, см</td>
                             <td >обязательный</td>
+                            <td>float</td>
                         </tr>
                     </tbody>
                 </table>
