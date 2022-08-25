@@ -88,7 +88,7 @@
                             <td style="text-align: left;" ><strong>id</strong></td>
                             <td >Номер заказа в системе заказчика</td>
                             <td >обязательный</td>
-                            <td>integer</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td ><strong>storeId</strong></td>
