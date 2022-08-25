@@ -210,7 +210,7 @@
                             <td colspan="1" style="text-align: right;" >flat</td>
                             <td >Номер квартиры</td>
                             <td >необязательный</td>
-                            <td>integer</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td ><strong>products (array)</strong></td>

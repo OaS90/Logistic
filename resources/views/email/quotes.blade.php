@@ -14,3 +14,20 @@
             % {{ $interval->active ? 'вкл.' : 'выкл.' }}</p>
     @endif
 @endforeach
+@if($quote->days)
+    <p>Дни:</p>
+    <ul>
+    @foreach($quote->days as $number => $day)
+        <li>
+            @if($day)
+                <p>{{ config('days')[$number] }} - вкл.</p>
+            @else
+                <p>{{ config('days')[$number] }} - выкл.</p>
+            @endif
+        </li>
+    @endforeach
+    </ul>
+@endif
+@if($quote->time_last)
+    <p>Ограничение по времени: {{ $quote->time_last }}</p>
+@endif
