@@ -96,7 +96,7 @@
                                 Согласовывается до старта/подключения каждого нового склада.
                             </td>
                             <td >обязательный</td>
-                            <td>integer</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td ><strong>paymentMethod</strong></td>
