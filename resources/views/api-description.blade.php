@@ -82,7 +82,7 @@
                             <td><strong>partnerId</strong></td>
                             <td>Идентификатор заказчика в личном кабинете</td>
                             <td>обязательный</td>
-                            <td>integer</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td style="text-align: left;" ><strong>id</strong></td>
