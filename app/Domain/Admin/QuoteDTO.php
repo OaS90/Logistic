@@ -37,7 +37,8 @@ class QuoteDTO
                     6 => null, //сб
                     7 => null //вс
                 ],
-                'time_last' => $quote->time_last
+                'time_last' => $quote->time_last,
+                'delivery_hours' => $quote->delivery_hours ?? ['from' => null, 'till' => null]
             ];
 
             $data[] = array_merge($quoteInfo, $intervals);
@@ -46,7 +47,7 @@ class QuoteDTO
         return $data;
     }
 
-    public function parseIntervals($intervals)
+    public function parseIntervals($intervals): array
     {
         $parsedIntervals = [];
 
@@ -73,7 +74,7 @@ class QuoteDTO
         return $parsedIntervals;
     }
 
-    public function makeDataForApiHru($quotes)
+    public function makeDataForApiHru($quotes): array
     {
         $data = [];
 
@@ -120,6 +121,10 @@ class QuoteDTO
                             $quote->available_until_date
                         ]
                     ];
+                }
+
+                if ($quote->delivery_hours) {
+                    $mainQuote['delivery_hours'] = $quote->delivery_hours;
                 }
 
                 $data[] = array_merge($mainQuote, $tmpPeriods, $dayHourPeriods);
