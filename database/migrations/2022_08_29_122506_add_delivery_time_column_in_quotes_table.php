@@ -14,7 +14,7 @@ class AddDeliveryTimeColumnInQuotesTable extends Migration
     public function up()
     {
         Schema::table('quotes', function (Blueprint $table) {
-            $table->json('delivery_time')->nullable();
+            $table->json('delivery_hours')->after('time_last')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class AddDeliveryTimeColumnInQuotesTable extends Migration
     public function down()
     {
         Schema::table('quotes', function (Blueprint $table) {
-            $table->removeColumn('delivery_time');
+            $table->removeColumn('delivery_hours');
         });
     }
 }
