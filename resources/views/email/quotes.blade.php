@@ -31,3 +31,6 @@
 @if($quote->time_last)
     <p>Ограничение по времени: {{ $quote->time_last }}</p>
 @endif
+@if($quote->delivery_hours)
+    <p>Время доставки: с: {{ $quote->delivery_hours['from'] }} до: {{ $quote->delivery_hours['till'] }}</p>
+@endif
