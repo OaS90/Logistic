@@ -21,7 +21,7 @@ class QuoteDTO
                 ];
 
             $quoteInfo = [
-                'id' => $quote->region->region_id,
+                'id' => $quote->id,
                 'to_save' => false,
                 'division' => $quote->region->name,
                 'warehouse' => $quote->region->warehouse->warehouse_name,
@@ -100,12 +100,14 @@ class QuoteDTO
                 }
             }
 
-            if (count($periods) > 0) {
+            if ($quote->quote) {
                 $mainQuote = [
                     'id' => $quote->region->region_id,
                     'limit' => $quote->quote,
-                    'interval_percent' => $periods
                 ];
+
+                if (count($periods) > 0)
+                    $mainQuote['interval_percent'] = $periods;
 
                 if ($days)
                     $mainQuote['days'] = $days;
