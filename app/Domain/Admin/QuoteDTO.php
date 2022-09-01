@@ -21,7 +21,7 @@ class QuoteDTO
                 ];
 
             $quoteInfo = [
-                'id' => $quote->id,
+                'id' => $quote->region->region_id,
                 'to_save' => false,
                 'division' => $quote->region->name,
                 'warehouse' => $quote->region->warehouse->warehouse_name,

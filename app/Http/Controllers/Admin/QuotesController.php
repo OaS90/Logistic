@@ -49,6 +49,8 @@ class QuotesController extends Controller
         $updatedQuotes = $this->repo->update($request->all());
         $client = new Client();
         $message = 'Данные сохранены.';
+        $json = (new QuoteDTO())->makeDataForApiHru($this->repo->getAll());
+        Log::info(json_encode($json));
 
         try {
             $response = $client->post(config('app.api_hru'), [
@@ -56,8 +58,7 @@ class QuotesController extends Controller
                     'Content-Type' => 'application/json', 'Accept' => 'application/json',
                     'Authorization' => config('app.api_hru_token')
                 ],
-                'json' => (new QuoteDTO())->makeDataForApiHru($this->repo->getAll())
-
+                'json' => $json
             ]);
 
             $responseContents = json_decode($response->getBody()->getContents(), true);
