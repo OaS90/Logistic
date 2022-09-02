@@ -26,6 +26,16 @@
         <th>Активно</th>
         <th></th>
         <th></th>
+        <th>Пн</th>
+        <th>Вт</th>
+        <th>Ср</th>
+        <th>Чт</th>
+        <th>Пт</th>
+        <th>Сб</th>
+        <th>Вс</th>
+        <th>Ограничение по
+            времени оформления	</th>
+        <th>Часы доставки</th>
     </tr>
     </thead>
     <tbody>
@@ -55,6 +65,32 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
+            @endif
+            @if($quote->days)
+                @foreach($quote->days as $number => $day)
+                    <td>
+                        @if($day)
+                            вкл.
+                        @else
+                            выкл.
+                        @endif
+                    </td>
+                @endforeach
+            @else
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            @endif
+            @if($quote->time_last)
+                <td>{{ $quote->time_last }}</td>
+            @endif
+            @if($quote->delivery_hours)
+                <td>с: {{ $quote->delivery_hours['from'] }} по: {{ $quote->delivery_hours['till'] }}</td>
                 <td></td>
             @endif
         </tr>
