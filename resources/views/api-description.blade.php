@@ -410,9 +410,17 @@
                 <h2>Обновление статуса</h2>
                 <p>Получение статуса по заказу осуществляется методом GET по
                     URL: <span class="post-api">
-                        <strong>https://lk.bortudachi.ru/api/v1/order/get-status?partnerId=000000004&orderId=ALI-007783</strong>
+                        <strong>https://lk.bortudachi.ru/api/v1/order/get-status</strong>
                     </span>
                 </p>
+
+                <div class="request-button" onclick="openRequest('order-status-update')">Пример запроса <strong class="show-request">+</strong></div>
+                <div class="order-status-update" style="display:none;">
+                    <strong style="background-color: #dddddd; padding: 5px">
+                        https://lk.bortudachi.ru/api/v1/order/get-status?partnerId=000000004&orderId=ALI-007783
+                    </strong>
+                </div>
+
 
                 <p>Параметры запроса:</p>
                 <table class="api-table">
@@ -461,9 +469,16 @@
                 <h2>История статусов заказа(ов)</h2>
                 <p>Получение истории статусов по заказу(ам) осуществляется методом GET по
                     URL: <span class="post-api">
-                        <strong>https://lk.bortudachi.ru/api/v1/order/status-history?ids[]=OrderId-1&ids[]=OrderId-2</strong>
+                        <strong>https://lk.bortudachi.ru/api/v1/order/status-history</strong>
                     </span>
                 </p>
+
+                <div class="request-button" onclick="openRequest('order-status-history-req')">Пример запроса <strong class="show-request">+</strong></div>
+                <div class="order-status-history-req" style="display:none;">
+                    <strong style="background-color: #dddddd; padding: 5px">
+                        https://lk.bortudachi.ru/api/v1/order/get-status?ids[]=OrderId-1&ids[]=OrderId-2
+                    </strong>
+                </div>
 
                 <p>Параметры запроса:</p>
                 <table class="api-table">
