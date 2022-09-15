@@ -194,19 +194,19 @@
                         <td colspan="1" style="text-align: right;">building</td>
                         <td>Номер дома</td>
                         <td>обязательный</td>
-                        <td>integer</td>
+                        <td>string</td>
                     </tr>
                     <tr>
                         <td colspan="1" style="text-align: right;">floor</td>
                         <td>Этаж</td>
                         <td>необязательный</td>
-                        <td>integer</td>
+                        <td>string</td>
                     </tr>
                     <tr>
                         <td colspan="1" style="text-align: right;">entrance</td>
                         <td>Номер подъезда</td>
                         <td>необязательный</td>
-                        <td>integer</td>
+                        <td>string</td>
                     </tr>
                     <tr>
                         <td colspan="1" style="text-align: right;">flat</td>
@@ -235,6 +235,24 @@
                     <tr>
                         <td colspan="1" style="text-align: right;">sku</td>
                         <td>Артикул</td>
+                        <td>необязательный</td>
+                        <td>string</td>
+                    </tr>
+                    <tr>
+                        <td colspan="1" style="text-align: right;">country</td>
+                        <td>код страны происхождения по ОКСМ</td>
+                        <td>необязательный</td>
+                        <td>string</td>
+                    </tr>
+                    <tr>
+                        <td colspan="1" style="text-align: right;">tnved</td>
+                        <td>Код ТНВЭД</td>
+                        <td>необязательный</td>
+                        <td>string</td>
+                    </tr>
+                    <tr>
+                        <td colspan="1" style="text-align: right;">barcode</td>
+                        <td>EAN баркод товара</td>
                         <td>необязательный</td>
                         <td>string</td>
                     </tr>
@@ -332,6 +350,9 @@
                                         "cost": 10000, // Оценочная стоимость
                                         "VATRate": 20, // Ставка НДС
                                         "leftToPay": 16000, // Сумма к получению
+                                        "tnved": "3304990000",
+                                        "country": "643",
+                                        "barcode": "7425785788000",
                                         "weight": 15.5, // Расчетный вес (кг)
                                         "brand": "Бренд", // Бренд
                                         "volume": 0,119970, // объем в м2
@@ -340,14 +361,13 @@
                                         "depth": 43.00 // глубина в см
                                     },
                                     {
-                                        "name": "CUTRIN  SCC REFLECTION Крем-краска для волос  8.74 карамель, 30 х 60 мл",
+                                        "name": "Стиральную машину Bosh",
                                         "sku": "LN54076",
                                         "count": 3,
                                         "cost": 314.42,
                                         "VATRate": 20,
                                         "leftToPay": 0,
                                         "weight": 0.8,
-                                        "setId": "54654_1",
                                         "tnved": "3304990000",
                                         "country": "643",
                                         "barcode": "7425785788000",
