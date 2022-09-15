@@ -476,7 +476,7 @@
                 <div class="request-button" onclick="openRequest('order-status-history-req')">Пример запроса <strong class="show-request">+</strong></div>
                 <div class="order-status-history-req" style="display:none;">
                     <strong style="background-color: #dddddd; padding: 5px">
-                        https://lk.bortudachi.ru/api/v1/order/get-status?ids[]=OrderId-1&ids[]=OrderId-2
+                        https://lk.bortudachi.ru/api/v1/order/status-history?ids[]=OrderId-1&ids[]=OrderId-2
                     </strong>
                 </div>
 
