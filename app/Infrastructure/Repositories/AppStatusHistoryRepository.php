@@ -37,7 +37,7 @@ class AppStatusHistoryRepository
         foreach ($numbers as $number) {
             $historyItems = $this->getByOneOrder($number);
 
-            if ($historyItems) {
+            if (count($historyItems) > 0) {
                 $statuses = [];
 
                 foreach ($historyItems as $item) {
