@@ -134,7 +134,7 @@
                             <td ><strong>buyer</strong></td>
                             <td >Информация о покупателе</td>
                             <td >обязательный</td>
-                            <td>string</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >fio</td>
@@ -173,8 +173,8 @@
                         <tr>
                             <td colspan="1" style="text-align: right;" >cityId</td>
                             <td >Код ФИАС населённого пункта</td>
-                            <td >обязательный</td>
-                            <td>integer</td>
+                            <td >не обязательный</td>
+                            <td>string</td>
                         </tr>
                         <tr>
                             <td colspan="1" style="text-align: right;" >street</td>
@@ -185,7 +185,7 @@
                         <tr>
                             <td colspan="1" style="text-align: right;" >streetId</td>
                             <td >Код ФИАС улицы</td>
-                            <td >обязательный</td>
+                            <td >не обязательный</td>
                             <td>string</td>
                         </tr>
                         <tr>
@@ -300,7 +300,8 @@
                                 [
                                     {
                                         "id": “47198”, // Номер заказа
-                                        "storeID": «11ff000000fff01», // признак точки забора товара у поставщика (склада). Строка до 15 символов. Согласовывается до старта/подключения нового склада по каждому.
+                                        "storeId": «11ff000000fff01», // признак точки забора товара у поставщика (склада). Строка до 15 символов. Согласовывается до старта/подключения нового склада по каждому.
+                                        "partnerId": "000000001"
                                         "paymentMethod": "Картой", // Способ оплаты ["Картой" (при получении), "Наличными", "Предоплата"]
                                         "comment": "Есть грузовой лифт", // Комментарий
                                         "deliveryDate": "23.05.2020", // Дата доставки
@@ -313,10 +314,9 @@
                                         "address": {
                                             "regionName": "Московская обл",
                                             "cityName": "Москва",
-                                            "cityId": "0c5b2444-70a0-4932-980c-b4dc0d3f02b5", // ФИАС код города/населенного пункта
+                                            "cityId": "0c5b2444-70a0-4932-980c-b4dc0d3f02b5", // ФИАС код города/населенного пункта (необязательный)
                                             "street": "ул Октябрьская",
-                                            "streetId": "5d305942-648a-427f-9a29-48b5b07501e2", // ФИАС код улицы
-
+                                            "streetId": "5d305942-648a-427f-9a29-48b5b07501e2", // ФИАС код улицы (необязательный)
                                             "building": "217, корпус 2",
                                             "floor": "10", // необязательно
                                             "flat": "176" // необязательно
@@ -324,22 +324,17 @@
                                         "products": [
                                             {
                                                 "name": "Газовая панель", // Товар
-                                                "vendorCode": "789797979797", // Артикул
+                                                "sku": "789797979797", // Артикул
                                                 "count": 2, // Количество
                                                 "cost": 10000, // Оценочная стоимость
-                                                "costAfterDiscounts": 8000, // Стоимость с учетом скидки
                                                 "VATRate": 20, // Ставка НДС
                                                 "leftToPay": 16000, // Сумма к получению
                                                 "weight": 15.5, // Расчетный вес (кг)
-                                                "setId": "54654_1", // Входит в состав комплекта, уникальное значение, необязательно (id записи корзины комплекта + инкремент для разделения по кол-ву)
                                                 "brand": "Бренд", // Бренд
-                                                "tnved": "8516609000", // Код ТНВЭД
-                                                "country": "643", // код страны происхождения по ОКСМ
-                                                "barcode": "8699272141522", // EAN
                                                 "volume": 0,119970, // объем в м2
                                                 "width": 62.00, // ширина в см
                                                 "height": 45.00, // высота в см
-                                               "depth": 43.00 // глубина в см
+                                                "depth": 43.00 // глубина в см
                                             }, {...}
                                         ]
                                     }, {...}
@@ -457,6 +452,62 @@
                             "message": "Сообщение об ошибке",
                             "orderNumber": "Номер заказа"
                         }
+                    </pre>
+                </div>
+
+
+                <hr style="margin: 15px 0">
+
+                <h2>История статусов заказа(ов)</h2>
+                <p>Получение истории статусов по заказу(ам) осуществляется методом GET по
+                    URL: <span class="post-api">
+                        <strong>http://logistic.loc/api/v1/order/status-history?ids[]=OrderId-1&ids[]=OrderId-2</strong>
+                    </span>
+                </p>
+
+                <p>Параметры запроса:</p>
+                <table class="api-table">
+                    <thead>
+                    <tr>
+                        <th>Название параметра</th>
+                        <th>Описание параметра</th>
+                        <th>Признак обязательности</th>
+                    </tr>
+                    </thead>
+                    <tbody aria-live="polite" aria-relevant="all">
+                    <tr>
+                        <td><strong>ids</strong></td>
+                        <td>Массив номеров заказов по которым требуется получить историю статусов</td>
+                        <td>обязательный</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="request-button" onclick="openRequest('order-status-history')">Пример ответа <strong>+</strong></div>
+                <div class="order-status-history" style="display:none;">
+                    <pre style="background-color: #dddddd">
+                        [
+                            {
+                                "orderId" : "OrderId-1",
+                                "statuses" : [
+                                    {
+                                        "description": "Новый",
+                                        "status": "new",
+                                        "datetime": "2019-08-20 15:10:00"
+                                    },
+                                ]
+                            }
+                            {
+                                "orderId" : "OrderId-2",
+                                "statuses" : [
+                                    {
+                                        "description": "В работе",
+                                        "status": "inProgress",
+                                        "datetime": "2019-08-21 09:10:00"
+                                    },
+                                ]
+                            }
+                        ]
                     </pre>
                 </div>
 {{--                <table class="api-table">--}}

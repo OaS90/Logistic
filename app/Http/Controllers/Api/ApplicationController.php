@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Application\DeliveryAddressService;
 use App\Domain\ApplicationDTO;
 use App\Domain\DeliveryAddressDTO;
 use App\Domain\ProductDTO;
 use App\Http\Controllers\Api\Exceptions\JsonParseException;
 use App\Infrastructure\Repositories\ApplicationRepository;
+use App\Infrastructure\Repositories\AppStatusHistoryRepository;
 use App\Infrastructure\Repositories\UserRepository;
 use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
@@ -25,6 +27,8 @@ class ApplicationController
     protected $userRepo;
     protected $appService;
     protected $appRepo;
+    protected $appStatusHistoryRepo;
+    protected $deliveryAddressService;
 
     public function __construct(ApplicationRepository $repository,
                                 DeliveryAddressRepository $addressRepo,
@@ -32,7 +36,9 @@ class ApplicationController
                                 WarehouseRepository $warehouseRepo,
                                 UserRepository $userRepo,
                                 ApplicationService $appService,
-                                ApplicationRepository $appRepo
+                                ApplicationRepository $appRepo,
+                                AppStatusHistoryRepository $appStatusHistoryRepo,
+                                DeliveryAddressService $deliveryAddressService
     )
     {
         $this->repo = $repository;
@@ -42,6 +48,8 @@ class ApplicationController
         $this->userRepo = $userRepo;
         $this->appService = $appService;
         $this->appRepo = $appRepo;
+        $this->appStatusHistoryRepo = $appStatusHistoryRepo;
+        $this->deliveryAddressService = $deliveryAddressService;
     }
 
     public function setStatus(Request $request): \Illuminate\Http\JsonResponse
@@ -58,10 +66,20 @@ class ApplicationController
        }
 
        foreach ($data as $item) {
-           $newStatus = last($item['statuses'])['status'];
+           // из 1с может приходить история статусов, если апи партнёра не отвечала
+           // из-за этого берём последний(актуальный) статус
+           $newStatus = last($item['statuses']);
 
            try {
-               $this->repo->updateStatus($item['id'], $newStatus);
+               $this->repo->updateStatus($item['id'], $newStatus['status']);
+
+               // записываем историю обновления статусов заказа
+               $this->appStatusHistoryRepo->create([
+                   'number' => $item['id'],
+                   'status' => $newStatus['status'],
+                   'dateTime' => $newStatus['dateTime']
+               ]);
+
                $statuses[] = [
                    'id' => $item['id'],
                    'success' => true,
@@ -86,6 +104,10 @@ class ApplicationController
 
         foreach ($data as $app) {
             $user = $this->userRepo->getBy1cId($app['partnerId']);
+
+            if (!$user)
+                return response(['message' => 'Не найден пользователь с идентификаторм ' . $app['partnerId']]);
+
             $app['user_id'] = $user->id;
             $warehouse = $this->warehouseRepo->findByStoreId($app['storeId']);
 
@@ -93,6 +115,15 @@ class ApplicationController
                 return response(['message' => 'Не найден склад'], 400);
 
             $app['storeId'] = $warehouse->id;
+
+            if (!isset($app['address']['cityId']) || !isset($app['address']['streetId'])) {
+                $dadataAddress = $this->deliveryAddressService
+                    ->checkFiasForCityAndStreet($app['address']['cityName'] . ' ' .$app['address']['street'] , 1);
+
+                $app['address']['cityId'] = $dadataAddress ? $dadataAddress[0]['data']['city_fias_id'] : '';
+                $app['address']['streetId'] = $dadataAddress ? $dadataAddress[0]['data']['street_fias_id'] : '';
+            }
+
             $address = $this->addressRepo->createFromCsv((new DeliveryAddressDTO())->apiRows($app['address']));
             $newApp = $this->repo->create((new ApplicationDTO())->apiRows($app, $address->id));
 
@@ -132,5 +163,16 @@ class ApplicationController
             'orderNumber' => $order->order_number,
             'orderStatus' => $order->status
         ]);
+    }
+
+    public function statusHistory(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $statuses = $this->appStatusHistoryRepo->getByFewOrders($request->get('ids'));
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+
+        return response()->json($statuses);
     }
 }

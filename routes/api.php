@@ -25,5 +25,6 @@ Route::prefix('v1')->group(function () {
     Route::post('order/create', [ApplicationController::class, 'create']);
     Route::get('order/{id}/stickers', [ApplicationController::class, 'getSticker']);
     Route::get('order/get-status', [ApplicationController::class, 'getOrderStatus']);
+    Route::get('order/status-history', [ApplicationController::class, 'statusHistory']);
 });
 
