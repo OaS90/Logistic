@@ -514,7 +514,7 @@
                 <hr style="margin: 15px 0">
 
                 <h2>История статусов заказа(ов)</h2>
-                <p>Получение истории статусов по заказу(ам) осуществляется методом GET по
+                <p>Получение истории статусов по заказу(ам) осуществляется методом POST по
                     URL: <span class="post-api">
                         <strong>https://lk.bortudachi.ru/api/v1/order/status-history</strong>
                     </span>
@@ -523,9 +523,15 @@
                 <div class="request-button" onclick="openRequest('order-status-history-req')">Пример запроса <strong
                         class="show-request">+</strong></div>
                 <div class="order-status-history-req" style="display:none;">
-                    <strong style="background-color: #dddddd; padding: 5px">
-                        https://lk.bortudachi.ru/api/v1/order/status-history?ids[]=OrderId-1&ids[]=OrderId-2
-                    </strong>
+                    <pre style="background-color: #dddddd; padding: 5px">
+                        {
+                            "ids": [
+                                "OrderNumber1",
+                                "OrderNumber2",
+                                ...
+                            ]
+                        }
+                    </pre>
                 </div>
 
                 <p>Параметры запроса:</p>
