@@ -341,7 +341,7 @@
                                     },
                                     {
                                         "name": "CUTRIN  SCC REFLECTION Крем-краска для волос  8.74 карамель, 30 х 60 мл",
-                                        "vendorCode": "LN54076",
+                                        "sku": "LN54076",
                                         "count": 3,
                                         "cost": 314.42,
                                         "VATRate": 20,
