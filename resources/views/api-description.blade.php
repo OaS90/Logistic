@@ -410,7 +410,7 @@
                 <h2>Обновление статуса</h2>
                 <p>Получение статуса по заказу осуществляется методом GET по
                     URL: <span class="post-api">
-                        <strong>http://logistic.loc/api/v1/order/get-status?partnerId=000000004&orderId=ALI-007783</strong>
+                        <strong>https://lk.bortudachi.ru/api/v1/order/get-status?partnerId=000000004&orderId=ALI-007783</strong>
                     </span>
                 </p>
 
@@ -461,7 +461,7 @@
                 <h2>История статусов заказа(ов)</h2>
                 <p>Получение истории статусов по заказу(ам) осуществляется методом GET по
                     URL: <span class="post-api">
-                        <strong>http://logistic.loc/api/v1/order/status-history?ids[]=OrderId-1&ids[]=OrderId-2</strong>
+                        <strong>https://lk.bortudachi.ru/api/v1/order/status-history?ids[]=OrderId-1&ids[]=OrderId-2</strong>
                     </span>
                 </p>
 
