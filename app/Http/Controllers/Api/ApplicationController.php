@@ -168,7 +168,7 @@ class ApplicationController
     public function statusHistory(Request $request): \Illuminate\Http\JsonResponse
     {
         try {
-            $statuses = $this->appStatusHistoryRepo->getByFewOrders($request->get('ids'));
+            $statuses = $this->appStatusHistoryRepo->getByFewOrders(json_decode($request->getContent(), true));
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
