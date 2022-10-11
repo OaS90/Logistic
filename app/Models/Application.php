@@ -12,7 +12,7 @@ class Application extends Model
     protected $table = 'applications';
     protected $guarded = ['id'];
     const STATUSES = [
-        'created' => 'В работе',
+        'created' => 'Создано',
         'new' => 'Новый',
         'inProgress' => 'В работе',
         'loaded' => 'Загружен',

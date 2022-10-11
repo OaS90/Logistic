@@ -58,7 +58,7 @@ class ApplicationController
         $statuses = [];
 
        $data = json_decode($request->getContent(), true);
-
+       // TODO сделать проверку, что отправляют не массив массивов заказ, а просто заказ
        if (!$data || !is_array($data)) {
            $exception = new JsonParseException('Ошибка формата json');
 
@@ -127,6 +127,13 @@ class ApplicationController
             $address = $this->addressRepo->createFromCsv((new DeliveryAddressDTO())->apiRows($app['address']));
             $newApp = $this->repo->create((new ApplicationDTO())->apiRows($app, $address->id));
 
+            // записываем историю статусов заказа
+            $this->appStatusHistoryRepo->create([
+                'number' => $newApp->id,
+                'status' => 'created',
+                'dateTime' => $newApp->created_at
+            ]);
+
             foreach ($app['products'] as $product) {
                 $this->productRepo->create((new ProductDTO())->apiRows($product, $newApp->id));
             }
@@ -170,6 +177,9 @@ class ApplicationController
         try {
             $data = json_decode($request->getContent(), true);
             $statuses = $this->appStatusHistoryRepo->getByFewOrders($data['ids']);
+
+            if (count($statuses) == 0)
+                $statuses = ['message' => 'История статусов для заказа(ов) пуста'];
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
