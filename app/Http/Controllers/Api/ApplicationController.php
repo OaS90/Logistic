@@ -129,7 +129,7 @@ class ApplicationController
 
             // записываем историю статусов заказа
             $this->appStatusHistoryRepo->create([
-                'number' => $newApp->id,
+                'number' => $newApp->order_number,
                 'status' => 'created',
                 'dateTime' => $newApp->created_at
             ]);
