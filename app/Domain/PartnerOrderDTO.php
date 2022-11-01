@@ -58,7 +58,7 @@ class PartnerOrderDTO
                 'vendorCode' => $product->sku, // Артикул
                 'count' => $product->count, // Количество
                 'cost' => $product->cost, // Оценочная стоимость
-                'costAfterDiscounts' => 10000, // Стоимость с учетом скидки
+                'costAfterDiscounts' => $product->discount_cost, // Стоимость с учетом скидки
                 'VATRate' => $product->vat, // Ставка НДС
                 'leftToPay' => $product->left_to_pay, // Сумма к получению
                 'weight' => $product->weight, // Расчетный вес (кг)
