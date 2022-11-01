@@ -121,7 +121,7 @@ class ApplicationController
                     ->checkFiasForCityAndStreet($app['address']['cityName'] . ' ' .$app['address']['street'] , 1);
 
                 $app['address']['cityId'] = $dadataAddress ? $dadataAddress[0]['data']['city_fias_id'] : '';
-                $app['address']['streetId'] = $dadataAddress ? $dadataAddress[0]['data']['street_fias_id'] : '';
+                $app['address']['streetId'] = $dadataAddress && $dadataAddress[0]['data']['street_fias_id'] ? $dadataAddress[0]['data']['street_fias_id'] : '';
             }
 
             $address = $this->addressRepo->createFromCsv((new DeliveryAddressDTO())->apiRows($app['address']));
