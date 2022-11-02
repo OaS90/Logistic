@@ -57,8 +57,8 @@ class PartnerOrderDTO
                 'name' => $product->name, // Товар
                 'vendorCode' => $product->sku, // Артикул
                 'count' => $product->count, // Количество
-                'cost' => $product->cost, // Оценочная стоимость
-                'costAfterDiscounts' => $product->discount_cost ?? $product->cost, // Стоимость с учетом скидки
+                'cost' => (float) $product->cost, // Оценочная стоимость
+                'costAfterDiscounts' => (float) $product->discount_cost ?? (float) $product->cost, // Стоимость с учетом скидки
                 'VATRate' => $product->vat, // Ставка НДС
                 'leftToPay' => $product->left_to_pay, // Сумма к получению
                 'weight' => $product->weight, // Расчетный вес (кг)
@@ -67,11 +67,11 @@ class PartnerOrderDTO
                 'tnved' => $product->tnved, // Код ТНВЭД
                 'country' => $product->country_code, // код страны происхождения по ОКСМ
                 'barcode' => $product->barcode, // EAN
-                'volume' => $product->volume, // объем в м2
-                'width' => $product->width, // ширина в см
-                'height' => $product->height, // высота в м2
-                'depth' => $product->depth, // глубина в см
-                'shipmentCode' => $app->order_number . '-TL-' . $i
+                'volume' => (float) $product->volume, // объем в м2
+                'width' => (float) $product->width, // ширина в см
+                'height' => (float) $product->height, // высота в м2
+                'depth' => (float) $product->depth, // глубина в см
+                'shipmentCode' => 'TL-' . $app->order_number . '-' . $i
             ];
         }
 
