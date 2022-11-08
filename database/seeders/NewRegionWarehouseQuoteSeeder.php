@@ -3,12 +3,13 @@
 namespace Database\Seeders;
 
 use App\Infrastructure\Imports\ApplicationImport;
-use App\Models\Region;
 use App\Models\QuoteWarehouse as Warehouse;
+use App\Models\Region;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
-class NewRegionsSeeder extends Seeder
+class NewRegionWarehouseQuoteSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -20,9 +21,13 @@ class NewRegionsSeeder extends Seeder
         $dataFromFile = Excel::toArray(new ApplicationImport(), storage_path('app/public/regions.csv'))[0];
 
         foreach ($dataFromFile as $region) {
-            $newRegion = Region::create(['name' => $region[1], 'region_id' => $region[2]]);
+            $newWarehouse = Warehouse::where('warehouse_name', $region[0])->first();
 
-            Warehouse::create(['region_id' => $newRegion->id, 'warehouse_name' => $region[0]]);
+            if (!$newWarehouse)
+                $newWarehouse = Warehouse::create(['warehouse_name' => $region[0]]);
+
+            Region::create(['name' => $region[1], 'region_id' => $region[2],
+                'warehouse_id' => $newWarehouse->id]);
         }
     }
 }
