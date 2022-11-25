@@ -19,12 +19,10 @@ use Illuminate\Support\Facades\DB;
 class RegionCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation { store as traitStore; }
-
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
      *
@@ -145,5 +143,21 @@ class RegionCrudController extends CrudController
 
         // do something after save
         return $response;
+    }
+
+    public function destroy($id)
+    {
+        // при удаолении региона удаляем интервалы и квоты.
+        // TODO переписать через репу
+        $quote = Quote::where('division_id', $id)->first();
+        $intervals = IntervalQuote::where('quote_id', $quote->id)->get();
+
+        foreach ($intervals as $interval) {
+            $interval->delete();
+        }
+
+        $quote->delete();
+
+        return $this->crud->delete($id);
     }
 }

@@ -118,7 +118,7 @@ class ApplicationController
 
             if (!isset($app['address']['cityId']) || !isset($app['address']['streetId'])) {
                 $dadataAddress = $this->deliveryAddressService
-                    ->checkFiasForCityAndStreet($app['address']['cityName'] . ' ' .$app['address']['street'] , 1);
+                    ->checkFiasForCityAndStreet($app['address']['regionName'] . ' '. $app['address']['cityName'] . ' ' .$app['address']['street'] , 1);
 
                 $app['address']['cityId'] = $dadataAddress ? $dadataAddress[0]['data']['city_fias_id'] : '';
                 $app['address']['streetId'] = $dadataAddress && $dadataAddress[0]['data']['street_fias_id'] ? $dadataAddress[0]['data']['street_fias_id'] : '';
