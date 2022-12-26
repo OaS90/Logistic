@@ -23,7 +23,12 @@ class ApplicationRepository
 
     public function create(array $data)
     {
-        return Application::create($data);
+        $existsApplication = $this->getByOrderNumber($data['order_number']);
+
+        if (!$existsApplication)
+            return Application::create($data);
+        else
+            return $existsApplication;
     }
 
     public function updateStatus(string $orderId, string $status)
