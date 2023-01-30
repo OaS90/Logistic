@@ -11,13 +11,20 @@ class QuoteDTO
         $data = [];
 
         foreach ($quotes as $quote) {
-            $tmpQuoteDate = null;
+            $tmpQuoteDate = [];
+            $blockedDates = [];
             $intervals = $this->parseIntervals($quote->intervals);
 
             if ($quote->available_from_date && $quote->available_until_date)
                 $tmpQuoteDate = [
                     str_replace('-', ', ', $quote->available_from_date),
                     str_replace('-', ', ', $quote->available_until_date)
+                ];
+
+            if ($quote->blocked_date_from && $quote->blocked_date_until)
+                $blockedDates = [
+                    str_replace('-', ', ', $quote->blocked_date_from),
+                    str_replace('-', ', ', $quote->blocked_date_until)
                 ];
 
             $quoteInfo = [
@@ -38,7 +45,8 @@ class QuoteDTO
                     7 => null //вс
                 ],
                 'time_last' => $quote->time_last,
-                'delivery_hours' => $quote->delivery_hours ?? ['from' => null, 'till' => null]
+                'delivery_hours' => $quote->delivery_hours ?? ['from' => null, 'till' => null],
+                'blocked_dates' => $blockedDates
             ];
 
             $data[] = array_merge($quoteInfo, $intervals);
@@ -83,6 +91,7 @@ class QuoteDTO
             $tmpPeriods = [];
             $dayHourPeriods = [];
             $days = [];
+            $blockedDates = [];
 
             foreach ($quote->intervals as $interval) {
                 if ($interval->active && $interval->percent )
@@ -125,11 +134,20 @@ class QuoteDTO
                     ];
                 }
 
+                if ($quote->blocked_date_from && $quote->blocked_date_until) {
+                    $blockedDates = [
+                        'blocked_dates' => [
+                            $quote->blocked_date_from,
+                            $quote->blocked_date_until
+                        ]
+                    ];
+                }
+
                 if ($quote->delivery_hours) {
                     $mainQuote['delivery_hours'] = $quote->delivery_hours;
                 }
 
-                $data[] = array_merge($mainQuote, $tmpPeriods, $dayHourPeriods);
+                $data[] = array_merge($mainQuote, $tmpPeriods, $dayHourPeriods, $blockedDates);
             }
         }
 

@@ -50,7 +50,6 @@ class QuotesController extends Controller
         $client = new Client();
         $message = 'Данные сохранены.';
         $json = (new QuoteDTO())->makeDataForApiHru($this->repo->getAll());
-        Log::info(json_encode($json));
 
         try {
             $response = $client->post(config('app.api_hru'), [

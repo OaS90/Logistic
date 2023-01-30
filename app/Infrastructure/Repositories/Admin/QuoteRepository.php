@@ -23,11 +23,13 @@ class QuoteRepository
             $quoteEntry->update([
                 'quote' => $quote['quote'],
                 'tmp_quote' => $quote['tmp_quote']  ?? null,
-                'available_from_date' => isset($quote['tmp_date'][0]) ? Carbon::parse($quote['tmp_date'][0])->format('Y-m-d') : null,
-                'available_until_date' => isset($quote['tmp_date'][1]) ? Carbon::parse($quote['tmp_date'][1])->format('Y-m-d') : null,
+                'available_from_date' => isset($quote['tmp_date'][0]) && $quote['tmp_date'][0] ? Carbon::parse($quote['tmp_date'][0])->format('Y-m-d') : null,
+                'available_until_date' => isset($quote['tmp_date'][1]) && $quote['tmp_date'][1] ? Carbon::parse($quote['tmp_date'][1])->format('Y-m-d') : null,
                 'days' => $quote['days'],
                 'time_last' => $quote['time_last'],
-                'delivery_hours' => $quote['delivery_hours']
+                'delivery_hours' => $quote['delivery_hours'],
+                'blocked_date_from' => isset($quote['blocked_dates'][0]) && $quote['blocked_dates'][0] ? Carbon::parse($quote['blocked_dates'][0])->format('Y-m-d') : null,
+                'blocked_date_until' => isset($quote['blocked_dates'][1]) && $quote['blocked_dates'][1] ? Carbon::parse($quote['blocked_dates'][1])->format('Y-m-d') : null,
             ]);
 
             $updatedQuotes[] = $quoteEntry;

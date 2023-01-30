@@ -76,6 +76,13 @@
 
                         </date-picker>
                     </td>
+                    <td>
+                        <date-picker range type="date"
+                                     v-model="item.blocked_dates"
+                                     format="MM.DD.YYYY"
+                        >
+                        </date-picker>
+                    </td>
                 </tr>
                 </tbody>
                 <thead>
@@ -93,7 +100,7 @@
                     <th>Доставка<br>
                         в указанный час
                     </th>
-                    <th colspan="9"></th>
+                    <th colspan="10"></th>
                 </tr>
                 <tr align="center">
                     <th></th>
@@ -119,6 +126,7 @@
                     <th>Вс</th>
                     <th>Ограничение по <br> времени оформления</th>
                     <th>Часы доставки</th>
+                    <th>Блокировка Заказов</th>
                 </tr>
                 </thead>
             </table>
@@ -180,6 +188,11 @@ export default {
                 item.tmp_date[0] = new Date(item.tmp_date[0])
                 item.tmp_date[1] = new Date(item.tmp_date[1])
             }
+
+            if (item.blocked_dates && item.blocked_dates.length > 0) {
+                item.blocked_dates[0] = new Date(item.blocked_dates[0])
+                item.blocked_dates[1] = new Date(item.blocked_dates[1])
+            }
         }
     },
     methods: {
@@ -188,13 +201,19 @@ export default {
                 this.showModal = !this.showModal
                 this.modalText = 'Не выбрано ни одного филиала для обновления'
             } else {
-                var date = new Date()
-
                 this.quotesToSave.forEach(item => {
-                    if (item.tmp_date && item.tmp_date.length > 0) {
+                    if ((item.tmp_date && item.tmp_date.length > 0) &&
+                        (item.tmp_date[0] && item.tmp_date[1])) {
                         // console.log(new Date(item.tmp_date[0].toString()).toISOString().slice(0,10))
                         item.tmp_date[0] = new Date(item.tmp_date[0]).toDateString()
                         item.tmp_date[1] = new Date(item.tmp_date[1]).toDateString()
+                    }
+
+                    if ((item.blocked_dates && item.blocked_dates.length > 0) &&
+                        (item.blocked_dates[0] && item.blocked_dates[1])) {
+                        // console.log(new Date(item.tmp_date[0].toString()).toISOString().slice(0,10))
+                        item.blocked_dates[0] = new Date(item.blocked_dates[0]).toDateString()
+                        item.blocked_dates[1] = new Date(item.blocked_dates[1]).toDateString()
                     }
                 })
 
