@@ -6,7 +6,23 @@ class ProductDTO
 {
     public function dbRows(array $allRows): array
     {
-        return array_slice($allRows, 17);
+        $data = [];
+        $data['name'] = $allRows['name'];
+        $data['sku'] = $allRows['sku'];
+        $data['count'] = $allRows['count'];
+        $data['cost'] = floatval(str_replace(' ', '', $allRows['cost']));
+        $data['vat'] = $allRows['vat'];
+        $data['width'] = $allRows['width'];
+        $data['height'] = $allRows['height'];
+        $data['depth'] = $allRows['depth'];
+        $data['brand'] = $allRows['brand'] ?? null; // Бренд
+        $data['tnved'] = $allRows['tnved'] ?? null; // Код ТНВЭД
+        $data['country'] = $allRows['country_code'] ?? null; // код страны происхождения по ОКСМ
+        $data['barcode'] = $allRows['barcode'] ?? null; // EAN
+        $data['volume'] = floatval(str_replace(' ', '', $allRows['volume']));
+        $data['weight'] = $allRows['weight'];
+
+        return $data;
     }
 
     public function toArray(int $appId, array $data): array
@@ -17,14 +33,14 @@ class ProductDTO
             'sku' => $data['sku'], // Артикул
             'count' => $data['count'], // Количество
             'cost' => floatval(str_replace(' ', '', $data['cost'])), // Оценочная стоимость
-            'discount_cost' => floatval(str_replace(' ', '', $data['discount_cost'])), // Стоимость с учетом скидки
+            //'discount_cost' => floatval(str_replace(' ', '', $data['discount_cost'])), // Стоимость с учетом скидки
             'vat' => $data['vat'], // Ставка НДС
-            'leftToPay' => $data['left_to_pay'], // Сумма к получению
+            //'leftToPay' => $data['left_to_pay'], // Сумма к получению
             'weight' => $data['weight'], // Расчетный вес (кг)
-            'brand' => $data['brand'], // Бренд
-            'tnved' => $data['tnved'], // Код ТНВЭД
-            'country' => $data['country_code'], // код страны происхождения по ОКСМ
-            'barcode' => $data['barcode'], // EAN
+            'brand' => $data['brand'] ?? null, // Бренд
+            'tnved' => $data['tnved'] ?? null, // Код ТНВЭД
+            'country' => $data['country_code'] ?? null, // код страны происхождения по ОКСМ
+            'barcode' => $data['barcode'] ?? null, // EAN
             'volume' => floatval(str_replace(' ', '', $data['volume'])), // объем в м2
             'width' => $data['width'], // ширина в см
             'height' => $data['height'], // высота в м2

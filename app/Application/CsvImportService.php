@@ -45,15 +45,16 @@ class CsvImportService
     {
         $dataFromCsv = $this->getDataArraysWithDbRows($entity, $file);
 
-        foreach ($dataFromCsv as $data) {
+        foreach ($dataFromCsv as $key => $data) {
             $existApp = $this->appRepo->getByOrderNumber($data['app']['order_number']);
             $data['app']['user_id'] = $userId;
+
             $data['app']['delivery_time'] = $data['app']['delivery_from'] . '-' . $data['app']['delivery_till'];
-            $warehouse = $this->warehouseRepo->findByStoreId($data['app']['store_id']);
+            $warehouse = $this->warehouseRepo->findByAddressAndUserId($userId, $data['app']['store_address']);
 
             if (!$warehouse)
                 return response(['message' => 'Не найден склад'], 400);
-
+//            dd($data['products']);
             if (!$existApp) {
                 $address = $this->addressRepo->createFromCsv($data['address']);
                 $data['app']['delivery_address'] = $address->id;
@@ -90,19 +91,20 @@ class CsvImportService
         // формируем массив данных [['app', 'address', 'products']]
         // -1 т.к. первый элемент - заголовки из файла
         for ($i = 1; $i <= count($dataFromFile) - 1; $i++) {
-            $appWithDbColumns = array_combine($rows, $dataFromFile[$i]);
+            if ($dataFromFile[$i][16]) {
+                $appWithDbColumns = array_combine($rows, $dataFromFile[$i]);
 
-            if ($appWithDbColumns['order_number'] == null) {
-                $apps[$i - 1]['products'][] = (new ProductDTO())->dbRows($appWithDbColumns);
-                continue;
+                if ($appWithDbColumns['order_number'] == null) {
+                    $apps[$i - 1]['products'][] = (new ProductDTO())->dbRows($appWithDbColumns);
+                    continue;
+                }
+                $appWithDbColumns['delivery_date'] = Carbon::createFromFormat('d.m.Y', $appWithDbColumns['delivery_date'])
+                    ->format('Y-m-d');
+
+                $apps[$i]['app'] = (new ApplicationDTO())->dbRows($appWithDbColumns);
+                $apps[$i]['address'] = (new DeliveryAddressDTO())->dbRows($appWithDbColumns);
+                $apps[$i]['products'][] = (new ProductDTO())->dbRows($appWithDbColumns);
             }
-            $appWithDbColumns['delivery_date'] = Carbon::createFromFormat('d.m.Y', $appWithDbColumns['delivery_date'])
-                ->format('Y-m-d');
-
-            $apps[$i]['app'] = (new ApplicationDTO())->dbRows($appWithDbColumns);
-            $apps[$i]['address'] = (new DeliveryAddressDTO())->dbRows($appWithDbColumns);
-            $apps[$i]['products'][] = (new ProductDTO())->dbRows($appWithDbColumns);
-
         }
 
         return $apps;

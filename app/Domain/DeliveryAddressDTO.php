@@ -6,7 +6,7 @@ class DeliveryAddressDTO
 {
     public function dbRows(array $allRows): array
     {
-        return array_slice($allRows, 9, 8);
+        return array_slice($allRows, 2, 7);
     }
 
     public function apiRows(array $data): array

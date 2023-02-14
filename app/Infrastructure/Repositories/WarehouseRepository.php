@@ -15,4 +15,11 @@ class WarehouseRepository
     {
         return Warehouse::where('store_id', $storeId)->first();
     }
+
+    public function findByAddressAndUserId(int $userId, string $address)
+    {
+        return Warehouse::where('user_id', $userId)
+            ->where('address', 'LIKE', '%' . $address . '%')
+            ->first();
+    }
 }

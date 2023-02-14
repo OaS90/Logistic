@@ -10,14 +10,7 @@ class ApplicationDTO
     {
         return [
             "Номер заказа" => 'order_number',
-            "Тип оплаты" => 'payment_type',
-            "Id склада" =>  'store_id',
-            "Комментарий" => 'comment',
-            "Дата доставки" => 'delivery_date',
-            "Время доствки с" => 'delivery_from',
-            "Время доставки до" => 'delivery_till',
-            "ФИО" => 'client_name',
-            "Мобильный телефон" => 'client_phone',
+            "Адрес склада" => 'store_id',
             "Регион" => 'region_name',
             "Город" => 'city_name',
             "ФИАС города" => 'city_fias',
@@ -26,11 +19,19 @@ class ApplicationDTO
             "Дом" => 'building',
             "Этаж" => 'floor',
             "Квартира" => 'flat',
+            "ФИО" => 'client_name',
+            "Мобильный телефон" => 'client_phone',
+            "Комментарий" => 'comment',
+            "Дата доставки" => 'delivery_date',
+            "Время доствки с" => 'delivery_from',
+            "Время доставки до" => 'delivery_till',
             "Товар" => 'name',
             "Артикул" => 'sku',
             "Количество" => 'count',
-            "Цена" => 'cost',
-            "Цена со скидкой" => 'discount_cost',
+            "Тип оплаты" => 'payment_type',
+            "Стоимость ед. товара" => 'cost',
+//            "Цена со скидкой" => 'discount_cost',
+            "Стоимость доставки" => 'delivery_cost',
             "НДС" => 'vat',
             "Сумма к получению" => 'left_to_pay',
             "Вес" => 'weight',
@@ -47,7 +48,20 @@ class ApplicationDTO
 
     public function dbRows(array $allRows): array
     {
-        return array_slice($allRows, 0, 9);
+        $data = [];
+
+        $data['client_name'] = $allRows['client_name'];
+        $data['order_number'] = $allRows['order_number'];
+        $data['payment_type'] = $allRows['payment_type'];
+        $data['delivery_date'] = $allRows['delivery_date'];
+        $data['delivery_cost'] = $allRows['delivery_cost'];
+        $data['delivery_from'] = $allRows['delivery_from'];
+        $data['delivery_till'] = $allRows['delivery_till'];
+        $data['comment'] = $allRows['comment'];
+        $data['store_address'] = $allRows['store_id'];
+        $data['client_phone'] = parse_phone($allRows['client_phone']);
+
+        return $data;
     }
 
     public function apiRows(array $data, int $addressId): array
