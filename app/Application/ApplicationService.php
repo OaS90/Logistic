@@ -38,7 +38,8 @@ class ApplicationService
     public function checkAppProducts($app, array $data)
     {
         foreach ($data as $csvProduct) {
-            $appProduct = $this->productRepo->getByAppIdSkuBrand($csvProduct['brand'], $csvProduct['sku'], $app->id);
+            $appProduct = $this->productRepo->getByAppIdSkuBrand($csvProduct['sku'], $app->id);
+
             if (!$appProduct) {
                 $app->update(['doc_ver' => $app->doc_ver + 1]);
                 $this->productRepo->create((new ProductDTO())->toArray($app->id, $csvProduct));

@@ -16,8 +16,10 @@ class ProductRepository
         return $model->update($data);
     }
 
-    public function getByAppIdSkuBrand(string $brand, string $sku, int $appId)
+    //public function getByAppIdSkuBrand(string $brand, string $sku, int $appId)
+    // TODO в будущем добавить проверку по бренду, для уникальности товаров
+    public function getByAppIdSkuBrand(string $sku, int $appId)
     {
-        return Product::where(['brand' => $brand, 'sku' => $sku, 'app_id' => $appId])->first();
+        return Product::where(['sku' => $sku, 'app_id' => $appId])->first();
     }
 }

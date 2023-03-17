@@ -18,29 +18,7 @@
             </div>
         </header>
         <section class="login-section">
-            <h1>Добро пожаловать в&nbsp;личный кабинет</h1>
-            <div class="h1">ООО «Транспорт Логистика»</div>
-            <div class="login-form">
-                <div class="login-form__wrapper">
-                    <h3>Вход в личный кабинет</h3>
-                    <form id="login_form" name="login_form" method="post" action="{{ route('login') }}">
-                        @csrf
-                        <div class="login-form__container">
-                            <input type="text" value="" id="email" class="login-form__input"
-                                   placeholder="Телефон или email" name="email">
-                            <input type="password" value="" id="password" name="password" class="login-form__input" placeholder="Пароль">
-                            <input type="submit" value="Войти" class="btn login-form__btn">
-                        </div>
-                        <div class="login-form_password">
-                            <div class="login-checkbox">
-                                <input id="remember" type="checkbox" class="login-checkbox__input" name="remember" value="">
-                                <label class="login-checkbox__label" for="remember" {{ old('remember') ? 'checked' : '' }}>Запомнить меня</label>
-                            </div>
-                            <div class="forgot-password">Забыли пароль?</div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <login-form></login-form>
         </section>
 {{--        <section class="advantage-section">--}}
 {{--            <h3>Преимущества компании</h3>--}}

@@ -18,6 +18,7 @@ import MaskedInput from "vue-masked-input";
 import ProfileForm from "./components/ProfileForm";
 import QuotesTable from "./components/Admin/QuotesTable";
 import QuoteEmailsTable from "./components/Admin/QuoteEmailsTable";
+import LoginForm from "./components/LoginForm";
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -46,7 +47,8 @@ if (document.getElementById('app')) {
             DatePicker,
             RegisterForm,
             MaskedInput,
-            ProfileForm
+            ProfileForm,
+            LoginForm
         }
     });
 }
