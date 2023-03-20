@@ -35,6 +35,8 @@
                     <td><input type="checkbox" v-model="item.days[5]"></td>
                     <td><input type="checkbox" v-model="item.days[6]"></td>
                     <td><input type="checkbox" v-model="item.days[7]"></td>
+                    <td><input type="text" v-model="item.deliveryDaysFromMoscow"
+                               @keypress="onlyNumber" maxlength=1></td>
                     <td>
                         <date-picker format="H:mm"
                                      class="date-time"
@@ -124,6 +126,7 @@
                     <th>Пт</th>
                     <th>Сб</th>
                     <th>Вс</th>
+                    <th class="deliveryFromMoscow">Кол-во дней <br> доставки <br>из Москвы</th>
                     <th>Ограничение по <br> времени оформления</th>
                     <th>Часы доставки</th>
                     <th>Блокировка Заказов</th>
@@ -320,6 +323,10 @@ th.tmp_period {
 
 th.percent {
     width: 7%;
+}
+
+th.deliveryFromMoscow {
+    width: 5%;
 }
 
 .mx-datepicker-range {

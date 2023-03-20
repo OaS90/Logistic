@@ -30,6 +30,7 @@ class QuoteRepository
                 'delivery_hours' => $quote['delivery_hours'],
                 'blocked_date_from' => isset($quote['blocked_dates'][0]) && $quote['blocked_dates'][0] ? Carbon::parse($quote['blocked_dates'][0])->format('Y-m-d') : null,
                 'blocked_date_until' => isset($quote['blocked_dates'][1]) && $quote['blocked_dates'][1] ? Carbon::parse($quote['blocked_dates'][1])->format('Y-m-d') : null,
+                'delivery_days_from_moscow' => $quote['deliveryDaysFromMoscow']
             ]);
 
             $updatedQuotes[] = $quoteEntry;

@@ -46,7 +46,8 @@ class QuoteDTO
                 ],
                 'time_last' => $quote->time_last,
                 'delivery_hours' => $quote->delivery_hours ?? ['from' => null, 'till' => null],
-                'blocked_dates' => $blockedDates
+                'blocked_dates' => $blockedDates,
+                'deliveryDaysFromMoscow' => $quote->delivery_days_from_moscow
             ];
 
             $data[] = array_merge($quoteInfo, $intervals);
@@ -145,6 +146,10 @@ class QuoteDTO
 
                 if ($quote->delivery_hours) {
                     $mainQuote['delivery_hours'] = $quote->delivery_hours;
+                }
+
+                if ($quote->delivery_days_from_moscow) {
+                    $mainQuote['deliveryDaysFromMoscow'] = $quote->delivery_days_from_moscow;
                 }
 
                 $data[] = array_merge($mainQuote, $tmpPeriods, $dayHourPeriods, $blockedDates);
