@@ -149,7 +149,7 @@ class QuoteDTO
                 }
 
                 if ($quote->delivery_days_from_moscow) {
-                    $mainQuote['deliveryDaysFromMoscow'] = $quote->delivery_days_from_moscow;
+                    $mainQuote['delivery_days_from_moscow'] = $quote->delivery_days_from_moscow;
                 }
 
                 $data[] = array_merge($mainQuote, $tmpPeriods, $dayHourPeriods, $blockedDates);
