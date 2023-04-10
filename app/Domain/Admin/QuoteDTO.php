@@ -148,7 +148,7 @@ class QuoteDTO
                     $mainQuote['delivery_hours'] = $quote->delivery_hours;
                 }
 
-                if ($quote->delivery_days_from_moscow) {
+                if ($quote->delivery_days_from_moscow >= 0) {
                     $mainQuote['delivery_days_from_moscow'] = $quote->delivery_days_from_moscow;
                 }
 
