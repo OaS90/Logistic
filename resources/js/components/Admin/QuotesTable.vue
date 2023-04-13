@@ -95,6 +95,20 @@
                         >
                         </date-picker>
                     </td>
+                    <td v-if="showSiteProperties">
+                        <date-picker format="H:mm"
+                                     class="date-time"
+                                     v-model="item.in_day_limitation"
+                                     type="time"
+                                     name="delivery_till"
+                                     value-type="H:mm"
+                                     :timePickerOptions="{
+                                        start: '00:00',
+                                        step: '01:00',
+                                        end: '23:00',
+                                     }">
+                        </date-picker>
+                    </td>
                     <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[1].zone_a"></td>
                     <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[2].zone_a"></td>
                     <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[3].zone_a"></td>
@@ -144,6 +158,7 @@
                     <th v-if="showSiteProperties">Ограничение по <br> времени оформления</th>
                     <th v-if="showSiteProperties">Часы доставки</th>
                     <th v-if="showSiteProperties">Блокировка Заказов</th>
+                    <th v-if="showSiteProperties">Ограничение ДвД</th>
                     <th v-if="showZonesProperties" colspan="7">Зона доставка А</th>
                     <th v-if="showZonesProperties" colspan="7">Зона доставка B</th>
                     <th v-if="showZonesProperties" colspan="7">Зона доставка C</th>
@@ -168,6 +183,7 @@
                     <th v-if="showQuoteProperties">Активно</th>
 <!--                    <th v-if="showQuoteProperties"></th>-->
 <!--                    <th v-if="showQuoteProperties"></th>-->
+                    <th v-if="showSiteProperties"></th>
                     <th v-if="showSiteProperties"></th>
                     <th v-if="showSiteProperties"></th>
                     <th v-if="showSiteProperties"></th>
