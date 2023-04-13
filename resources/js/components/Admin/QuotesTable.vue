@@ -17,6 +17,7 @@
                     <td>{{ item.division }}</td>
                     <td v-if="showQuoteProperties"></td>
                     <td></td>
+                    <td v-if="!showSiteProperties && !showQuoteProperties"></td>
                     <td v-if="showSiteProperties && !showQuoteProperties"></td>
                     <td v-if="showQuoteProperties"><input type="text" class="form-control" v-model="item.quote"
                                                           @keypress="onlyNumber"></td>
@@ -39,13 +40,27 @@
                     <td v-if="showQuoteProperties"><input type="checkbox" v-model="item.periodSixTen.active"></td>
                     <td v-if="showSiteProperties"><input type="checkbox" v-model="item.inDay"></td>
                     <td v-if="showSiteProperties"><input type="checkbox" v-model="item.inHour"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[1]"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[2]"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[3]"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[4]"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[5]"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[6]"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[7]"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[1].zone_a"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[2].zone_a"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[3].zone_a"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[4].zone_a"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[5].zone_a"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[6].zone_a"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[7].zone_a"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[1].zone_b"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[2].zone_b"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[3].zone_b"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[4].zone_b"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[5].zone_b"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[6].zone_b"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[7].zone_b"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[1].zone_c"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[2].zone_c"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[3].zone_c"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[4].zone_c"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[5].zone_c"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[6].zone_c"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[7].zone_c"></td>
                     <td v-if="showSiteProperties"><input type="text" v-model="item.deliveryDaysFromMoscow"
                                                          @keypress="onlyNumber" maxlength=1></td>
                     <td v-if="showSiteProperties">
@@ -117,7 +132,10 @@
                     <th v-if="showSiteProperties">Доставка<br>
                         в указанный час
                     </th>
-                    <th v-if="showSiteProperties" colspan="11"></th>
+                    <th v-if="showSiteProperties" colspan="7">Зона доставка А</th>
+                    <th v-if="showSiteProperties" colspan="7">Зона доставка B</th>
+                    <th v-if="showSiteProperties" colspan="7">Зона доставка C</th>
+                    <th v-if="showSiteProperties" colspan="4"></th>
                 </tr>
                 <tr align="center">
                     <th></th>
@@ -138,6 +156,20 @@
 <!--                    <th v-if="showQuoteProperties"></th>-->
                     <th v-if="showSiteProperties"></th>
                     <th v-if="showSiteProperties"></th>
+                    <th v-if="showSiteProperties">Пн</th>
+                    <th v-if="showSiteProperties">Вт</th>
+                    <th v-if="showSiteProperties">Ср</th>
+                    <th v-if="showSiteProperties">Чт</th>
+                    <th v-if="showSiteProperties">Пт</th>
+                    <th v-if="showSiteProperties">Сб</th>
+                    <th v-if="showSiteProperties">Вс</th>
+                    <th v-if="showSiteProperties">Пн</th>
+                    <th v-if="showSiteProperties">Вт</th>
+                    <th v-if="showSiteProperties">Ср</th>
+                    <th v-if="showSiteProperties">Чт</th>
+                    <th v-if="showSiteProperties">Пт</th>
+                    <th v-if="showSiteProperties">Сб</th>
+                    <th v-if="showSiteProperties">Вс</th>
                     <th v-if="showSiteProperties">Пн</th>
                     <th v-if="showSiteProperties">Вт</th>
                     <th v-if="showSiteProperties">Ср</th>

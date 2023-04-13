@@ -36,13 +36,13 @@ class QuoteDTO
                 'tmp_quote' => $quote->tmp_quote,
                 'tmp_date' => $tmpQuoteDate,
                 'days' => $quote->days ?? [
-                    1 => null, //пн
-                    2 => null, //вт
-                    3 => null, //ср
-                    4 => null, //чт
-                    5 => null, //пт
-                    6 => null, //сб
-                    7 => null //вс
+                    1 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //пн
+                    2 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //вт
+                    3 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //ср
+                    4 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //чт
+                    5 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //пт
+                    6 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //сб
+                    7 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false] //вс
                 ],
                 'time_last' => $quote->time_last,
                 'delivery_hours' => $quote->delivery_hours ?? ['from' => null, 'till' => null],
