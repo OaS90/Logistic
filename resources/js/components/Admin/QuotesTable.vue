@@ -3,12 +3,12 @@
         <button type="button" class="btn btn-outline-success" @click="save">Сохранить</button>
         <button type="button" class="btn btn btn-info" @click="excel">Выгрузить Excel</button>
         <input type="text" class="form-control col-4 filter" v-model="filter" placeholder="Поиск...">
-        <div id="table-wrapper" ref="wrapper">
-            <div class="wmd-view-topscroll" :style="{'width': scrollWidth + 'px'}" @scroll="topScroll" ref="scroll">
-                <div class="scroll-div1" :style="{'width': tableWidth + 'px'}">
-                </div>
+        <div class="wmd-view-topscroll" :style="{'width': scrollWidth + 'px'}" @scroll="topScroll" ref="scroll">
+            <div class="scroll-div1" :style="{'width': tableWidth + 'px'}">
             </div>
-            <table id="quotes" class="table-content" ref="maintable" @scroll="mainScroll">
+        </div>
+        <div id="table-wrapper" ref="wrapper">
+            <table id="quotes" class="table-content" @scroll="mainScroll">
                 <tbody ref="table">
                 <tr v-for="(item, id) in filteredRows" align="center" :key="`division-${id}`">
                     <td class="choose"><input type="checkbox" v-model="item.to_save"
@@ -16,6 +16,7 @@
                     <td>{{ item.warehouse }}</td>
                     <td>{{ item.division }}</td>
                     <td v-if="showQuoteProperties"></td>
+                    <td></td>
                     <td></td>
                     <td v-if="!showSiteProperties && !showQuoteProperties"></td>
                     <td v-if="showSiteProperties && !showQuoteProperties"></td>
@@ -40,29 +41,12 @@
                     <td v-if="showQuoteProperties"><input type="checkbox" v-model="item.periodSixTen.active"></td>
                     <td v-if="showSiteProperties"><input type="checkbox" v-model="item.inDay"></td>
                     <td v-if="showSiteProperties"><input type="checkbox" v-model="item.inHour"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[1].zone_a"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[2].zone_a"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[3].zone_a"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[4].zone_a"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[5].zone_a"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[6].zone_a"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[7].zone_a"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[1].zone_b"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[2].zone_b"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[3].zone_b"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[4].zone_b"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[5].zone_b"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[6].zone_b"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[7].zone_b"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[1].zone_c"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[2].zone_c"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[3].zone_c"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[4].zone_c"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[5].zone_c"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[6].zone_c"></td>
-                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[7].zone_c"></td>
-                    <td v-if="showSiteProperties"><input type="text" v-model="item.deliveryDaysFromMoscow"
-                                                         @keypress="onlyNumber" maxlength=1></td>
+                    <td v-if="showSiteProperties">
+                        <input type="text" v-model="item.deliveryDaysFromMoscow"
+                               class="form-control"
+                               @keypress="onlyNumber"
+                               maxlength=1>
+                    </td>
                     <td v-if="showSiteProperties">
                         <date-picker format="H:mm"
                                      class="date-time"
@@ -111,17 +95,40 @@
                         >
                         </date-picker>
                     </td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[1].zone_a"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[2].zone_a"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[3].zone_a"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[4].zone_a"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[5].zone_a"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[6].zone_a"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[7].zone_a"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[1].zone_b"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[2].zone_b"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[3].zone_b"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[4].zone_b"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[5].zone_b"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[6].zone_b"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[7].zone_b"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[1].zone_c"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[2].zone_c"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[3].zone_c"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[4].zone_c"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[5].zone_c"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[6].zone_c"></td>
+                    <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[7].zone_c"></td>
                 </tr>
                 </tbody>
                 <thead>
                 <tr align="center">
-                    <th>Выбрать</th>
+                    <th class="choose-th">Выбрать</th>
                     <th class="store">Склад</th>
                     <th class="regions">Регионы России</th>
-                    <th class="show-rows" @click="showQutes()">Квоты <br> <i
+                    <th class="show-rows quote-settings" @click="showQutes()">Квоты <br> <i
                         :class="[showQuoteProperties ? 'la-angle-up' : 'la-angle-down', 'las']"></i></th>
-                    <th class="show-rows" @click="showSite()">Настройки для сайта <br> <i
+                    <th class="show-rows site-settings" @click="showSite()">Настройки для сайта <br> <i
                         :class="[showSiteProperties ? 'la-angle-up' : 'la-angle-down', 'las']"></i></th>
+                    <th class="show-rows zone-settings" @click="showZones()">Зоны <br> <i
+                        :class="[showZonesProperties ? 'la-angle-up' : 'la-angle-down', 'las']"></i></th>
                     <th class="quote" v-if="showQuoteProperties">Дневная <br> квота</th>
                     <th class="tmp_quote" v-if="showQuoteProperties">Временная <br> квота</th>
                     <th class="tmp_period" v-if="showQuoteProperties">Срок <br> действия</th>
@@ -132,17 +139,24 @@
                     <th v-if="showSiteProperties">Доставка<br>
                         в указанный час
                     </th>
-                    <th v-if="showSiteProperties" colspan="7">Зона доставка А</th>
-                    <th v-if="showSiteProperties" colspan="7">Зона доставка B</th>
-                    <th v-if="showSiteProperties" colspan="7">Зона доставка C</th>
-                    <th v-if="showSiteProperties" colspan="4"></th>
+                    <th v-if="showSiteProperties" class="deliveryFromMoscow">Кол-во дней <br> доставки <br>из Москвы
+                    </th>
+                    <th v-if="showSiteProperties">Ограничение по <br> времени оформления</th>
+                    <th v-if="showSiteProperties">Часы доставки</th>
+                    <th v-if="showSiteProperties">Блокировка Заказов</th>
+                    <th v-if="showZonesProperties" colspan="7">Зона доставка А</th>
+                    <th v-if="showZonesProperties" colspan="7">Зона доставка B</th>
+                    <th v-if="showZonesProperties" colspan="7">Зона доставка C</th>
                 </tr>
                 <tr align="center">
                     <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
-                    <th></th>
+                    <th v-if="!showQuoteProperties"></th>
+                    <th v-if="!showQuoteProperties"></th>
+                    <th v-if="showQuoteProperties"></th>
+                    <th v-if="showQuoteProperties"></th>
                     <th v-if="showQuoteProperties"></th>
                     <th v-if="showQuoteProperties"></th>
                     <th v-if="showQuoteProperties"></th>
@@ -156,32 +170,31 @@
 <!--                    <th v-if="showQuoteProperties"></th>-->
                     <th v-if="showSiteProperties"></th>
                     <th v-if="showSiteProperties"></th>
-                    <th v-if="showSiteProperties">Пн</th>
-                    <th v-if="showSiteProperties">Вт</th>
-                    <th v-if="showSiteProperties">Ср</th>
-                    <th v-if="showSiteProperties">Чт</th>
-                    <th v-if="showSiteProperties">Пт</th>
-                    <th v-if="showSiteProperties">Сб</th>
-                    <th v-if="showSiteProperties">Вс</th>
-                    <th v-if="showSiteProperties">Пн</th>
-                    <th v-if="showSiteProperties">Вт</th>
-                    <th v-if="showSiteProperties">Ср</th>
-                    <th v-if="showSiteProperties">Чт</th>
-                    <th v-if="showSiteProperties">Пт</th>
-                    <th v-if="showSiteProperties">Сб</th>
-                    <th v-if="showSiteProperties">Вс</th>
-                    <th v-if="showSiteProperties">Пн</th>
-                    <th v-if="showSiteProperties">Вт</th>
-                    <th v-if="showSiteProperties">Ср</th>
-                    <th v-if="showSiteProperties">Чт</th>
-                    <th v-if="showSiteProperties">Пт</th>
-                    <th v-if="showSiteProperties">Сб</th>
-                    <th v-if="showSiteProperties">Вс</th>
-                    <th v-if="showSiteProperties" class="deliveryFromMoscow">Кол-во дней <br> доставки <br>из Москвы
-                    </th>
-                    <th v-if="showSiteProperties">Ограничение по <br> времени оформления</th>
-                    <th v-if="showSiteProperties">Часы доставки</th>
-                    <th v-if="showSiteProperties">Блокировка Заказов</th>
+                    <th v-if="showSiteProperties"></th>
+                    <th v-if="showSiteProperties"></th>
+                    <th v-if="showSiteProperties"></th>
+                    <th v-if="showSiteProperties"></th>
+                    <th v-if="showZonesProperties">Пн</th>
+                    <th v-if="showZonesProperties">Вт</th>
+                    <th v-if="showZonesProperties">Ср</th>
+                    <th v-if="showZonesProperties">Чт</th>
+                    <th v-if="showZonesProperties">Пт</th>
+                    <th v-if="showZonesProperties">Сб</th>
+                    <th v-if="showZonesProperties">Вс</th>
+                    <th v-if="showZonesProperties">Пн</th>
+                    <th v-if="showZonesProperties">Вт</th>
+                    <th v-if="showZonesProperties">Ср</th>
+                    <th v-if="showZonesProperties">Чт</th>
+                    <th v-if="showZonesProperties">Пт</th>
+                    <th v-if="showZonesProperties">Сб</th>
+                    <th v-if="showZonesProperties">Вс</th>
+                    <th v-if="showZonesProperties">Пн</th>
+                    <th v-if="showZonesProperties">Вт</th>
+                    <th v-if="showZonesProperties">Ср</th>
+                    <th v-if="showZonesProperties">Чт</th>
+                    <th v-if="showZonesProperties">Пт</th>
+                    <th v-if="showZonesProperties">Сб</th>
+                    <th v-if="showZonesProperties">Вс</th>
                 </tr>
                 </thead>
             </table>
@@ -218,6 +231,7 @@ export default {
             currentPage: 1,
             showQuoteProperties: false,
             showSiteProperties: false,
+            showZonesProperties: false,
             scrollWidth: 0,
             tableWidth: 0,
             scrollPosition: 0
@@ -330,9 +344,13 @@ export default {
             this.showSiteProperties = !this.showSiteProperties
             setTimeout(() => this.tableWidth = this.$refs.table.clientWidth, 100);
         },
+        showZones() {
+            this.showZonesProperties = !this.showZonesProperties
+            setTimeout(() => this.tableWidth = this.$refs.table.clientWidth, 100);
+        },
         topScroll(e) {
             let currentScrollPosition = e.srcElement.scrollLeft
-            this.$refs.maintable.scrollTo(currentScrollPosition, 0)
+            this.$refs.wrapper.scrollTo(currentScrollPosition, 0)
         },
         mainScroll(e) {
             let currentScrollPosition = e.srcElement.scrollLeft
@@ -355,19 +373,15 @@ export default {
 #quotes {
     background-color: #4fa7d7;
     color: white;
-    width: 100%;
-    display: block;
-    overflow-x: scroll;
     white-space: nowrap;
 }
 #table-wrapper {
     margin-top: 15px;
+    overflow-x: scroll;
 }
 .wmd-view-topscroll {
     overflow-x: scroll;
-    /* overflow-y: hidden; */
-    width: 300px;
-    border: none 0px RED;
+    overflow-y: hidden;
 }
 .wmd-view-topscroll { height: 20px; }
 .scroll-div1 {
@@ -379,7 +393,6 @@ export default {
     top: -20px;
     z-index: 2;
     height: 20px;
-    width: 35%;
 }
 
 .filter {
@@ -397,34 +410,6 @@ input[type=checkbox] {
 #quotes th {
     border: 1px solid #ddd;
     padding: 15px;
-}
-
-th.store {
-    width: 12%
-}
-
-th.regions {
-    width: 12%
-}
-
-th.quote {
-    width: 3%;
-}
-
-th.tmp_quote {
-    width: 2%;
-}
-
-th.tmp_period {
-    width: 5%;
-}
-
-th.percent {
-    width: 7%;
-}
-
-th.deliveryFromMoscow {
-    width: 5%;
 }
 
 .mx-datepicker-range {
