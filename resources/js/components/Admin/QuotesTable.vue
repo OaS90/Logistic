@@ -40,6 +40,21 @@
                                                           @keypress="onlyNumber" maxlength=3></td>
                     <td v-if="showQuoteProperties"><input type="checkbox" v-model="item.periodSixTen.active"></td>
                     <td v-if="showSiteProperties"><input type="checkbox" v-model="item.inDay"></td>
+                    <td v-if="showSiteProperties">
+                        <date-picker format="H:mm"
+                                     class="date-time"
+                                     v-model="item.in_day_limitation"
+                                     type="time"
+                                     name="delivery_till"
+                                     value-type="H:mm"
+                                     :disabled="!item.inDay ? true : false"
+                                     :timePickerOptions="{
+                                        start: '00:00',
+                                        step: '01:00',
+                                        end: '23:00',
+                                     }">
+                        </date-picker>
+                    </td>
                     <td v-if="showSiteProperties"><input type="checkbox" v-model="item.inHour"></td>
                     <td v-if="showSiteProperties">
                         <input type="text" v-model="item.deliveryDaysFromMoscow"
@@ -95,20 +110,6 @@
                         >
                         </date-picker>
                     </td>
-                    <td v-if="showSiteProperties">
-                        <date-picker format="H:mm"
-                                     class="date-time"
-                                     v-model="item.in_day_limitation"
-                                     type="time"
-                                     name="delivery_till"
-                                     value-type="H:mm"
-                                     :timePickerOptions="{
-                                        start: '00:00',
-                                        step: '01:00',
-                                        end: '23:00',
-                                     }">
-                        </date-picker>
-                    </td>
                     <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[1].zone_a"></td>
                     <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[2].zone_a"></td>
                     <td v-if="showZonesProperties"><input type="checkbox" v-model="item.days[3].zone_a"></td>
@@ -150,6 +151,7 @@
                     <th colspan="2" class="percent" v-if="showQuoteProperties">14-18</th>
                     <th colspan="2" class="percent" v-if="showQuoteProperties">18-22</th>
                     <th v-if="showSiteProperties">День в день</th>
+                    <th v-if="showSiteProperties">Ограничение ДвД</th>
                     <th v-if="showSiteProperties">Доставка<br>
                         в указанный час
                     </th>
@@ -158,7 +160,6 @@
                     <th v-if="showSiteProperties">Ограничение по <br> времени оформления</th>
                     <th v-if="showSiteProperties">Часы доставки</th>
                     <th v-if="showSiteProperties">Блокировка Заказов</th>
-                    <th v-if="showSiteProperties">Ограничение ДвД</th>
                     <th v-if="showZonesProperties" colspan="7">Зона доставка А</th>
                     <th v-if="showZonesProperties" colspan="7">Зона доставка B</th>
                     <th v-if="showZonesProperties" colspan="7">Зона доставка C</th>
