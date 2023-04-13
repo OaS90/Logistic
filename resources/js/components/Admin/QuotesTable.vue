@@ -1,43 +1,54 @@
 <template>
-
     <div>
         <button type="button" class="btn btn-outline-success" @click="save">Сохранить</button>
         <button type="button" class="btn btn btn-info" @click="excel">Выгрузить Excel</button>
         <input type="text" class="form-control col-4 filter" v-model="filter" placeholder="Поиск...">
-            <div id="table-wrapper">
-            <table id="quotes" class="table-content">
-
-                <tbody>
+        <div id="table-wrapper" ref="wrapper">
+            <div class="wmd-view-topscroll" :style="{'width': scrollWidth + 'px'}" @scroll="topScroll" ref="scroll">
+                <div class="scroll-div1" :style="{'width': tableWidth + 'px'}">
+                </div>
+            </div>
+            <table id="quotes" class="table-content" ref="maintable" @scroll="mainScroll">
+                <tbody ref="table">
                 <tr v-for="(item, id) in filteredRows" align="center" :key="`division-${id}`">
-                    <td><input type="checkbox" v-model="item.to_save" @change="quoteToSave(item, id)"></td>
+                    <td class="choose"><input type="checkbox" v-model="item.to_save"
+                                              @change="quoteToSave(item, id)"></td>
                     <td>{{ item.warehouse }}</td>
                     <td>{{ item.division }}</td>
-                    <td><input type="text" class="form-control" v-model="item.quote" @keypress="onlyNumber"></td>
-                    <td><input type="text" class="form-control" v-model="item.tmp_quote" @keypress="onlyNumber"></td>
-                    <td>
+                    <td v-if="showQuoteProperties"></td>
+                    <td></td>
+                    <td v-if="showSiteProperties && !showQuoteProperties"></td>
+                    <td v-if="showQuoteProperties"><input type="text" class="form-control" v-model="item.quote"
+                                                          @keypress="onlyNumber"></td>
+                    <td v-if="showQuoteProperties"><input type="text" class="form-control" v-model="item.tmp_quote"
+                                                          @keypress="onlyNumber"></td>
+                    <td v-if="showQuoteProperties">
                         <date-picker range type="date" v-model="item.tmp_date" format="MM.DD.YYYY"></date-picker>
                     </td>
-                    <td><input type="text" class="form-control" v-model="item.periodTenTwo.percent"
-                               @keypress="onlyNumber" maxlength=3></td>
-                    <td><input type="checkbox" v-model="item.periodTenTwo.active"></td>
-                    <td><input type="text" class="form-control" v-model="item.periodTwoSix.percent"
-                               @keypress="onlyNumber" maxlength=3></td>
-                    <td><input type="checkbox" v-model="item.periodTwoSix.active"></td>
-                    <td><input type="text" class="form-control" v-model="item.periodSixTen.percent"
-                               @keypress="onlyNumber" maxlength=3></td>
-                    <td><input type="checkbox" v-model="item.periodSixTen.active"></td>
-                    <td><input type="checkbox" v-model="item.inDay"></td>
-                    <td><input type="checkbox" v-model="item.inHour"></td>
-                    <td><input type="checkbox" v-model="item.days[1]"></td>
-                    <td><input type="checkbox" v-model="item.days[2]"></td>
-                    <td><input type="checkbox" v-model="item.days[3]"></td>
-                    <td><input type="checkbox" v-model="item.days[4]"></td>
-                    <td><input type="checkbox" v-model="item.days[5]"></td>
-                    <td><input type="checkbox" v-model="item.days[6]"></td>
-                    <td><input type="checkbox" v-model="item.days[7]"></td>
-                    <td><input type="text" v-model="item.deliveryDaysFromMoscow"
-                               @keypress="onlyNumber" maxlength=1></td>
-                    <td>
+                    <td v-if="showQuoteProperties"><input type="text" class="form-control"
+                                                          v-model="item.periodTenTwo.percent"
+                                                          @keypress="onlyNumber" maxlength=3></td>
+                    <td v-if="showQuoteProperties"><input type="checkbox" v-model="item.periodTenTwo.active"></td>
+                    <td v-if="showQuoteProperties"><input type="text" class="form-control"
+                                                          v-model="item.periodTwoSix.percent"
+                                                          @keypress="onlyNumber" maxlength=3></td>
+                    <td v-if="showQuoteProperties"><input type="checkbox" v-model="item.periodTwoSix.active"></td>
+                    <td v-if="showQuoteProperties"><input type="text" class="form-control"
+                                                          v-model="item.periodSixTen.percent"
+                                                          @keypress="onlyNumber" maxlength=3></td>
+                    <td v-if="showQuoteProperties"><input type="checkbox" v-model="item.periodSixTen.active"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.inDay"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.inHour"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[1]"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[2]"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[3]"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[4]"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[5]"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[6]"></td>
+                    <td v-if="showSiteProperties"><input type="checkbox" v-model="item.days[7]"></td>
+                    <td v-if="showSiteProperties"><input type="text" v-model="item.deliveryDaysFromMoscow"
+                                                         @keypress="onlyNumber" maxlength=1></td>
+                    <td v-if="showSiteProperties">
                         <date-picker format="H:mm"
                                      class="date-time"
                                      v-model="item.time_last"
@@ -51,7 +62,7 @@
                                      }">
                         </date-picker>
                     </td>
-                    <td>
+                    <td v-if="showSiteProperties">
                         <span>c :</span>
                         <date-picker type="time"
                                      class="date-time"
@@ -78,7 +89,7 @@
 
                         </date-picker>
                     </td>
-                    <td>
+                    <td v-if="showSiteProperties">
                         <date-picker range type="date"
                                      v-model="item.blocked_dates"
                                      format="MM.DD.YYYY"
@@ -92,17 +103,21 @@
                     <th>Выбрать</th>
                     <th class="store">Склад</th>
                     <th class="regions">Регионы России</th>
-                    <th class="quote">Дневная <br> квота</th>
-                    <th class="tmp_quote">Временная <br> квота</th>
-                    <th class="tmp_period">Срок <br> действия</th>
-                    <th colspan="2" class="percent">10-14</th>
-                    <th colspan="2" class="percent">14-18</th>
-                    <th colspan="2" class="percent">18-22</th>
-                    <th>День в день</th>
-                    <th>Доставка<br>
+                    <th class="show-rows" @click="showQutes()">Квоты <br> <i
+                        :class="[showQuoteProperties ? 'la-angle-up' : 'la-angle-down', 'las']"></i></th>
+                    <th class="show-rows" @click="showSite()">Настройки для сайта <br> <i
+                        :class="[showSiteProperties ? 'la-angle-up' : 'la-angle-down', 'las']"></i></th>
+                    <th class="quote" v-if="showQuoteProperties">Дневная <br> квота</th>
+                    <th class="tmp_quote" v-if="showQuoteProperties">Временная <br> квота</th>
+                    <th class="tmp_period" v-if="showQuoteProperties">Срок <br> действия</th>
+                    <th colspan="2" class="percent" v-if="showQuoteProperties">10-14</th>
+                    <th colspan="2" class="percent" v-if="showQuoteProperties">14-18</th>
+                    <th colspan="2" class="percent" v-if="showQuoteProperties">18-22</th>
+                    <th v-if="showSiteProperties">День в день</th>
+                    <th v-if="showSiteProperties">Доставка<br>
                         в указанный час
                     </th>
-                    <th colspan="10"></th>
+                    <th v-if="showSiteProperties" colspan="11"></th>
                 </tr>
                 <tr align="center">
                     <th></th>
@@ -110,30 +125,35 @@
                     <th></th>
                     <th></th>
                     <th></th>
-                    <th></th>
-                    <th>%</th>
-                    <th>Активно</th>
-                    <th>%</th>
-                    <th>Активно</th>
-                    <th>%</th>
-                    <th>Активно</th>
-                    <th></th>
-                    <th></th>
-                    <th>Пн</th>
-                    <th>Вт</th>
-                    <th>Ср</th>
-                    <th>Чт</th>
-                    <th>Пт</th>
-                    <th>Сб</th>
-                    <th>Вс</th>
-                    <th class="deliveryFromMoscow">Кол-во дней <br> доставки <br>из Москвы</th>
-                    <th>Ограничение по <br> времени оформления</th>
-                    <th>Часы доставки</th>
-                    <th>Блокировка Заказов</th>
+                    <th v-if="showQuoteProperties"></th>
+                    <th v-if="showQuoteProperties"></th>
+                    <th v-if="showQuoteProperties"></th>
+                    <th v-if="showQuoteProperties">%</th>
+                    <th v-if="showQuoteProperties">Активно</th>
+                    <th v-if="showQuoteProperties">%</th>
+                    <th v-if="showQuoteProperties">Активно</th>
+                    <th v-if="showQuoteProperties">%</th>
+                    <th v-if="showQuoteProperties">Активно</th>
+<!--                    <th v-if="showQuoteProperties"></th>-->
+<!--                    <th v-if="showQuoteProperties"></th>-->
+                    <th v-if="showSiteProperties"></th>
+                    <th v-if="showSiteProperties"></th>
+                    <th v-if="showSiteProperties">Пн</th>
+                    <th v-if="showSiteProperties">Вт</th>
+                    <th v-if="showSiteProperties">Ср</th>
+                    <th v-if="showSiteProperties">Чт</th>
+                    <th v-if="showSiteProperties">Пт</th>
+                    <th v-if="showSiteProperties">Сб</th>
+                    <th v-if="showSiteProperties">Вс</th>
+                    <th v-if="showSiteProperties" class="deliveryFromMoscow">Кол-во дней <br> доставки <br>из Москвы
+                    </th>
+                    <th v-if="showSiteProperties">Ограничение по <br> времени оформления</th>
+                    <th v-if="showSiteProperties">Часы доставки</th>
+                    <th v-if="showSiteProperties">Блокировка Заказов</th>
                 </tr>
                 </thead>
             </table>
-            </div>
+        </div>
         <!--        <p>-->
         <!--            <button type="button" class="btn btn-secondary" @click="prevPage">Предыдущая</button>-->
         <!--            <button type="button" class="btn btn-secondary" @click="nextPage">Следующая</button>-->
@@ -150,6 +170,7 @@
 <script>
 import DatePicker from "vue2-datepicker";
 import Modal from "./Modal";
+import Popup from "../Popup";
 
 export default {
     name: "QuotesTable",
@@ -162,8 +183,17 @@ export default {
             dataQuotes: this.quotes,
             filter: '',
             pageSize: 10,
-            currentPage: 1
+            currentPage: 1,
+            showQuoteProperties: false,
+            showSiteProperties: false,
+            scrollWidth: 0,
+            tableWidth: 0,
+            scrollPosition: 0
         }
+    },
+    mounted() {
+        this.scrollWidth = this.$refs.wrapper.clientWidth
+        this.tableWidth = this.$refs.table.clientWidth
     },
     computed: {
         filteredRows() {
@@ -259,9 +289,26 @@ export default {
             if ((keyCode < 48 || keyCode > 57) && keyCode !== 46) { // 46 is dot
                 $event.preventDefault();
             }
+        },
+        showQutes() {
+            this.showQuoteProperties = !this.showQuoteProperties
+            setTimeout(() => this.tableWidth = this.$refs.table.clientWidth, 100);
+        },
+        showSite() {
+            this.showSiteProperties = !this.showSiteProperties
+            setTimeout(() => this.tableWidth = this.$refs.table.clientWidth, 100);
+        },
+        topScroll(e) {
+            let currentScrollPosition = e.srcElement.scrollLeft
+            this.$refs.maintable.scrollTo(currentScrollPosition, 0)
+        },
+        mainScroll(e) {
+            let currentScrollPosition = e.srcElement.scrollLeft
+            this.$refs.scroll.scrollTo(currentScrollPosition, 0)
         }
     },
     components: {
+        Popup,
         DatePicker,
         Modal
     }
@@ -269,27 +316,46 @@ export default {
 </script>
 
 <style scoped>
-    #quotes thead {
-        background-color: #136d99;
-    }
-    #quotes {
-        margin-top: 15px;
-        background-color: #4fa7d7;
-        color: white;
-    }
-    .filter {
-        margin-top: 15px;
-    }
-
-input[type=checkbox] {
-    transform: scale(2);
+#quotes thead {
+    background-color: #136d99;
 }
 
 #quotes {
+    background-color: #4fa7d7;
+    color: white;
     width: 100%;
     display: block;
-    overflow-x: auto;
+    overflow-x: scroll;
     white-space: nowrap;
+}
+#table-wrapper {
+    margin-top: 15px;
+}
+.wmd-view-topscroll {
+    overflow-x: scroll;
+    /* overflow-y: hidden; */
+    width: 300px;
+    border: none 0px RED;
+}
+.wmd-view-topscroll { height: 20px; }
+.scroll-div1 {
+    width: 1000px;
+    /* overflow-x: scroll; */
+    /* overflow-y: hidden; */
+}
+#table-wrapper table thead th {
+    top: -20px;
+    z-index: 2;
+    height: 20px;
+    width: 35%;
+}
+
+.filter {
+    margin-top: 15px;
+}
+
+input[type=checkbox] {
+    transform: scale(2);
 }
 
 #quotes td {
@@ -353,5 +419,13 @@ input.time-picker {
 
 td span {
     padding: 0 5px;
+}
+
+.show-rows:hover {
+    cursor: pointer;
+}
+
+.choose {
+    padding: 10px;
 }
 </style>
