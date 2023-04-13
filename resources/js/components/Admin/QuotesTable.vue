@@ -7,8 +7,8 @@
             <div class="scroll-div1" :style="{'width': tableWidth + 'px'}">
             </div>
         </div>
-        <div id="table-wrapper" ref="wrapper">
-            <table id="quotes" class="table-content" @scroll="mainScroll">
+        <div id="table-wrapper" ref="wrapper" @scroll="mainScroll">
+            <table id="quotes" class="table-content">
                 <tbody ref="table">
                 <tr v-for="(item, id) in filteredRows" align="center" :key="`division-${id}`">
                     <td class="choose"><input type="checkbox" v-model="item.to_save"
@@ -402,8 +402,8 @@ export default {
 }
 .wmd-view-topscroll { height: 20px; }
 .scroll-div1 {
-    width: 1000px;
-    /* overflow-x: scroll; */
+    /*width: 1000px;*/
+     overflow-x: scroll;
     /* overflow-y: hidden; */
 }
 #table-wrapper table thead th {
