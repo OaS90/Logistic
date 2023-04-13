@@ -57,6 +57,7 @@ class QuotesController extends Controller
                     'Content-Type' => 'application/json', 'Accept' => 'application/json',
                     'Authorization' => config('app.api_hru_token')
                 ],
+                //'auth' => config('app.api_auth'), для теста раскоментить
                 'json' => $json
             ]);
 

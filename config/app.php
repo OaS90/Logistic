@@ -17,6 +17,8 @@ return [
 
     'api_hru_token' => env('API_HRU_TOKEN'),
     'api_hru' => env('API_HRU'),
+    'api_user' => env('API_HRU_USER', 'holodilnik'),
+    'api_password' => env('API_HRU_PASSWORD', ''),
     /*
     |--------------------------------------------------------------------------
     | Application Environment
