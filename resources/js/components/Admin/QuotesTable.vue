@@ -155,7 +155,8 @@
                     <th v-if="showSiteProperties">Доставка<br>
                         в указанный час
                     </th>
-                    <th v-if="showSiteProperties" class="deliveryFromMoscow">Кол-во дней <br> доставки <br>из Москвы
+                    <th v-if="showSiteProperties" class="deliveryFromMoscow">
+                        Кол-во дней <br> доставки <br>со склада отгрузки
                     </th>
                     <th v-if="showSiteProperties">Ограничение по <br> времени оформления</th>
                     <th v-if="showSiteProperties">Часы доставки</th>

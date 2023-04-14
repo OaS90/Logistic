@@ -149,8 +149,12 @@ class QuoteDTO
                     $mainQuote['delivery_hours'] = $quote->delivery_hours;
                 }
 
-                if ($quote->delivery_days_from_moscow) {
-                    $mainQuote['deliveryDaysFromMoscow'] = $quote->delivery_days_from_moscow;
+                if ($quote->delivery_days_from_moscow >= 0) {
+                    $mainQuote['delivery_days_from_moscow'] = $quote->delivery_days_from_moscow;
+                }
+
+                if ($quote->in_day_limitation) {
+                    $mainQuote['in_day_limitation'] = $quote->in_day_limitation;
                 }
 
                 $data[] = array_merge($mainQuote, $tmpPeriods, $dayHourPeriods, $blockedDates);
