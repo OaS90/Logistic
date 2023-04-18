@@ -54,21 +54,23 @@ class CsvImportService
 
             if (!$warehouse)
                 return response(['message' => 'Не найден склад'], 400);
-//            dd($data['products']);
+
             if (!$existApp) {
                 $address = $this->addressRepo->createFromCsv($data['address']);
                 $data['app']['delivery_address'] = $address->id;
                 $data['app']['warehouse_id'] = $warehouse->id;
-                $app = $this->appRepo->create($data['app']);
+                $existApp = $this->appRepo->create($data['app']);
 
                 foreach ($data['products'] as $dataProduct) {
-                    $this->productRepo->create((new ProductDTO())->toArray($app->id, $dataProduct));
+                    $this->productRepo->create((new ProductDTO())->toArray($existApp->id, $dataProduct));
                 }
             } else {
                 $data['app']['warehouse_id'] = $warehouse->id;
                 $this->appService->checkAppChanges($existApp, $data['app']);
                 $this->appService->checkAppProducts($existApp, $data['products']);
             }
+
+            $this->appService->getDeliveryDateFromHru($existApp->order_number, $existApp->address);
         }
 
         return response(['message' => 'success'], 200);

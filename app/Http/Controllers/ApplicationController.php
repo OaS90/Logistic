@@ -95,14 +95,15 @@ class ApplicationController extends Controller
         $existApp = $this->repo->getByOrderNumber($data['order_number']);
 
         if (!$existApp) {
-            $newApp = $this->repo->create($data);
-            $products['app_id'] = $newApp->id;
+            $existApp = $this->repo->create($data);
+            $products['app_id'] = $existApp->id;
             $products[] = $this->productRepository->create($products);
         } else {
            $this->appService->checkAppChanges($existApp, $data);
            $this->appService->checkAppProducts($existApp, $products);
         }
 
+        $this->appService->getDeliveryDateFromHru($existApp->order_number, $newAddress);
 //        if ($newApplication)
 //            $this->makeCsvAndStore($newApplication);
 

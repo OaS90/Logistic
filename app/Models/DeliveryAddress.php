@@ -10,4 +10,10 @@ class DeliveryAddress extends Model
     protected $table = 'delivery_addresses';
     protected $guarded = ['id'];
     public $timestamps = false;
+
+    public function getFullAddressAttribute(): string
+    {
+        return $this->city_name . ', ' . $this->region_name . ', ' .
+            $this->street . ' ' . $this->building;
+    }
 }

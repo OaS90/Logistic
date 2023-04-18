@@ -118,6 +118,7 @@
                             <th>Стоимость</th>
                             <th>Признак склада отгрузки</th>
                             <th>Дата доставки</th>
+                            <th>Дата доставки сайт/факт</th>
                             <th>Адрес доставки</th>
                         </tr>
                         @foreach($list as $application)
@@ -133,6 +134,7 @@
                                     <div class="hidden-td">{{ $application->warehouse->address }}</div>
                                 </td>
                                 <td>{{ $application->delivery_date }}</td>
+                                <td>{{ $application->hru_delivery_date ?? '' }}</td>
                                 <td>
                                     <div class="hidden-td">
 {{--                                        {{ (strlen($application->full_address) > 24) ? substr($application->full_address,0, 24).'...' : $application->full_address }}--}}

@@ -3,9 +3,12 @@
 namespace App\Application;
 
 use App\Domain\ProductDTO;
+use App\Infrastructure\Api;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\ProductRepository;
+use App\Models\DeliveryAddress;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Doctrine\DBAL\Query;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 
 class ApplicationService
@@ -64,5 +67,22 @@ class ApplicationService
             ->setPaper([30, -30, 280.77, 320.16]);
 
         return $pdf;
+    }
+
+    public function getDeliveryDateFromHru($appNumber, DeliveryAddress $addressEntity): bool
+    {
+        $api = new Api(config('app.hru_delivery_url'));
+        $deliveryResponse = $api
+            ->query('HolodilnikDelivery2', ['address' => $addressEntity->full_address]);
+
+        if ($deliveryResponse) {
+            foreach ($deliveryResponse as $delivery) {
+                if ($delivery['externalIdRoot'] == 'holod_courier') {
+                    $this->appRepo->updateByFields($appNumber, ['hru_delivery_date' => $delivery['params']['date']]);
+                }
+            }
+        }
+
+        return false;
     }
 }
