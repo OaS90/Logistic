@@ -21,7 +21,7 @@ class PartnerOrderDTO
             'id' => $this->app->order_number,
             'paymentMethod' => $this->app->payment_type,
             'comment' => $this->app->comment,
-            'deliveryDate' => Carbon::createFromDate($this->app->delivery_date)->format('d.m.Y'),
+            'deliveryDate' => $this->app->hru_delivery_date ? Carbon::createFromDate($this->app->hru_delivery_date)->format('d.m.Y') : $this->app->delivery_date,
             'deliveryTimeFrom' => $this->deliveryTime($this->app->delivery_time)[0],
             'deliveryTimeTo' => $this->deliveryTime($this->app->delivery_time)[1],
             'buyer' => [
