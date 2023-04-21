@@ -41,9 +41,9 @@ class PartnerCrudController extends CrudController
     protected function setupListOperation()
     {
 //        CRUD::setFromDb(); // columns
-        $this->crud->removeAllButtons();
+        //$this->crud->removeAllButtons();
 
-        $this->crud->denyAccess(['update', 'delete', 'show']);
+        $this->crud->denyAccess(['delete', 'show']);
 
         $this->crud->addColumn([
             'name' => 'id',
@@ -141,7 +141,87 @@ class PartnerCrudController extends CrudController
     {
         CRUD::setValidation(PartnerRequest::class);
 
-        CRUD::setFromDb(); // fields
+//        CRUD::setFromDb(); // fields
+
+        $this->crud->addField([
+            'name' => 'id_1c',
+            'label' => 'Идентификатор 1с'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'firstname',
+            'label' => 'Имя'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'patronymic',
+            'label' => 'Отчество'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'lastname',
+            'label' => 'Фамилия'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'lastname',
+            'label' => 'Фамилия'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'mobile_phone',
+            'label' => 'Мобильный телефон'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'position',
+            'label' => 'Должность'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'work_phone',
+            'label' => 'Рабочий телефон'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'additional_number',
+            'label' => 'Добавочный номер'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'company',
+            'label' => 'Компания'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'inn',
+            'label' => 'ИНН'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'kpp',
+            'label' => 'КПП'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'okpo',
+            'label' => 'ОКПО'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'email',
+            'label' => 'Email'
+        ]);
+
+        $this->crud->addField([
+            'name' => 'legal_address',
+            'label' => 'Юридический адрес'
+        ]);
+
+//        $this->crud->addField([
+//            'name' => 'password',
+//            'label' => 'Пароль'
+//        ]);
 
 
         /**

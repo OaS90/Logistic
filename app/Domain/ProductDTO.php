@@ -10,17 +10,17 @@ class ProductDTO
         $data['name'] = $allRows['name'];
         $data['sku'] = $allRows['sku'];
         $data['count'] = $allRows['count'];
-        $data['cost'] = floatval(str_replace(' ', '', $allRows['cost']));
+        $data['cost'] = floatval(str_replace(',', '.', $allRows['cost']));
         $data['vat'] = $allRows['vat'];
-        $data['width'] = $allRows['width'];
-        $data['height'] = $allRows['height'];
-        $data['depth'] = $allRows['depth'];
+        $data['width'] = floatval(str_replace(',', '.', $allRows['width']));
+        $data['height'] = floatval(str_replace(',', '.', $allRows['height']));
+        $data['depth'] = floatval(str_replace(',', '.', $allRows['depth']));
         $data['brand'] = $allRows['brand'] ?? null; // Бренд
         $data['tnved'] = $allRows['tnved'] ?? null; // Код ТНВЭД
         $data['country'] = $allRows['country_code'] ?? null; // код страны происхождения по ОКСМ
         $data['barcode'] = $allRows['barcode'] ?? null; // EAN
-        $data['volume'] = floatval(str_replace(' ', '', $allRows['volume']));
-        $data['weight'] = $allRows['weight'];
+        $data['volume'] = floatval(str_replace(',', '.', $allRows['volume']));
+        $data['weight'] = floatval(str_replace(',', '.', $allRows['weight']));
 
         return $data;
     }
