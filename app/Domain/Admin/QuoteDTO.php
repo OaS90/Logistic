@@ -105,9 +105,8 @@ class QuoteDTO
             }
 
             if ($quote->days > 0) {
-                foreach ($quote->days as $day => $isActive) {
-                    if ($isActive)
-                        $days[] = $day;
+                foreach ($quote->days as $day => $zones) {
+                    $days[$day] = $zones;
                 }
             }
 
