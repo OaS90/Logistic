@@ -123,7 +123,7 @@ class QuoteDTO
                     $mainQuote['days'] = $days;
 
                 if ($quote->time_last)
-                    $mainQuote['time_last'] = $quote->time_last;
+                    $mainQuote['time_last'] = Carbon::parse($quote->time_last)->format('H:i');
 
                 if ($quote->tmp_quote) {
                     $tmpPeriods = [
@@ -153,7 +153,7 @@ class QuoteDTO
                 }
 
                 if ($quote->in_day_limitation) {
-                    $mainQuote['in_day_limitation'] = $quote->in_day_limitation;
+                    $mainQuote['in_day_limitation'] = Carbon::parse($quote->in_day_limitation)->format('H:i');
                 }
 
                 $data[] = array_merge($mainQuote, $tmpPeriods, $dayHourPeriods, $blockedDates);
