@@ -23,24 +23,10 @@ class Api
         $responseData = false;
         $url = $this->url . $uri;
 
-        // заглушка для получения даты доставки(без товаров не рабоатет)
-        $products = [
-            [
-                'Offer1C' => 163820,
-                'Amount' => 1
-            ]
-        ];
-
         if ($method == 'GET') {
             $requestData['query'] = $data;
-
-            if ($uri == 'HolodilnikDelivery2')
-                $requestData['query']['products'] = $products;
         } else {
             $requestData['json'] = $data;
-
-            if ($uri == 'HolodilnikDelivery2')
-                $requestData['json']['products'] = $products;
         }
 
         if ($this->headers)

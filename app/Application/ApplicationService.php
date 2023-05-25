@@ -73,7 +73,7 @@ class ApplicationService
     {
         $api = new Api(config('app.hru_delivery_url'));
         $deliveryResponse = $api
-            ->query('HolodilnikDelivery2', ['address' => $addressEntity->full_address]);
+            ->query('DeliveryDateBortUdachi', ['address' => $addressEntity->full_address]);
 
         if ($deliveryResponse) {
             foreach ($deliveryResponse as $delivery) {
