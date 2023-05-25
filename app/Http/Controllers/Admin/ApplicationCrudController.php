@@ -29,7 +29,7 @@ class ApplicationCrudController extends CrudController
         CRUD::setModel(\App\Models\Application::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/applications');
         CRUD::setEntityNameStrings('applications', 'Заявки');
-        $this->crud->denyAccess(['update', 'delete', 'show']);
+        $this->crud->denyAccess(['update', 'show']);
 
     }
 
@@ -42,7 +42,7 @@ class ApplicationCrudController extends CrudController
     protected function setupListOperation()
     {
 //        CRUD::setFromDb(); // columns
-        $this->crud->removeAllButtons();
+//        $this->crud->removeAllButtons();
 
         $this->crud->addColumn([
             'label' => "Партнёр", // Table column heading
