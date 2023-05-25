@@ -11,9 +11,8 @@ class DeliveryAddress extends Model
     protected $guarded = ['id'];
     public $timestamps = false;
 
-    public function getFullAddressAttribute(): string
+    public function getRegionAndCityAttribute(): string
     {
-        return $this->city_name . ', ' . $this->region_name . ', ' .
-            $this->street . ' ' . $this->building;
+        return $this->city_name . ', ' . $this->region_name;
     }
 }

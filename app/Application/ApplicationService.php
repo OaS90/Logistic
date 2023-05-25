@@ -71,16 +71,13 @@ class ApplicationService
 
     public function getDeliveryDateFromHru($appNumber, DeliveryAddress $addressEntity): bool
     {
+
         $api = new Api(config('app.hru_delivery_url'));
         $deliveryResponse = $api
-            ->query('DeliveryDateBortUdachi', ['address' => $addressEntity->full_address]);
+            ->query('', ['q' => 'DeliveryDateBortUdachi', 'address' => $addressEntity->region_and_city]);
 
         if ($deliveryResponse) {
-            foreach ($deliveryResponse as $delivery) {
-                if ($delivery['externalIdRoot'] == 'holod_courier') {
-                    $this->appRepo->updateByFields($appNumber, ['hru_delivery_date' => $delivery['params']['date']]);
-                }
-            }
+             $this->appRepo->updateByFields($appNumber, ['hru_delivery_date' => $deliveryResponse['date']]);
         }
 
         return false;

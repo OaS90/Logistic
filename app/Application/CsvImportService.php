@@ -6,14 +6,12 @@ use App\Domain\ApplicationDTO;
 use App\Domain\DeliveryAddressDTO;
 use App\Domain\ProductDTO;
 use App\Infrastructure\Repositories\WarehouseRepository;
-use App\Models\Warehouse;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Infrastructure\Imports\ImportEntity;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Repositories\ProductRepository;
-use App\Application\ApplicationService;
 
 /**
  *
@@ -45,7 +43,7 @@ class CsvImportService
     {
         $dataFromCsv = $this->getDataArraysWithDbRows($entity, $file);
 
-        foreach ($dataFromCsv as $key => $data) {
+        foreach ($dataFromCsv as $data) {
             $existApp = $this->appRepo->getByOrderNumber($data['app']['order_number']);
             $data['app']['user_id'] = $userId;
 
@@ -93,6 +91,9 @@ class CsvImportService
         // формируем массив данных [['app', 'address', 'products']]
         // -1 т.к. первый элемент - заголовки из файла
         for ($i = 1; $i <= count($dataFromFile) - 1; $i++) {
+            // проверяем, что есть товар в этой столбце.
+            // даже если это второй товар для одного заказа,
+            // то номера заказа не будет, но название товара будет по-любому
             if ($dataFromFile[$i][16]) {
                 $appWithDbColumns = array_combine($rows, $dataFromFile[$i]);
 
