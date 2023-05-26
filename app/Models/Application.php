@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Application extends Model
@@ -80,5 +81,11 @@ class Application extends Model
             return self::STATUSES[$status];
 
         return '';
+    }
+
+    public function getParsedDeliveryDateAttribute()
+    {
+        $deliveryDate = $this->hru_delivery_date ?? $this->delivery_date;
+        return Carbon::createFromDate($deliveryDate)->format('d.m.Y');
     }
 }
