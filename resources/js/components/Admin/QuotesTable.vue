@@ -60,7 +60,7 @@
                         <input type="text" v-model="item.deliveryDaysFromMoscow"
                                class="form-control"
                                @keypress="onlyNumber"
-                               maxlength=1>
+                               maxlength=2>
                     </td>
                     <td v-if="showSiteProperties">
                         <date-picker format="H:mm"
