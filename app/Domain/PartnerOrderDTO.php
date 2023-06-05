@@ -2,13 +2,13 @@
 
 namespace App\Domain;
 
-use Carbon\Carbon;
+use App\Models\Application;
 
 class PartnerOrderDTO
 {
-    private $app;
+    private Application $app;
 
-    public function __construct($application)
+    public function __construct(Application $application)
     {
         $this->app = $application;
     }
@@ -24,6 +24,7 @@ class PartnerOrderDTO
             'deliveryDate' => $this->app->parsed_delivery_date,
             'deliveryTimeFrom' => $this->deliveryTime($this->app->delivery_time)[0],
             'deliveryTimeTo' => $this->deliveryTime($this->app->delivery_time)[1],
+            'storeID' => $this->app->warehouse->store_id ?? null,
             'buyer' => [
                 'fio' => $this->app->client_name,
                 'phone' => $this->app->mobile_phone
@@ -42,12 +43,12 @@ class PartnerOrderDTO
         ];
     }
 
-    public function deliveryTime($time)
+    public function deliveryTime($time): array
     {
         return explode('-', $time);
     }
 
-    public function products($app)
+    public function products($app): array
     {
         $products = [];
 
