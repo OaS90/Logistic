@@ -18,11 +18,11 @@ use App\Infrastructure\Repositories\ProductRepository;
  */
 class CsvImportService
 {
-    protected $appRepo;
-    protected $productRepo;
-    protected $addressRepo;
-    protected $appService;
-    protected $warehouseRepo;
+    protected ApplicationRepository $appRepo;
+    protected ProductRepository $productRepo;
+    protected DeliveryAddressRepository $addressRepo;
+    protected ApplicationService $appService;
+    protected WarehouseRepository $warehouseRepo;
 
     public function __construct(ApplicationRepository $appRepo,
                                 DeliveryAddressRepository $addressRepository,

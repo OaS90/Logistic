@@ -20,7 +20,7 @@ class CreateDeliveryAddressesTable extends Migration
             $table->char('city_fias', 40);
             $table->char('street', 50);
             $table->char('street_fias', 50);
-            $table->char('building', 30);
+            $table->char('building', 30)->nullable();
             $table->integer('floor')->nullable();
             $table->integer('flat')->nullable();
             $table->integer('entrance')->nullable();

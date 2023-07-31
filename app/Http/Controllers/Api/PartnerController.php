@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Domain\PartnerOrderDTO;
 use App\Http\Controllers\Controller;
 use App\Infrastructure\Repositories\UserRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Infrastructure\Repositories\ApplicationRepository;
 
 class PartnerController extends Controller
 {
-    private $repo;
-    private $userRepo;
+    private ApplicationRepository $repo;
+    private UserRepository $userRepo;
 
     public function __construct(ApplicationRepository $repository, UserRepository $userRepo)
     {
@@ -19,7 +20,7 @@ class PartnerController extends Controller
         $this->userRepo = $userRepo;
     }
 
-    public function getOrders(Request $request)
+    public function getOrders(Request $request): JsonResponse
     {
         $partnerId = $request->get('partnerId');
         $user = $this->userRepo->getBy1cId($partnerId);
@@ -28,7 +29,11 @@ class PartnerController extends Controller
             $applications = $this->repo->getListByUserId($user->id);
 
             if ($applications->count() == 0)
-                return response()->json(['message' => 'Не найдено заявок для клиента с id=' . $partnerId], 200);
+                return response()
+                    ->json(
+                        ['message' => 'Не найдено заявок для клиента с id=' . $partnerId],
+                        200, ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
+                    );
 
             $apps = [];
 
@@ -39,9 +44,13 @@ class PartnerController extends Controller
                 }
             }
 
-            return response()->json($apps, 200);
+            return response()->json($apps);
         }
 
-        return response(['message' => 'Не найден партнёр с id ' . $partnerId], 200);
+        return response()
+            ->json(
+                ['message' => 'Не найден партнёр с id ' . $partnerId],
+                200, ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
+            );
     }
 }

@@ -10,7 +10,7 @@ class ProductDTO
         $data['name'] = $allRows['name'];
         $data['sku'] = $allRows['sku'];
         $data['count'] = $allRows['count'];
-        $data['cost'] = floatval(str_replace(',', '.', $allRows['cost']));
+        $data['cost'] = floatval(str_replace(' ', '',str_replace(',', '.', $allRows['cost'])));
         $data['vat'] = $allRows['vat'];
         $data['width'] = floatval(str_replace(',', '.', $allRows['width']));
         $data['height'] = floatval(str_replace(',', '.', $allRows['height']));
@@ -32,7 +32,7 @@ class ProductDTO
             'name' => $data['name'], // Товар
             'sku' => $data['sku'], // Артикул
             'count' => $data['count'], // Количество
-            'cost' => floatval(str_replace(' ', '', $data['cost'])), // Оценочная стоимость
+            'cost' => $data['cost'], // Оценочная стоимость
             //'discount_cost' => floatval(str_replace(' ', '', $data['discount_cost'])), // Стоимость с учетом скидки
             'vat' => $data['vat'], // Ставка НДС
             //'leftToPay' => $data['left_to_pay'], // Сумма к получению

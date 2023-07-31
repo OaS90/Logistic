@@ -11,6 +11,7 @@ use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\AppStatusHistoryRepository;
 use App\Infrastructure\Repositories\UserRepository;
 use Barryvdh\DomPDF\PDF;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\Exceptions\StatusUpdateException;
 use App\Infrastructure\Repositories\ProductRepository;
@@ -106,13 +107,21 @@ class ApplicationController
             $user = $this->userRepo->getBy1cId($app['partnerId']);
 
             if (!$user)
-                return response(['message' => 'Не найден пользователь с идентификаторм ' . $app['partnerId']]);
+                return response()
+                    ->json(
+                        ['message' => 'Не найден пользователь с идентификаторм ' . $app['partnerId']], 500,
+                        ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
+                    );
 
             $app['user_id'] = $user->id;
             $warehouse = $this->warehouseRepo->findByStoreId($app['storeId']);
 
             if (!$warehouse)
-                return response(['message' => 'Не найден склад'], 400);
+                return response()
+                    ->json(
+                        ['message' => 'Не найден склад'], 500,
+                        ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
+                    );
 
             $app['storeId'] = $warehouse->id;
 
@@ -142,12 +151,16 @@ class ApplicationController
         return response(['code' => $newApp->order_number . '-' . $newApp->id, 'success' => true, 'message' => ''], 200);
     }
 
-    public function getSticker($partnerOrderId): \Illuminate\Http\Response
+    public function getSticker($partnerOrderId): \Illuminate\Http\Response|JsonResponse
     {
         $app = $this->repo->getByOrderNumber($partnerOrderId);
 
         if (!$app)
-            return response(['message' => 'Не найдена заявка с номером заказа ' . $partnerOrderId], 400);
+            return response()
+                ->json(
+                    ['message' => 'Не найдена заявка с номером заказа ' . $partnerOrderId], 500,
+                    ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
+                );
 
         $stickers = $this->appService->makeStickers($app);
 
@@ -162,7 +175,11 @@ class ApplicationController
                 $request->get('orderId')
             );
         } catch (\Throwable $e) {
-            return response()->json(['message' => 'Не удалось найти заказ с номер ' . $request->get('orderId')]);
+            return response()
+                ->json(
+                    ['message' => 'Не удалось найти заказ с номер ' . $request->get('orderId')], 500,
+                    ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
+                );
         }
 
         return response()->json([

@@ -8,14 +8,13 @@ use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\ProductRepository;
 use App\Models\DeliveryAddress;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Doctrine\DBAL\Query;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 
 class ApplicationService
 {
-    protected $appRepo;
-    protected $productRepo;
-    protected $codeGenerator;
+    protected ApplicationRepository $appRepo;
+    protected ProductRepository $productRepo;
+    protected BarcodeGeneratorDynamicHTML $codeGenerator;
 
     public function __construct(ApplicationRepository $appRepo,
                                 ProductRepository $productRepo,
@@ -38,11 +37,10 @@ class ApplicationService
         return null;
     }
 
-    public function checkAppProducts($app, array $data)
+    public function checkAppProducts($app, array $data): void
     {
         foreach ($data as $csvProduct) {
             $appProduct = $this->productRepo->getByAppIdSkuBrand($csvProduct['sku'], $app->id);
-
             if (!$appProduct) {
                 $app->update(['doc_ver' => $app->doc_ver + 1]);
                 $this->productRepo->create((new ProductDTO())->toArray($app->id, $csvProduct));
@@ -63,10 +61,8 @@ class ApplicationService
                 return response(['message' => 'У товара ' . $product->name . ' отсутствует баркод'], 400);
         }
 
-        $pdf = PDF::loadView('sticker', ['codes' => $barcodes, 'application' => $app, 'products' => $app->products])
+        return PDF::loadView('sticker', ['codes' => $barcodes, 'application' => $app, 'products' => $app->products])
             ->setPaper([30, -30, 280.77, 320.16]);
-
-        return $pdf;
     }
 
     public function getDeliveryDateFromHru($appNumber, DeliveryAddress $addressEntity): bool
@@ -76,7 +72,7 @@ class ApplicationService
         $deliveryResponse = $api
             ->query('', ['q' => 'DeliveryDateBortUdachi', 'address' => $addressEntity->region_and_city]);
 
-        if ($deliveryResponse) {
+        if ($deliveryResponse && isset($deliveryResponse['date'])) {
              $this->appRepo->updateByFields($appNumber, ['hru_delivery_date' => $deliveryResponse['date']]);
         }
 
