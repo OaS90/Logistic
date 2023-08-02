@@ -54,7 +54,7 @@ class ApplicationDTO
         $data['order_number'] = $allRows['order_number'];
         $data['payment_type'] = $allRows['payment_type'];
         $data['delivery_date'] = $allRows['delivery_date'];
-        $data['delivery_cost'] = $allRows['delivery_cost'] ?? 0;
+        $data['delivery_cost'] = (float) $allRows['delivery_cost'];
         $data['delivery_from'] = $allRows['delivery_from'];
         $data['delivery_till'] = $allRows['delivery_till'];
         $data['comment'] = $allRows['comment'];
