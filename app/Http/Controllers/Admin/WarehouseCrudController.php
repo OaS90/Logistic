@@ -55,8 +55,8 @@ class WarehouseCrudController extends CrudController
             'label' => 'Идентификатор склада'
         ]);
 
-        $this->crud->denyAccess(['delete', 'show']);
-        $this->crud->removeButton('create');
+        $this->crud->denyAccess(['show']);
+        //$this->crud->removeButton('create');
         /**
          * Columns can be defined using the fluent syntax or array syntax:
          * - CRUD::column('price')->type('number');
@@ -77,18 +77,12 @@ class WarehouseCrudController extends CrudController
         $this->crud->addField([
             'label' => 'Id партнёра',
             'name' => 'user_id',
-            'attributes' => [
-                'disabled'    => 'disabled',
-            ],
         ]);
 
         $this->crud->addField([
             'label' => 'Адрес',
             'name' => 'address',
             'type' => 'textarea',
-            'attributes' => [
-                'disabled'    => 'disabled',
-            ],
         ]);
 
         $this->crud->addField([

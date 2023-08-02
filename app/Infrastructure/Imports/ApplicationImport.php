@@ -3,15 +3,12 @@
 namespace App\Infrastructure\Imports;
 
 use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
-use App\Infrastructure\Imports\ImportEntity;
-use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\DefaultValueBinder;
 use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
-use PhpOffice\PhpSpreadsheet\Exception;
-use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
-class ApplicationImport extends DefaultValueBinder implements WithCustomCsvSettings, ImportEntity, WithCustomValueBinder
+class ApplicationImport extends DefaultValueBinder implements WithCustomCsvSettings, ImportEntity, WithCustomValueBinder, WithCalculatedFormulas
 {
     public function getCsvSettings(): array
     {

@@ -29,7 +29,7 @@ class ApplicationCrudController extends CrudController
         CRUD::setModel(\App\Models\Application::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/applications');
         CRUD::setEntityNameStrings('applications', 'Заявки');
-        $this->crud->denyAccess(['update', 'show']);
+        $this->crud->denyAccess(['update']);
 
     }
 

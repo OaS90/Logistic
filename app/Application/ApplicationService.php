@@ -61,19 +61,20 @@ class ApplicationService
                 return response(['message' => 'У товара ' . $product->name . ' отсутствует баркод'], 400);
         }
 
-        return PDF::loadView('sticker', ['codes' => $barcodes, 'application' => $app, 'products' => $app->products])
+        $pdf = PDF::loadView('sticker', ['codes' => $barcodes, 'application' => $app, 'products' => $app->products])
             ->setPaper([30, -30, 280.77, 320.16]);
+
+        return $pdf;
     }
 
     public function getDeliveryDateFromHru($appNumber, DeliveryAddress $addressEntity): bool
     {
-
         $api = new Api(config('app.hru_delivery_url'));
         $deliveryResponse = $api
             ->query('', ['q' => 'DeliveryDateBortUdachi', 'address' => $addressEntity->region_and_city]);
 
         if ($deliveryResponse && isset($deliveryResponse['date'])) {
-             $this->appRepo->updateByFields($appNumber, ['hru_delivery_date' => $deliveryResponse['date']]);
+            $this->appRepo->updateByFields($appNumber, ['hru_delivery_date' => $deliveryResponse['date']]);
         }
 
         return false;
