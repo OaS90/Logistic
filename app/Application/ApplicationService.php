@@ -33,7 +33,6 @@ class ApplicationService
             $app->update($data);
         }
 
-
         return null;
     }
 
@@ -41,8 +40,9 @@ class ApplicationService
     {
         foreach ($data as $csvProduct) {
             $appProduct = $this->productRepo->getByAppIdSkuBrand($csvProduct['sku'], $app->id);
+            $this->appRepo->updateByFields($app, ['doc_ver' => $app->doc_ver + 1]);
+
             if (!$appProduct) {
-                $app->update(['doc_ver' => $app->doc_ver + 1]);
                 $this->productRepo->create((new ProductDTO())->toArray($app->id, $csvProduct));
             } else {
                 $this->productRepo->update((new ProductDTO())->toArray($app->id, $csvProduct), $appProduct);

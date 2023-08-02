@@ -19,6 +19,7 @@ class PartnerOrderDTO
 
         return [
             'id' => $this->app->order_number,
+            'docVer' => $this->app->doc_ver,
             'paymentMethod' => $this->app->payment_type,
             'comment' => $this->app->comment,
             'deliveryDate' => $this->app->parsed_delivery_date,

@@ -38,9 +38,10 @@ class PartnerController extends Controller
             $apps = [];
 
             foreach ($applications as $app) {
-                if ($app->status == 'created') {
+                if ($app->status == 'created' || $app->doc_ver > $app->old_doc_ver) {
                     $appDTO = (new PartnerOrderDTO($app))->make();
                     $apps[] = $appDTO;
+                    $this->repo->updateByFields($app, ['old_doc_ver' => $app->doc_ver]);
                 }
             }
 
