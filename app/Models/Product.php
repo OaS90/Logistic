@@ -11,9 +11,4 @@ class Product extends Model
 
     protected $table = 'application_products';
     protected $guarded = ['id'];
-
-    public function getNameAttribute($value): string
-    {
-        return $this->toUtf($value);
-    }
 }

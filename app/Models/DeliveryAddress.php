@@ -17,19 +17,4 @@ class DeliveryAddress extends Model
     {
         return $this->city_name . ', ' . $this->region_name;
     }
-
-    public function getRegionNameAttribute($value): string
-    {
-        return $this->toUtf($value);
-    }
-
-    public function getCityNameAttribute($value): string
-    {
-        return $this->toUtf($value);
-    }
-
-    public function getStreetAttribute($value): string
-    {
-        return $this->toUtf($value);
-    }
 }

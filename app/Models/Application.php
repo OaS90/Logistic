@@ -90,14 +90,4 @@ class Application extends Model
         $deliveryDate = $this->hru_delivery_date ?? $this->delivery_date;
         return Carbon::createFromDate($deliveryDate)->format('d.m.Y');
     }
-
-    public function getPaymentTypeAttribute($value): string
-    {
-        return $this->toUtf($value);
-    }
-
-    public function getClientNameAttribute($value): string
-    {
-        return $this->toUtf($value);
-    }
 }
