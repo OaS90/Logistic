@@ -151,7 +151,7 @@ class ApplicationController
         return response(['code' => $newApp->order_number . '-' . $newApp->id, 'success' => true, 'message' => ''], 200);
     }
 
-    public function getSticker($partnerOrderId): \Illuminate\Http\Response|JsonResponse
+    public function getSticker($partnerOrderId)
     {
         $app = $this->repo->getByOrderNumber($partnerOrderId);
 

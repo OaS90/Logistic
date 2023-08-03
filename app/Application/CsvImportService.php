@@ -93,11 +93,15 @@ class CsvImportService
             // проверяем, что есть товар в этой столбце.
             // даже если это второй товар для одного заказа,
             // то номера заказа не будет, но название товара будет по-любому
+            // или если одинаковые номера заказов подряд
+
             if ($dataFromFile[$i][16]) {
                 $appWithDbColumns = array_combine($rows, $dataFromFile[$i]);
 
-                if ($appWithDbColumns['order_number'] == null) {
+                if ($appWithDbColumns['order_number'] == null ||
+                    (isset($apps[$i - 1]) && $appWithDbColumns['order_number'] == $apps[$i - 1]['app']['order_number'])) {
                     $apps[$i - 1]['products'][] = (new ProductDTO())->dbRows($appWithDbColumns);
+
                     continue;
                 }
                 $appWithDbColumns['delivery_date'] = Carbon::createFromFormat('d.m.Y', $appWithDbColumns['delivery_date'])

@@ -41,11 +41,13 @@ class PartnerController extends Controller
                 if ($app->status == 'created' || $app->doc_ver > $app->old_doc_ver) {
                     $appDTO = (new PartnerOrderDTO($app))->make();
                     $apps[] = $appDTO;
-                    $this->repo->updateByFields($app, ['old_doc_ver' => $app->doc_ver]);
+                    $this->repo->updateByFields($app->order_number, ['old_doc_ver' => $app->doc_ver]);
                 }
             }
 
-            return response()->json($apps);
+            return response()->json($apps, 200,
+                ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
+            );
         }
 
         return response()

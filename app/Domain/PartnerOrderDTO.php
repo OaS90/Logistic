@@ -3,6 +3,7 @@
 namespace App\Domain;
 
 use App\Models\Application;
+use App\Models\Product;
 
 class PartnerOrderDTO
 {
@@ -54,6 +55,7 @@ class PartnerOrderDTO
         $products = [];
 
         foreach ($app->products as $index => $product) {
+            /* @var Product $product */
             $i = $index + 1;
             $products[] = [
                 'name' => $product->name, // Товар

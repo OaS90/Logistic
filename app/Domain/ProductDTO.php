@@ -17,7 +17,7 @@ class ProductDTO
         $data['depth'] = floatval(str_replace(',', '.', $allRows['depth']));
         $data['brand'] = $allRows['brand'] ?? null; // Бренд
         $data['tnved'] = $allRows['tnved'] ?? null; // Код ТНВЭД
-        $data['country'] = $allRows['country_code'] ?? null; // код страны происхождения по ОКСМ
+        $data['country_code'] = $allRows['country_code'] ?? null; // код страны происхождения по ОКСМ
         $data['barcode'] = $allRows['barcode'] ?? null; // EAN
         $data['volume'] = floatval(str_replace(',', '.', $allRows['volume']));
         $data['weight'] = floatval(str_replace(',', '.', $allRows['weight']));
@@ -39,7 +39,7 @@ class ProductDTO
             'weight' => $data['weight'], // Расчетный вес (кг)
             'brand' => $data['brand'] ?? null, // Бренд
             'tnved' => $data['tnved'] ?? null, // Код ТНВЭД
-            'country' => $data['country_code'] ?? null, // код страны происхождения по ОКСМ
+            'country_code' => $data['country_code'] ?? null, // код страны происхождения по ОКСМ
             'barcode' => $data['barcode'] ?? null, // EAN
             'volume' => floatval(str_replace(' ', '', $data['volume'])), // объем в м2
             'width' => $data['width'], // ширина в см

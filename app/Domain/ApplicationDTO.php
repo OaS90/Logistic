@@ -54,7 +54,7 @@ class ApplicationDTO
         $data['order_number'] = $allRows['order_number'];
         $data['payment_type'] = $allRows['payment_type'];
         $data['delivery_date'] = $allRows['delivery_date'];
-        $data['delivery_cost'] = (float) $allRows['delivery_cost'];
+        $data['delivery_cost'] = isset($allRows['delivery_cost']) ? (float) $allRows['delivery_cost'] : 0;
         $data['delivery_from'] = $allRows['delivery_from'];
         $data['delivery_till'] = $allRows['delivery_till'];
         $data['comment'] = $allRows['comment'];
@@ -71,6 +71,7 @@ class ApplicationDTO
         $data['order_number'] = $data['id'];
         $data['delivery_time'] = $data['deliveryTimeFrom'] . '-' . $data['deliveryTimeTo'];
         $data['delivery_date'] = Carbon::parse($data['deliveryDate'])->format('Y-m-d');
+        $data['delivery_cost'] = isset($allRows['delivery_cost']) ? (float) $allRows['delivery_cost'] : 0;
         $data['payment_type'] = $data['paymentMethod'];
         $data['delivery_address'] = $addressId;
         $data['warehouse_id'] = $data['storeId'];
