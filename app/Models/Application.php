@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Shared\Eloquent\ConvertsToUtfTrait;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class Application extends Model
 {
     use CrudTrait;
+    use ConvertsToUtfTrait;
 
     protected $table = 'applications';
     protected $guarded = ['id'];
@@ -87,5 +89,15 @@ class Application extends Model
     {
         $deliveryDate = $this->hru_delivery_date ?? $this->delivery_date;
         return Carbon::createFromDate($deliveryDate)->format('d.m.Y');
+    }
+
+    public function getPaymentTypeAttribute($value): string
+    {
+        return $this->toUtf($value);
+    }
+
+    public function getClientNameAttribute($value): string
+    {
+        return $this->toUtf($value);
     }
 }
