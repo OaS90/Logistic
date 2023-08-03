@@ -71,7 +71,7 @@ class Application extends Model
 
     public function getMobilePhoneAttribute(): string
     {
-        return '+7 (' . substr($this->client_phone, 0, 3) . ') ' .
+        return '+7 ' . substr($this->client_phone, 0, 3) . ' ' .
             substr($this->client_phone, 3, 3) . '-' .
             substr($this->client_phone, 6, 2) . '-' .
             substr($this->client_phone, 8);
