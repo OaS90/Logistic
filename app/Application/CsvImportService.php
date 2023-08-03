@@ -65,7 +65,6 @@ class CsvImportService
             } else {
                 $data['app']['warehouse_id'] = $warehouse->id;
                 $this->appService->checkAppChanges($existApp, $data['app']);
-                $this->appService->checkAppProducts($existApp, $data['products']);
             }
 
             $this->appService->getDeliveryDateFromHru($existApp->order_number, $existApp->address);

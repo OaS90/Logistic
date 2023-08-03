@@ -100,7 +100,6 @@ class ApplicationController extends Controller
             $products[] = $this->productRepository->create($products);
         } else {
            $this->appService->checkAppChanges($existApp, $data);
-           $this->appService->checkAppProducts($existApp, $products);
         }
 
         $this->appService->getDeliveryDateFromHru($existApp->order_number, $newAddress);

@@ -28,19 +28,19 @@ class ApplicationService
 
     public function checkAppChanges($app, array $data)
     {
-        if ($app->status != 'new' ) {
+        if ($app->status != 'new') {
             $data['doc_ver'] = $app->doc_ver + 1;
             $app->update($data);
+            $this->checkAppProducts($app, $data['products']);
         }
 
         return null;
     }
 
-    public function checkAppProducts($app, array $data): void
+    private function checkAppProducts($app, array $data): void
     {
         foreach ($data as $csvProduct) {
             $appProduct = $this->productRepo->getByAppIdSkuBrand($csvProduct['sku'], $app->id);
-            $this->appRepo->updateByFields($app, ['doc_ver' => $app->doc_ver + 1]);
 
             if (!$appProduct) {
                 $this->productRepo->create((new ProductDTO())->toArray($app->id, $csvProduct));

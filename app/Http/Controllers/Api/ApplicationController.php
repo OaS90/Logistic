@@ -198,7 +198,7 @@ class ApplicationController
             if (count($statuses) == 0)
                 $statuses = ['message' => 'История статусов для заказа(ов) пуста'];
         } catch (\Throwable $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['message' => 'Ошибка получения истории'], 500);
         }
 
         return response()->json($statuses);
