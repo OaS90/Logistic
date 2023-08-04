@@ -28,7 +28,7 @@ class ApplicationService
 
     public function checkAppChanges($app, array $data)
     {
-        if ($app->status != 'new') {
+        if (!in_array($app->status, ['new', 'refusal'])) {
             $data['app']['doc_ver'] = $app->doc_ver + 1;
             $app->update($data['app']);
             $this->checkAppProducts($app, $data['products']);

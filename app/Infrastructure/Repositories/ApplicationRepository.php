@@ -26,10 +26,13 @@ class ApplicationRepository
     {
         $existsApplication = $this->getByOrderNumber($data['order_number']);
 
-        if (!$existsApplication)
+        if (!$existsApplication) {
             return Application::create($data);
-        else
+        } else {
+            $existsApplication->update($data);
+
             return $existsApplication;
+        }
     }
 
     public function updateStatus(string $orderId, string $status): void

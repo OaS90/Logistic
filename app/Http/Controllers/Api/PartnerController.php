@@ -8,6 +8,7 @@ use App\Infrastructure\Repositories\UserRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Infrastructure\Repositories\ApplicationRepository;
+use Illuminate\Support\Facades\Log;
 
 class PartnerController extends Controller
 {
@@ -41,6 +42,7 @@ class PartnerController extends Controller
                 if ($app->status == 'created' || $app->doc_ver > $app->old_doc_ver) {
                     $appDTO = (new PartnerOrderDTO($app))->make();
                     $apps[] = $appDTO;
+                    Log::info('Sent to 1c ' . json_encode($appDTO));
                     $this->repo->updateByFields($app->order_number, ['old_doc_ver' => $app->doc_ver]);
                 }
             }
