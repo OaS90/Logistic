@@ -159,7 +159,7 @@ class ApplicationController extends Controller
 
     public function import(Request $request)
     {
-        if (Auth::id() == 6) {
+        if (Auth::id() == $this->obiUser) {
             return $this->importService->importObi($request->file('file'), new ApplicationObiImport(), Auth::id());
         } else {
             return $this->importService->import($request->file('file'), new ApplicationImport(), Auth::id());
@@ -168,7 +168,7 @@ class ApplicationController extends Controller
 
     public function downloadFileExample(): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
-        if (Auth::id() == 6) {
+        if (Auth::id() == $this->obiUser) {
             return Response::download(storage_path('app/public/example-obi.xlsx'));
         } else {
             return Response::download(storage_path('app/public/orders_example.csv'));

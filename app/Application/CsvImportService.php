@@ -112,9 +112,9 @@ class CsvImportService
             foreach ($products as $product) {
                 $this->obiProductsRepo->create($product, $newApp->id);
             }
-
-            return response(['message' => 'success'], 200);
         }
+
+        return response(['message' => 'success'], 200);
     }
 
     /**
