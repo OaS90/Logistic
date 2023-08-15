@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Domain\ApplicationStatuses;
 use App\Shared\Eloquent\ConvertsToUtfTrait;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Carbon\Carbon;
@@ -11,19 +12,10 @@ class Application extends Model
 {
     use CrudTrait;
     use ConvertsToUtfTrait;
+    use ApplicationStatuses;
 
     protected $table = 'applications';
     protected $guarded = ['id'];
-    const STATUSES = [
-        'created' => 'Создано',
-        'new' => 'Новый',
-        'inProgress' => 'В работе',
-        'loaded' => 'Загружен',
-        'postponed' => 'Отложен',
-        'refusal' => 'Отказ',
-        'completed' => 'Выполнен',
-        'defect' => 'Брак'
-    ];
 
     public function user()
     {
@@ -75,14 +67,6 @@ class Application extends Model
             substr($this->client_phone, 3, 3) . '-' .
             substr($this->client_phone, 6, 2) . '-' .
             substr($this->client_phone, 8);
-    }
-
-    public function getStatus($status): string
-    {
-        if ($status)
-            return self::STATUSES[$status];
-
-        return '';
     }
 
     public function getParsedDeliveryDateAttribute()

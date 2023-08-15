@@ -20,6 +20,7 @@ return [
     'api_user' => env('API_HRU_USER', 'holodilnik'),
     'api_password' => env('API_HRU_PASSWORD', ''),
     'hru_delivery_url' => env('API_DELIVERY_HRU', ''),
+    'obi_user_id' => env('OBI_USER_ID', 6),
     /*
     |--------------------------------------------------------------------------
     | Application Environment

@@ -3,8 +3,10 @@
 namespace App\Application;
 
 use App\Domain\ApplicationDTO;
+use App\Domain\ApplicationObiDTO;
 use App\Domain\DeliveryAddressDTO;
 use App\Domain\ProductDTO;
+use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\WarehouseRepository;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
@@ -12,6 +14,8 @@ use App\Infrastructure\Imports\ImportEntity;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Repositories\ProductRepository;
+use App\Infrastructure\Repositories\ObiProductsRepository;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 /**
  *
@@ -23,12 +27,16 @@ class CsvImportService
     protected DeliveryAddressRepository $addressRepo;
     protected ApplicationService $appService;
     protected WarehouseRepository $warehouseRepo;
+    protected ApplicationObiRepository $applicationObiRepo;
+    protected ObiProductsRepository $obiProductsRepo;
 
     public function __construct(ApplicationRepository $appRepo,
                                 DeliveryAddressRepository $addressRepository,
                                 ProductRepository $productRepository,
                                 ApplicationService $appService,
-                                WarehouseRepository $warehouseRepository
+                                WarehouseRepository $warehouseRepository,
+                                ApplicationObiRepository $applicationObiRepo,
+                                ObiProductsRepository $obiProductsRepository
     )
     {
         $this->appRepo = $appRepo;
@@ -36,6 +44,8 @@ class CsvImportService
         $this->addressRepo = $addressRepository;
         $this->appService = $appService;
         $this->warehouseRepo = $warehouseRepository;
+        $this->applicationObiRepo = $applicationObiRepo;
+        $this->obiProductsRepo = $obiProductsRepository;
     }
 
 
@@ -73,6 +83,40 @@ class CsvImportService
         return response(['message' => 'success'], 200);
     }
 
+    public function importObi($file, ImportEntity $entity, $userId)
+    {
+        $dataFromFile = Excel::toArray($entity, $file)[0];
+        $rows = (new ApplicationObiDTO())->dbRowsFromXlsx();
+
+        for ($i = 4; $i <= count($dataFromFile) - 4; $i++) {
+            // убираем номер строки из файла (№ п/п)
+            unset($dataFromFile[$i][0]);
+            $dataFromFile[$i][1] = Carbon::parse(Date::excelToDateTimeObject($dataFromFile[$i][1]));
+            $appWithDbColumns = array_combine($rows, $dataFromFile[$i]);
+            $appWithDbColumns['user_id'] = $userId;
+            $orderList = explode(';', $appWithDbColumns['order_list']);
+            $products = [];
+
+            foreach ($orderList as $product) {
+                $productInfo = strlen(trim($product));
+
+                if ($productInfo != 0) {
+                    $products[] = trim($product);
+                }
+            }
+
+            unset($appWithDbColumns['order_list']);
+
+            $newApp = $this->applicationObiRepo->create($appWithDbColumns);
+
+            foreach ($products as $product) {
+                $this->obiProductsRepo->create($product, $newApp->id);
+            }
+
+            return response(['message' => 'success'], 200);
+        }
+    }
+
     /**
      * Формирует массив значений из csv файла и создаёт заявки
      * @param $entity
@@ -96,6 +140,7 @@ class CsvImportService
             // или если одинаковые номера заказов подряд
 
             if ($dataFromFile[$i][16]) {
+                // проверка кол-ва нужных ячеек. Должно быть 33
                 $appWithDbColumns = array_combine($rows, $dataFromFile[$i]);
 
                 if ($appWithDbColumns['order_number'] == null ||
@@ -104,6 +149,7 @@ class CsvImportService
 
                     continue;
                 }
+
                 $appWithDbColumns['delivery_date'] = Carbon::createFromFormat('d.m.Y', $appWithDbColumns['delivery_date'])
                     ->format('Y-m-d');
 
