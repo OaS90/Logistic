@@ -8,7 +8,9 @@ class ApplicationObiRepository
 {
     public function create(array $data)
     {
-        $existsApp = ApplicationObi::where('order_number', $data['order_number'])->first();
+        $existsApp = ApplicationObi::where('order_number', $data['order_number'])
+            ->where('user_id', $data['user_id'])
+            ->first();
 
         if (!$existsApp) {
             return ApplicationObi::create($data);
