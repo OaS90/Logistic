@@ -88,7 +88,7 @@ class CsvImportService
         $dataFromFile = Excel::toArray($entity, $file)[0];
         $rows = (new ApplicationObiDTO())->dbRowsFromXlsx();
 
-        for ($i = 4; $i <= count($dataFromFile); $i++) {
+        for ($i = 4; $i <= count($dataFromFile) - 1; $i++) {
             // убираем номер строки из файла (№ п/п)
             unset($dataFromFile[$i][0]);
             $dataFromFile[$i][1] = Carbon::parse(Date::excelToDateTimeObject($dataFromFile[$i][1]));
