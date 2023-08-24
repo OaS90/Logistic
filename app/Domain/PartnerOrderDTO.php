@@ -132,14 +132,17 @@ class PartnerOrderDTO
             $i = $index + 1;
             $productsForFComment[] = $product->name;
             $explodedName = explode('- ', $product->name);
-            $count = 1;
 
             if (is_array($explodedName)) {
                 $name = $explodedName[0];
                 $count = floatval(str_replace(',', '.', trim($explodedName[1])));
             } else {
                 $name = $product->name;
+                $count = 1;
             }
+
+            $explodedProductIdName = explode('_', $name);
+            $productId = $explodedProductIdName[0];
 
             if (!str_contains($name, 'Доплата') && !str_contains($name, 'Доставка')) {
                 $products[] = [
@@ -151,7 +154,7 @@ class PartnerOrderDTO
                     'VATRate' => 0, // Ставка НДС
                     'leftToPay' => 0, // Сумма к получению
                     'weight' => $eachProductWeight, // Расчетный вес (кг)
-                    'setId' => $name . '_' . $i,
+                    'setId' => $productId . '_' . $i,
                     'brand' => '', // Бренд
                     'tnved' => '', // Код ТНВЭД
                     'country' => '', // код страны происхождения по ОКСМ
