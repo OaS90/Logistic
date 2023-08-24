@@ -16,33 +16,67 @@ class PartnerOrderDTO
 
     public function make(): array
     {
-        $products = $this->products($this->app);
+        $isObiPartner = config('app.obi_user_id') == $this->app->user_id;
 
-        return [
-            'id' => $this->app->order_number,
-            'docVer' => $this->app->doc_ver,
-            'paymentMethod' => $this->app->payment_type,
-            'comment' => $this->app->comment,
-            'deliveryDate' => $this->app->parsed_delivery_date,
-            'deliveryTimeFrom' => $this->deliveryTime($this->app->delivery_time)[0],
-            'deliveryTimeTo' => $this->deliveryTime($this->app->delivery_time)[1],
-            'storeID' => $this->app->warehouse->store_id ?? null,
-            'buyer' => [
-                'fio' => $this->app->client_name,
-                'phone' => $this->app->mobile_phone
-            ],
-            'address' => [
-                'regionName'=> $this->app->address->region_name,
-                'cityName'=> $this->app->address->city_name,
-                'cityId'=> $this->app->address->city_fias, // ФИАС код города/населенного пункта
-                'street'=> $this->app->address->street,
-                'streetId'=> $this->app->address->street_fias, // ФИАС код улицы
-                'building'=> $this->app->address->building,
-                'floor'=> $this->app->address->floor, // необязательно
-                'flat'=> $this->app->address->flat // необязательно
-            ],
-            'products' => $products
-        ];
+        if ($isObiPartner) {
+            $productsInfo = $this->obiProducts($this->app);
+            $comment = $this->app->comment . '\n ' . $productsInfo['productsComment'];
+
+            $data = [
+                'id' => $this->app->order_number,
+                'docVer' => $this->app->doc_ver,
+                'paymentMethod' => 'Предоплата',
+                'comment' => $comment,
+                'deliveryDate' => $this->app->parsed_delivery_date,
+                'deliveryTimeFrom' => $this->deliveryTime($this->app->delivery_time)[0],
+                'deliveryTimeTo' => $this->deliveryTime($this->app->delivery_time)[1],
+                'storeID' => $this->app->warehouse->store_id ?? null,
+                'buyer' => [
+                    'fio' => $this->app->client_name,
+                    'phone' => $this->app->phone
+                ],
+                'address' => [
+                    'regionName'=> $this->app->delivery_address,
+                    'cityName'=> '',
+                    'cityId'=> '', // ФИАС код города/населенного пункта
+                    'street'=> '',
+                    'streetId'=> '', // ФИАС код улицы
+                    'building'=> '',
+                    'floor'=> '', // необязательно
+                    'flat'=> '' // необязательно
+                ],
+                'products' => $productsInfo['products']
+            ];
+        } else {
+            $products = $this->products($this->app);
+            $data = [
+                'id' => $this->app->order_number,
+                'docVer' => $this->app->doc_ver,
+                'paymentMethod' => $this->app->payment_type,
+                'comment' => $this->app->comment,
+                'deliveryDate' => $this->app->parsed_delivery_date,
+                'deliveryTimeFrom' => $this->deliveryTime($this->app->delivery_time)[0],
+                'deliveryTimeTo' => $this->deliveryTime($this->app->delivery_time)[1],
+                'storeID' => $this->app->warehouse->store_id ?? null,
+                'buyer' => [
+                    'fio' => $this->app->client_name,
+                    'phone' => $this->app->mobile_phone
+                ],
+                'address' => [
+                    'regionName'=> $this->app->address->region_name,
+                    'cityName'=> $this->app->address->city_name,
+                    'cityId'=> $this->app->address->city_fias, // ФИАС код города/населенного пункта
+                    'street'=> $this->app->address->street,
+                    'streetId'=> $this->app->address->street_fias, // ФИАС код улицы
+                    'building'=> $this->app->address->building,
+                    'floor'=> $this->app->address->floor, // необязательно
+                    'flat'=> $this->app->address->flat // необязательно
+                ],
+                'products' => $products
+            ];
+        }
+
+        return $data;
     }
 
     public function deliveryTime($time): array
@@ -80,5 +114,54 @@ class PartnerOrderDTO
         }
 
         return $products;
+    }
+
+    private function obiProducts(Application $app): array
+    {
+        $products = [];
+        $productsForFComment = [];
+
+        foreach ($app->products as $index => $product) {
+            /* @var Product $product */
+            $i = $index + 1;
+            $productsForFComment[] = $product->name;
+            $explodedName = explode('-', $product->name);
+            $count = 1;
+
+            if (is_array($explodedName)) {
+                $name = $explodedName[0];
+                $count = $explodedName[1];
+            } else {
+                $name = $product->name;
+            }
+
+            $products[] = [
+                'name' => $name, // Товар
+                'vendorCode' => '', // Артикул
+                'count' => $count, // Количество
+                'cost' => 0, // Оценочная стоимость
+                'costAfterDiscounts' => 0, // Стоимость с учетом скидки
+                'VATRate' => 0, // Ставка НДС
+                'leftToPay' => 0, // Сумма к получению
+                'weight' => 1, // Расчетный вес (кг)
+                'setId' => $name . '_' . $i,
+                'brand' => '', // Бренд
+                'tnved' => '', // Код ТНВЭД
+                'country' => '', // код страны происхождения по ОКСМ
+                'barcode' => '', // EAN
+                'volume' => 1, // объем в м2
+                'width' => 1, // ширина в см
+                'height' => 1, // высота в м2
+                'depth' => 1, // глубина в см
+                'shipmentCode' => 'OBI-' . $app->order_number . '-' . $i
+            ];
+        }
+
+        $allProductsString = implode('; ', $productsForFComment);
+
+        return [
+            'products' => $products,
+            'productsComment' => $allProductsString
+        ];
     }
 }
