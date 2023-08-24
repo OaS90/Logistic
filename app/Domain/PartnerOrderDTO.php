@@ -32,7 +32,7 @@ class PartnerOrderDTO
                 'deliveryDate' => $this->app->parsed_delivery_date,
                 'deliveryTimeFrom' => $this->deliveryTime($this->app->delivery_time)[0],
                 'deliveryTimeTo' => $this->deliveryTime($this->app->delivery_time)[1],
-                'storeID' => $this->app->warehouse->store_id ?? null,
+                'storeID' => 14010,
                 'buyer' => [
                     'fio' => $this->app->client_name,
                     'phone' => $this->app->phone
