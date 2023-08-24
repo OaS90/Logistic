@@ -131,7 +131,7 @@ class PartnerOrderDTO
             /* @var Product $product */
             $i = $index + 1;
             $productsForFComment[] = $product->name;
-            $explodedName = explode('-', $product->name);
+            $explodedName = explode('- ', $product->name);
             $count = 1;
 
             if (is_array($explodedName)) {
