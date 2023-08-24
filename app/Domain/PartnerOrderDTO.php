@@ -122,6 +122,8 @@ class PartnerOrderDTO
     {
         $products = [];
         $productsForFComment = [];
+        $appCost = $app->products_cost;
+        $eachProductCost = $appCost / count($app->products);
 
         foreach ($app->products as $index => $product) {
             /* @var Product $product */
@@ -141,7 +143,7 @@ class PartnerOrderDTO
                 'name' => $name, // Товар
                 'vendorCode' => '', // Артикул
                 'count' => $count, // Количество
-                'cost' => 0, // Оценочная стоимость
+                'cost' => $eachProductCost, // Оценочная стоимость
                 'costAfterDiscounts' => 0, // Стоимость с учетом скидки
                 'VATRate' => 0, // Ставка НДС
                 'leftToPay' => 0, // Сумма к получению
