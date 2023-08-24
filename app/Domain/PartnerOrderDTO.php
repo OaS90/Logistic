@@ -35,7 +35,7 @@ class PartnerOrderDTO
                 'storeID' => 14010,
                 'buyer' => [
                     'fio' => $this->app->client_name,
-                    'phone' => $this->app->phone
+                    'phone' => $this->app->mobile_phone
                 ],
                 'address' => [
                     'regionName'=> $this->app->delivery_address,

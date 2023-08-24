@@ -106,6 +106,19 @@ class CsvImportService
             }
             $productsCost = substr(preg_replace('/[^0-9]/', '', $appWithDbColumns['products_cost']), 0, -2);
             $appWithDbColumns['products_cost'] = floatval($productsCost);
+            $explodedPhones = explode(',', $appWithDbColumns['phone']);
+            $phones = [];
+
+            if (is_array($explodedPhones) && count($explodedPhones) > 1) {
+                foreach ($explodedPhones as $phone) {
+                    $phones[] = parse_phone($phone);
+                }
+
+                $phones = implode(', ', $phones);
+            } else {
+                $phones = parse_phone($appWithDbColumns['phone']);
+            }
+            $appWithDbColumns['phone'] = $phones;
             unset($appWithDbColumns['order_list']);
             $newApp = $this->applicationObiRepo->create($appWithDbColumns);
 
