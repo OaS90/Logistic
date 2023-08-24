@@ -73,6 +73,7 @@
                             <th>Наименование товара</th>
                             <th>Дата доставки</th>
                             <th>Адрес доставки</th>
+                            <th>Статус</th>
                         </tr>
                         @foreach($list as $application)
                             <tr>
@@ -84,6 +85,9 @@
                                         {{--                                        {{ (strlen($application->full_address) > 24) ? substr($application->full_address,0, 24).'...' : $application->full_address }}--}}
                                         {{ $application->delivery_address }}
                                     </div>
+                                </td>
+                                <td>
+                                    {{ $application->getStatus($application->status) }}
                                 </td>
                             </tr>
                         @endforeach

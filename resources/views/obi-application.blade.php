@@ -76,7 +76,7 @@
                     </div>
                     <div class="total-block">
                         <div class="total-block__ttl">Сумма к получению с покупателя</div>
-                        <div class="total-block__amount">{{ $application->total_cost }} ₽</div>
+                        <div class="total-block__amount">{{ $application->products_cost }} ₽</div>
                     </div>
                 </div>
             </section>
