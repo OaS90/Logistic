@@ -2,14 +2,16 @@
 
 namespace App\Domain;
 
+use App\Application\ApplicationInterface;
 use App\Models\Application;
+use App\Models\ApplicationObi;
 use App\Models\Product;
 
 class PartnerOrderDTO
 {
-    private Application $app;
+    private $app;
 
-    public function __construct(Application $application)
+    public function __construct($application)
     {
         $this->app = $application;
     }
@@ -116,7 +118,7 @@ class PartnerOrderDTO
         return $products;
     }
 
-    private function obiProducts(Application $app): array
+    private function obiProducts(ApplicationObi $app): array
     {
         $products = [];
         $productsForFComment = [];

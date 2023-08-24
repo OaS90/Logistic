@@ -14,11 +14,13 @@ class PartnerController extends Controller
 {
     private ApplicationRepository $repo;
     private UserRepository $userRepo;
+    private int $obiUser;
 
     public function __construct(ApplicationRepository $repository, UserRepository $userRepo)
     {
         $this->repo = $repository;
         $this->userRepo = $userRepo;
+        $this->obiUser = config('app.obi_user_id');
     }
 
     public function getOrders(Request $request): JsonResponse
@@ -27,7 +29,8 @@ class PartnerController extends Controller
         $user = $this->userRepo->getBy1cId($partnerId);
 
         if ($user) {
-            $applications = $this->repo->getListByUserId($user->id);
+            $isObiPartner = $this->obiUser == $user->id;
+            $applications = $this->repo->getListByUserId($user->id, $isObiPartner);
 
             if ($applications->count() == 0)
                 return response()
