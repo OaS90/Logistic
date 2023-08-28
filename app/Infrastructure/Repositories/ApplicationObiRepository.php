@@ -28,4 +28,15 @@ class ApplicationObiRepository
     {
         return ApplicationObi::find($appId);
     }
+
+    public function getByOrderNumber(string $orderId)
+    {
+        return ApplicationObi::where('order_number', $orderId)->first();
+    }
+
+    public function updateByFields($number, $fields): void
+    {
+        $app = $this->getByOrderNumber($number);
+        $app->update($fields);
+    }
 }

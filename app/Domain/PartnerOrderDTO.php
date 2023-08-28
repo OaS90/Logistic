@@ -2,23 +2,54 @@
 
 namespace App\Domain;
 
-use App\Application\ApplicationInterface;
-use App\Models\Application;
 use App\Models\ApplicationObi;
 use App\Models\Product;
+use App\Application\DadataService;
 
 class PartnerOrderDTO
 {
     private $app;
+    protected $dadataService;
 
     public function __construct($application)
     {
         $this->app = $application;
+        $this->dadataService = new DadataService();
     }
 
     public function make(): array
     {
         $isObiPartner = config('app.obi_user_id') == $this->app->user_id;
+        $addressInfo = $this->dadataService->getAddress($this->app->delivery_address, 1);
+
+        if (isset($addressInfo[0]['data']) && count($addressInfo[0]['data']) > 0) {
+            $cityInfo = [
+                'cityName' => $addressInfo[0]['data']['city'] ?? $addressInfo[0]['data']['settlement_with_type'],
+                'cityFias' => $addressInfo[0]['data']['city_fias_id'] ?? $addressInfo[0]['data']['settlement_fias_id']
+            ];
+
+            $address = [
+                'regionName'=> $addressInfo[0]['data']['region_with_type'],
+                'cityName'=> $cityInfo['cityName'],
+                'cityId'=> $cityInfo['cityFias'] ?? '', // ФИАС код города/населенного пункта
+                'street'=> $addressInfo[0]['data']['street_with_type'] ?? '',
+                'streetId'=> $addressInfo[0]['data']['street_fias_id'] ?? '', // ФИАС код улицы
+                'building'=> $addressInfo[0]['data']['house'] ?? '',
+                'floor'=> $addressInfo[0]['data']['floor'] ?? '', // необязательно
+                'flat'=> $addressInfo[0]['data']['flat'] ?? '' // необязательно
+            ];
+        } else {
+            $address = [
+                'regionName'=> $this->app->delivery_address,
+                'cityName'=> '',
+                'cityId'=> '', // ФИАС код города/населенного пункта
+                'street'=> '',
+                'streetId'=> '', // ФИАС код улицы
+                'building'=> '',
+                'floor'=> '', // необязательно
+                'flat'=> '' // необязательно
+            ];
+        }
 
         if ($isObiPartner) {
             $productsInfo = $this->obiProducts($this->app);
@@ -37,16 +68,7 @@ class PartnerOrderDTO
                     'fio' => $this->app->client_name,
                     'phone' => $this->app->mobile_phone
                 ],
-                'address' => [
-                    'regionName'=> $this->app->delivery_address,
-                    'cityName'=> '',
-                    'cityId'=> '', // ФИАС код города/населенного пункта
-                    'street'=> '',
-                    'streetId'=> '', // ФИАС код улицы
-                    'building'=> '',
-                    'floor'=> '', // необязательно
-                    'flat'=> '' // необязательно
-                ],
+                'address' => $address,
                 'products' => $productsInfo['products']
             ];
         } else {

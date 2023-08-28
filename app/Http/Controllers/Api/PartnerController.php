@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Domain\PartnerOrderDTO;
 use App\Http\Controllers\Controller;
+use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\UserRepository;
+use App\Models\ApplicationObi;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Infrastructure\Repositories\ApplicationRepository;
@@ -13,14 +15,16 @@ use Illuminate\Support\Facades\Log;
 class PartnerController extends Controller
 {
     private ApplicationRepository $repo;
+    private ApplicationObiRepository $obiRepository;
     private UserRepository $userRepo;
     private int $obiUser;
 
-    public function __construct(ApplicationRepository $repository, UserRepository $userRepo)
+    public function __construct(ApplicationRepository $repository, UserRepository $userRepo, ApplicationObiRepository $obiRepository)
     {
         $this->repo = $repository;
         $this->userRepo = $userRepo;
         $this->obiUser = config('app.obi_user_id');
+        $this->obiRepository = $obiRepository;
     }
 
     public function getOrders(Request $request): JsonResponse
@@ -30,7 +34,12 @@ class PartnerController extends Controller
 
         if ($user) {
             $isObiPartner = $this->obiUser == $user->id;
-            $applications = $this->repo->getListByUserId($user->id, $isObiPartner);
+
+            if ($isObiPartner) {
+                $applications = $this->obiRepository->getListByUserId($user->id);
+            } else {
+                $applications = $this->repo->getListByUserId($user->id);
+            }
 
             if ($applications->count() == 0)
                 return response()
@@ -46,6 +55,13 @@ class PartnerController extends Controller
                     $appDTO = (new PartnerOrderDTO($app))->make();
                     $apps[] = $appDTO;
                     Log::info('Sent to 1c ' . json_encode($appDTO));
+
+                    if ($isObiPartner) {
+                        $this->obiRepository->updateByFields($app->order_number, ['old_doc_ver' => $app->doc_ver]);
+                    } else {
+                        $this->repo->updateByFields($app->order_number, ['old_doc_ver' => $app->doc_ver]);
+                    }
+
                     $this->repo->updateByFields($app->order_number, ['old_doc_ver' => $app->doc_ver]);
                 }
             }

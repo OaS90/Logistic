@@ -117,10 +117,20 @@ class ApplicationController extends Controller
         $data['client_phone'] = parse_phone($data['client_phone']);
         $newAddress = $this->addressRepository->create($addressData);
         $data['delivery_address'] = $newAddress->id;
-        $existApp = $this->repo->getByOrderNumber($data['order_number']);
+
+        if ($this->obiUser == Auth::id()) {
+            $existApp = $this->applicationObiRepo->getById($data['order_number']);
+        } else {
+            $existApp = $this->repo->getByOrderNumber($data['order_number']);
+        }
 
         if (!$existApp) {
-            $existApp = $this->repo->create($data);
+            if ($this->obiUser == Auth::id()) {
+                $existApp = $this->applicationObiRepo->create($data);
+            } else {
+                $existApp = $this->repo->create($data);
+            }
+
             $products['app_id'] = $existApp->id;
             $products[] = $this->productRepository->create($products);
         } else {

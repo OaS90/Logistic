@@ -3,7 +3,6 @@
 namespace App\Infrastructure\Repositories;
 
 use App\Models\Application;
-use App\Models\ApplicationObi;
 use Illuminate\Support\Facades\Log;
 
 class ApplicationRepository
@@ -18,12 +17,8 @@ class ApplicationRepository
         return Application::where('order_number', $orderId)->first();
     }
 
-    public function getListByUserId(int $userId, bool $isObiPartner = false)
+    public function getListByUserId(int $userId)
     {
-        if ($isObiPartner) {
-            return ApplicationObi::where('user_id', $userId)->with('products')->get();
-        }
-
         return Application::where('user_id', $userId)->with('products')->get();
     }
 

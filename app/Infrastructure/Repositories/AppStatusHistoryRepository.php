@@ -42,7 +42,7 @@ class AppStatusHistoryRepository
 
                 foreach ($historyItems as $item) {
                     $statuses[] = [
-                        "description" => Application::STATUSES[$item->status] ?? 'Статус не найден.',
+                        "description" => $item->getStatus($item->status) ?? 'Неизвестный статус.',
                         "status" => $item->status,
                         "datetime" => $item->date_time
                     ];

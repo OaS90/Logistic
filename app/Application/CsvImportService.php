@@ -120,10 +120,19 @@ class CsvImportService
             }
             $appWithDbColumns['phone'] = $phones;
             unset($appWithDbColumns['order_list']);
-            $newApp = $this->applicationObiRepo->create($appWithDbColumns);
+            $existApp = $this->applicationObiRepo->getByOrderNumber($appWithDbColumns['order_number']);
 
-            foreach ($products as $product) {
-                $this->obiProductsRepo->create($product, $newApp->id);
+            if (!$existApp) {
+                $existApp = $this->applicationObiRepo->create($appWithDbColumns);
+
+                foreach ($products as $product) {
+                    $this->obiProductsRepo->create($product, $existApp->id);
+                }
+            } else {
+                if (!in_array($existApp->status, ['new', 'refusal'])) {
+                    $this->applicationObiRepo
+                        ->updateByFields($existApp->order_number, ['doc_ver' => $existApp->doc_ver + 1]);
+                }
             }
         }
 

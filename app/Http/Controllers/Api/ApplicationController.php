@@ -7,17 +7,19 @@ use App\Domain\ApplicationDTO;
 use App\Domain\DeliveryAddressDTO;
 use App\Domain\ProductDTO;
 use App\Http\Controllers\Api\Exceptions\JsonParseException;
+use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\AppStatusHistoryRepository;
 use App\Infrastructure\Repositories\UserRepository;
 use Barryvdh\DomPDF\PDF;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\Exceptions\StatusUpdateException;
 use App\Infrastructure\Repositories\ProductRepository;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Repositories\WarehouseRepository;
 use App\Application\ApplicationService;
+use Illuminate\Support\Facades\Log;
+
 
 class ApplicationController
 {
@@ -30,6 +32,8 @@ class ApplicationController
     protected $appRepo;
     protected $appStatusHistoryRepo;
     protected $deliveryAddressService;
+    protected ApplicationObiRepository $applicationObiRepo;
+    private int $obiUser;
 
     public function __construct(ApplicationRepository $repository,
                                 DeliveryAddressRepository $addressRepo,
@@ -39,7 +43,8 @@ class ApplicationController
                                 ApplicationService $appService,
                                 ApplicationRepository $appRepo,
                                 AppStatusHistoryRepository $appStatusHistoryRepo,
-                                DeliveryAddressService $deliveryAddressService
+                                DeliveryAddressService $deliveryAddressService,
+                                ApplicationObiRepository $applicationObiRepo
     )
     {
         $this->repo = $repository;
@@ -51,6 +56,8 @@ class ApplicationController
         $this->appRepo = $appRepo;
         $this->appStatusHistoryRepo = $appStatusHistoryRepo;
         $this->deliveryAddressService = $deliveryAddressService;
+        $this->applicationObiRepo = $applicationObiRepo;
+        $this->obiUser = config('app.obi_user_id');
     }
 
     public function setStatus(Request $request): \Illuminate\Http\JsonResponse
@@ -72,7 +79,21 @@ class ApplicationController
            $newStatus = last($item['statuses']);
 
            try {
-               $this->repo->updateStatus($item['id'], $newStatus['status']);
+               $app = $this->repo->getByOrderNumber($item['id']);
+
+               // Ищем обычную заявку для обновления статуса по номеру заказа
+               // если не находим, то ищем заявку Obi
+               if (!$app) {
+                    $app = $this->applicationObiRepo->getByOrderNumber($item['id']);
+
+                    if ($app) {
+                        $this->applicationObiRepo->updateByFields($item['id'], ['status' => $newStatus['status']]);
+                    } else {
+                        Log::error('Не найден заказ Obi с номером ' . $item['id']);
+                    }
+               } else {
+                   $this->repo->updateStatus($item['id'], $newStatus['status']);
+               }
 
                // записываем историю обновления статусов заказа
                $this->appStatusHistoryRepo->create([
