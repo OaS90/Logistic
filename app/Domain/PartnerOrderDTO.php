@@ -185,9 +185,7 @@ class PartnerOrderDTO
 //            if ($count > 1) {
 //                $eachProductCost = round($eachProductCost / $count);
 //            }
-            if ($app->order_number == 3455697) {
-                dd($eachProductCost);
-            }
+
             $products[] = [
                 'name' => $name, // Товар
                 'vendorCode' => '', // Артикул
