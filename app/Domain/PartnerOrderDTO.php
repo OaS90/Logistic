@@ -146,10 +146,26 @@ class PartnerOrderDTO
         $productsForFComment = [];
         $appCost = $app->products_cost;
         $appWeight = $app->order_weight;
-        $eachProductCost = round($appCost / count($app->products));
-        $eachProductWeight = round($appWeight / count($app->products));
+        $exceptExtraPaymentsProducts = [];
 
-        foreach ($app->products as $index => $product) {
+        foreach ($app->products as $product) {
+            $explodedName = explode('- ', $product->name);
+
+            if (is_array($explodedName)) {
+                $name = $explodedName[0];
+            } else {
+                $name = $product->name;
+            }
+
+            if (!str_contains($name, 'Доплата') && !str_contains($name, 'Доставка')) {
+                $exceptExtraPaymentsProducts[] = $product;
+            }
+        }
+
+        $eachProductCost = round($appCost / count($exceptExtraPaymentsProducts));
+        $eachProductWeight = round($appWeight / count($exceptExtraPaymentsProducts));
+
+        foreach ($exceptExtraPaymentsProducts as $index => $product) {
             /* @var Product $product */
             $i = $index + 1;
             $productsForFComment[] = $product->name;
@@ -166,31 +182,29 @@ class PartnerOrderDTO
             $explodedProductIdName = explode('_', $name);
             $productId = $explodedProductIdName[0];
 
-            if (!str_contains($name, 'Доплата') && !str_contains($name, 'Доставка')) {
-                $products[] = [
-                    'name' => $name, // Товар
-                    'vendorCode' => '', // Артикул
-                    'count' => $count, // Количество
-                    'cost' => $eachProductCost, // Оценочная стоимость
-                    'costAfterDiscounts' => $eachProductCost, // Стоимость с учетом скидки
-                    'VATRate' => 0, // Ставка НДС
-                    'leftToPay' => 0, // Сумма к получению
-                    'weight' => $eachProductWeight, // Расчетный вес (кг)
-                    'setId' => $productId . '_' . $i,
-                    'brand' => '', // Бренд
-                    'tnved' => '', // Код ТНВЭД
-                    'country' => '', // код страны происхождения по ОКСМ
-                    'barcode' => '', // EAN
-                    'volume' => 1, // объем в м2
-                    'width' => 1, // ширина в см
-                    'height' => 1, // высота в м2
-                    'depth' => 1, // глубина в см
-                    'shipmentCode' => 'OBI-' . $app->order_number . '-' . $i
-                ];
-            }
+            $products[] = [
+                'name' => $name, // Товар
+                'vendorCode' => '', // Артикул
+                'count' => $count, // Количество
+                'cost' => $eachProductCost, // Оценочная стоимость
+                'costAfterDiscounts' => $eachProductCost, // Стоимость с учетом скидки
+                'VATRate' => 0, // Ставка НДС
+                'leftToPay' => 0, // Сумма к получению
+                'weight' => $eachProductWeight, // Расчетный вес (кг)
+                'setId' => $productId . '_' . $i,
+                'brand' => '', // Бренд
+                'tnved' => '', // Код ТНВЭД
+                'country' => '', // код страны происхождения по ОКСМ
+                'barcode' => '', // EAN
+                'volume' => 1, // объем в м2
+                'width' => 1, // ширина в см
+                'height' => 1, // высота в м2
+                'depth' => 1, // глубина в см
+                'shipmentCode' => 'OBI-' . $app->order_number . '-' . $i
+            ];
         }
 
-        $allProductsString = implode('; ', $productsForFComment);
+        $allProductsString = implode(';', $productsForFComment);
 
         return [
             'products' => $products,
