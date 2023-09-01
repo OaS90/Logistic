@@ -162,8 +162,8 @@ class PartnerOrderDTO
             }
         }
 
-        $eachProductCost = round($appCost / count($exceptExtraPaymentsProducts));
-        $eachProductWeight = round($appWeight / count($exceptExtraPaymentsProducts));
+        $eachProductCost = round($appCost / count($exceptExtraPaymentsProducts), 2);
+        $eachProductWeight = round($appWeight / count($exceptExtraPaymentsProducts), 2);
 
         foreach ($exceptExtraPaymentsProducts as $index => $product) {
             /* @var Product $product */
@@ -182,14 +182,16 @@ class PartnerOrderDTO
             $explodedProductIdName = explode('_', $name);
             $productId = $explodedProductIdName[0];
 
-            if ($count > 1) {
-                $eachProductCost = round($eachProductCost / $count);
+//            if ($count > 1) {
+//                $eachProductCost = round($eachProductCost / $count);
+//            }
+            if ($app->order_number == 3455697) {
+                dd($eachProductCost);
             }
-
             $products[] = [
                 'name' => $name, // Товар
                 'vendorCode' => '', // Артикул
-                'count' => $count, // Количество
+                'count' => 1, // Количество (временно)
                 'cost' => $eachProductCost, // Оценочная стоимость
                 'costAfterDiscounts' => $eachProductCost, // Стоимость с учетом скидки
                 'VATRate' => 0, // Ставка НДС
