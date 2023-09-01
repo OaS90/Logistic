@@ -182,6 +182,10 @@ class PartnerOrderDTO
             $explodedProductIdName = explode('_', $name);
             $productId = $explodedProductIdName[0];
 
+            if ($count > 1) {
+                $eachProductCost = round($eachProductCost / $count);
+            }
+
             $products[] = [
                 'name' => $name, // Товар
                 'vendorCode' => '', // Артикул
