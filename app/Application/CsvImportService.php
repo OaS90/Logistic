@@ -93,45 +93,49 @@ class CsvImportService
             unset($dataFromFile[$i][0]);
             $dataFromFile[$i][1] = Carbon::parse(Date::excelToDateTimeObject($dataFromFile[$i][1]))->format('Y-m-d');
             $appWithDbColumns = array_combine($rows, $dataFromFile[$i]);
-            $appWithDbColumns['user_id'] = $userId;
-            $orderList = explode(';', $appWithDbColumns['order_list']);
-            $products = [];
 
-            foreach ($orderList as $product) {
-                $productInfo = strlen(trim($product));
+            if ($appWithDbColumns['order_number']) {
+                $appWithDbColumns['user_id'] = $userId;
+                $orderList = explode(';', $appWithDbColumns['order_list']);
+                $products = [];
 
-                if ($productInfo != 0) {
-                    $products[] = trim($product);
+                foreach ($orderList as $product) {
+                    $productInfo = strlen(trim($product));
+
+                    if ($productInfo != 0) {
+                        $products[] = trim($product);
+                    }
                 }
-            }
-            $productsCost = substr(preg_replace('/[^0-9]/', '', $appWithDbColumns['products_cost']), 0, -2);
-            $appWithDbColumns['products_cost'] = floatval($productsCost);
-            $explodedPhones = explode(',', $appWithDbColumns['phone']);
-            $phones = [];
+                $productsCost = substr(preg_replace('/[^0-9]/', '', $appWithDbColumns['products_cost']), 0, -2);
+                $appWithDbColumns['products_cost'] = floatval($productsCost);
+                $explodedPhones = explode(',', $appWithDbColumns['phone']);
+                $phones = [];
 
-            if (is_array($explodedPhones) && count($explodedPhones) > 1) {
-                foreach ($explodedPhones as $phone) {
-                    $phones[] = parse_phone($phone);
+                if (is_array($explodedPhones) && count($explodedPhones) > 1) {
+                    foreach ($explodedPhones as $phone) {
+                        $phones[] = parse_phone($phone);
+                    }
+
+                    $phones = implode(', ', $phones);
+                } else {
+                    $phones = parse_phone($appWithDbColumns['phone']);
                 }
+                $appWithDbColumns['phone'] = $phones;
+                unset($appWithDbColumns['order_list']);
 
-                $phones = implode(', ', $phones);
-            } else {
-                $phones = parse_phone($appWithDbColumns['phone']);
-            }
-            $appWithDbColumns['phone'] = $phones;
-            unset($appWithDbColumns['order_list']);
-            $existApp = $this->applicationObiRepo->getByOrderNumber($appWithDbColumns['order_number']);
+                $existApp = $this->applicationObiRepo->getByOrderNumber($appWithDbColumns['order_number']);
 
-            if (!$existApp) {
-                $existApp = $this->applicationObiRepo->create($appWithDbColumns);
+                if (!$existApp) {
+                    $existApp = $this->applicationObiRepo->create($appWithDbColumns);
 
-                foreach ($products as $product) {
-                    $this->obiProductsRepo->create($product, $existApp->id);
-                }
-            } else {
-                if (!in_array($existApp->status, ['new', 'refusal'])) {
-                    $this->applicationObiRepo
-                        ->updateByFields($existApp->order_number, ['doc_ver' => $existApp->doc_ver + 1]);
+                    foreach ($products as $product) {
+                        $this->obiProductsRepo->create($product, $existApp->id);
+                    }
+                } else {
+                    if (!in_array($existApp->status, ['new', 'refusal'])) {
+                        $this->applicationObiRepo
+                            ->updateByFields($existApp->order_number, ['doc_ver' => $existApp->doc_ver + 1]);
+                    }
                 }
             }
         }
