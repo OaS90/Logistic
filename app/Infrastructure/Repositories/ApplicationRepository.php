@@ -44,9 +44,11 @@ class ApplicationRepository
     public function updateByFields($number, $fields): void
     {
         $app = $this->getByOrderNumber($number);
-        if ($app)
+
+        if ($app) {
             $app->update($fields);
-        else
-            Log::info('Не удалось проставить дату заказа с сайта(Курьерской доставкой). Не найден заказ с номер ' . $number);
+        } else {
+            Log::error('Не удалось найти заказ №' . $number);
+        }
     }
 }

@@ -61,8 +61,6 @@ class PartnerController extends Controller
                     } else {
                         $this->repo->updateByFields($app->order_number, ['old_doc_ver' => $app->doc_ver]);
                     }
-
-                    $this->repo->updateByFields($app->order_number, ['old_doc_ver' => $app->doc_ver]);
                 }
             }
 

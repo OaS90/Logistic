@@ -162,8 +162,13 @@ class PartnerOrderDTO
             }
         }
 
-        $eachProductCost = round($appCost / count($exceptExtraPaymentsProducts), 2);
-        $eachProductWeight = round($appWeight / count($exceptExtraPaymentsProducts), 2);
+        if (count($exceptExtraPaymentsProducts)) {
+            $eachProductCost = round($appCost / count($exceptExtraPaymentsProducts), 2);
+            $eachProductWeight = round($appWeight / count($exceptExtraPaymentsProducts), 2);
+        } else {
+            $eachProductCost = round($appCost, 2);
+            $eachProductWeight = round($appWeight, 2);
+        }
 
         foreach ($exceptExtraPaymentsProducts as $index => $product) {
             /* @var Product $product */

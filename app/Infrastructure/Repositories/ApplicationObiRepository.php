@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Repositories;
 
 use App\Models\ApplicationObi;
+use Illuminate\Support\Facades\Log;
 
 class ApplicationObiRepository
 {
@@ -37,6 +38,11 @@ class ApplicationObiRepository
     public function updateByFields($number, $fields): void
     {
         $app = $this->getByOrderNumber($number);
-        $app->update($fields);
+
+        if ($app) {
+            $app->update($fields);
+        } else {
+            Log::error('Не удалось найти заказ OBI №' . $number);
+        }
     }
 }
