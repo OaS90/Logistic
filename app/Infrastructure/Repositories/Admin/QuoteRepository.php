@@ -10,7 +10,7 @@ class QuoteRepository
     /**
      * @throws \Exception
      */
-    public function update($quotes)
+    public function update($quotes, $userId): array
     {
         $updatedQuotes = [];
 
@@ -31,7 +31,8 @@ class QuoteRepository
                 'blocked_date_from' => isset($quote['blocked_dates'][0]) && $quote['blocked_dates'][0] ? Carbon::parse($quote['blocked_dates'][0])->format('Y-m-d') : null,
                 'blocked_date_until' => isset($quote['blocked_dates'][1]) && $quote['blocked_dates'][1] ? Carbon::parse($quote['blocked_dates'][1])->format('Y-m-d') : null,
                 'delivery_days_from_moscow' => $quote['deliveryDaysFromMoscow'],
-                'in_day_limitation' => $quote['in_day_limitation']
+                'in_day_limitation' => $quote['in_day_limitation'],
+                'updater_id' => $userId
             ]);
 
             $updatedQuotes[] = $quoteEntry;

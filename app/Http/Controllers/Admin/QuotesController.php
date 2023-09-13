@@ -11,6 +11,7 @@ use App\Infrastructure\Repositories\Admin\QuoteRepository;
 use App\Infrastructure\Repositories\Admin\IntervalQuoteRepository;
 use App\Application\ExcelExportService;
 use App\Infrastructure\Exports\Admin\QuoteExport;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Exception\BadResponseException;
 use Illuminate\Support\Facades\Mail;
@@ -46,7 +47,7 @@ class QuotesController extends Controller
     public function save(Request $request)
     {
         $this->intervalRepo->update($request->all());
-        $updatedQuotes = $this->repo->update($request->all());
+        $updatedQuotes = $this->repo->update($request->all(), backpack_user()->id);
         $client = new Client();
         $message = 'Данные сохранены.';
         $json = (new QuoteDTO())->makeDataForApiHru($this->repo->getAll());
