@@ -29,6 +29,9 @@ class QuoteWarehouseCrudController extends CrudController
         CRUD::setModel(\App\Models\QuoteWarehouse::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/quote-warehouse');
         CRUD::setEntityNameStrings('quote warehouse', 'quote warehouses');
+        if (backpack_user()->hasRole('guest')) {
+            $this->crud->denyAccess(['update', 'delete', 'show', 'create']);
+        }
     }
 
     /**

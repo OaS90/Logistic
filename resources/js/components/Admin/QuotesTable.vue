@@ -1,7 +1,7 @@
 <template>
     <div>
-        <button type="button" class="btn btn-outline-success" @click="save">Сохранить</button>
-        <button type="button" class="btn btn btn-info" @click="excel">Выгрузить Excel</button>
+        <button type="button" class="btn btn-outline-success" @click="save" :disabled='this.guest'>Сохранить</button>
+        <button type="button" class="btn btn btn-info" @click="excel" :disabled='this.guest'>Выгрузить Excel</button>
         <input type="text" class="form-control col-4 filter" v-model="filter" placeholder="Поиск...">
         <div class="wmd-view-topscroll" :style="{'width': scrollWidth + 'px'}" @scroll="topScroll" ref="scroll">
             <div class="scroll-div1" :style="{'width': tableWidth + 'px'}">
@@ -237,7 +237,7 @@ import Popup from "../Popup";
 
 export default {
     name: "QuotesTable",
-    props: ['quotes'],
+    props: ['quotes', 'guest'],
     data() {
         return {
             quotesToSave: [],

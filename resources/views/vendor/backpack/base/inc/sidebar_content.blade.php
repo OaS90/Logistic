@@ -5,7 +5,9 @@
     <li class='nav-item'><a class='nav-link' href='{{ backpack_url('applications') }}'><i class="las la-file-alt"></i> Заявки</a></li>
     <li class='nav-item'><a class='nav-link' href='{{ backpack_url('warehouses') }}'><i class="las la-file-alt"></i> Склады</a></li>
     <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quotes') }}'><i class="las la-user-tie"></i> Квоты</a></li>
-    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-emails') }}'><i class="las la-user-tie"></i>Email уведомления по квотам</a></li>
+    @if(!backpack_user()->hasRole('guest'))
+        <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-emails') }}'><i class="las la-user-tie"></i>Email уведомления по квотам</a></li>
+    @endif
     <li class='nav-item'><a class='nav-link' href='{{ backpack_url('regions') }}'><i class='nav-icon la la-question'></i>Регионы</a></li>
     <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-warehouse') }}'><i class='nav-icon la la-question'></i>Склады по квотам</a></li>
 @endif

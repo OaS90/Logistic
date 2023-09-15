@@ -40,12 +40,19 @@ class QuotesController extends Controller
     public function show()
     {
         $quotes = (new QuoteDTO())->toArrayForVue(Quote::with(['intervals', 'region'])->get());
+        $isGuest = (bool) backpack_user()->hasRole('guest');
 
-        return view('vendor.backpack.quotes', ['quotes' => collect($quotes)]);
+        return view('vendor.backpack.quotes', ['quotes' => collect($quotes), 'guest' => $isGuest]);
     }
 
     public function save(Request $request)
     {
+        $isGuest = (bool) backpack_user()->hasRole('guest');
+
+        if ($isGuest) {
+            return response(['message' => 'У вас недостаточно прав.']);
+        }
+
         $this->intervalRepo->update($request->all());
         $updatedQuotes = $this->repo->update($request->all(), backpack_user()->id);
         $client = new Client();

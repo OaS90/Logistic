@@ -6,7 +6,7 @@
 
         <hr>
 
-        <quotes-table :quotes="{{ $quotes }}"></quotes-table>
+        <quotes-table :quotes="{{ $quotes }}" :guest="@json($guest)"></quotes-table>
 {{--        <example-component></example-component>--}}
     </div>
 @endsection

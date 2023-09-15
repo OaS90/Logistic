@@ -29,6 +29,9 @@ class WarehouseCrudController extends CrudController
         CRUD::setModel(\App\Models\Warehouse::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/warehouses');
         CRUD::setEntityNameStrings('warehouse', 'Склады');
+        if (backpack_user()->hasRole('guest')) {
+            $this->crud->denyAccess(['update', 'delete', 'show', 'create']);
+        }
     }
 
     /**
