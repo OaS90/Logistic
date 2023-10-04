@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Domain\ApplicationStatuses;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -42,5 +43,11 @@ class ApplicationObi extends Model
         }
 
         return $parsedPhone;
+    }
+
+    public function getParsedDeliveryDateAttribute(): string
+    {
+        $deliveryDate = $this->hru_delivery_date ?? $this->delivery_date;
+        return Carbon::createFromDate($deliveryDate)->format('d.m.Y');
     }
 }

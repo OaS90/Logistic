@@ -17,27 +17,27 @@ class Application extends Model
     protected $table = 'applications';
     protected $guarded = ['id'];
 
-    public function user()
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function address()
+    public function address(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(DeliveryAddress::class, 'delivery_address', 'id');
     }
 
-    public function warehouse()
+    public function warehouse(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Warehouse::class, 'id', 'warehouse_id');
     }
 
-    public function products()
+    public function products(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Product::class, 'app_id', 'id');
     }
 
-    public function getFullAddressAttribute()
+    public function getFullAddressAttribute(): string
     {
         return implode(', ', [
             $this->address->city_name,
@@ -50,7 +50,7 @@ class Application extends Model
         ]);
     }
 
-    public function getTotalCostAttribute()
+    public function getTotalCostAttribute(): int
     {
         $total = 0;
 
@@ -69,7 +69,7 @@ class Application extends Model
             substr($this->client_phone, 8);
     }
 
-    public function getParsedDeliveryDateAttribute()
+    public function getParsedDeliveryDateAttribute(): string
     {
         $deliveryDate = $this->hru_delivery_date ?? $this->delivery_date;
         return Carbon::createFromDate($deliveryDate)->format('d.m.Y');

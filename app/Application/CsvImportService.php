@@ -63,6 +63,11 @@ class CsvImportService
             if (!$warehouse)
                 return response(['message' => 'Не найден склад'], 400);
 
+            // если не заполняют кол-во товаров, ставим 1
+            if (!$data['app']['count']) {
+                $data['app']['count'] = 1;
+            }
+
             if (!$existApp) {
                 $address = $this->addressRepo->createFromCsv($data['address']);
                 $data['app']['delivery_address'] = $address->id;
