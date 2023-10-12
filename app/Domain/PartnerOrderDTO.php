@@ -39,16 +39,20 @@ class PartnerOrderDTO
                 'flat'=> $addressInfo[0]['data']['flat'] ?? '' // необязательно
             ];
         } else {
-            $address = [
-                'regionName'=> $this->app->delivery_address,
-                'cityName'=> '',
-                'cityId'=> '', // ФИАС код города/населенного пункта
-                'street'=> '',
-                'streetId'=> '', // ФИАС код улицы
-                'building'=> '',
-                'floor'=> '', // необязательно
-                'flat'=> '' // необязательно
-            ];
+            if ($isObiPartner) {
+                $address = [
+                    'regionName' => $this->app->delivery_address,
+                    'cityName' => '',
+                    'cityId' => '', // ФИАС код города/населенного пункта
+                    'street' => '',
+                    'streetId' => '', // ФИАС код улицы
+                    'building' => '',
+                    'floor' => '', // необязательно
+                    'flat' => '' // необязательно
+                ];
+            } else {
+                $address = [];
+            }
         }
 
         if ($isObiPartner) {
@@ -86,7 +90,7 @@ class PartnerOrderDTO
                     'fio' => $this->app->client_name,
                     'phone' => $this->app->mobile_phone
                 ],
-                'address' => [
+                'address' => $address ?? [
                     'regionName'=> $this->app->address->region_name,
                     'cityName'=> $this->app->address->city_name,
                     'cityId'=> $this->app->address->city_fias, // ФИАС код города/населенного пункта
