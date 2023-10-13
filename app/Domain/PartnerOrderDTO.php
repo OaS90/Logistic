@@ -20,7 +20,12 @@ class PartnerOrderDTO
     public function make(): array
     {
         $isObiPartner = config('app.obi_user_id') == $this->app->user_id;
-        $addressInfo = $this->dadataService->getAddress($this->app->delivery_address, 1);
+
+        if ($isObiPartner) {
+            $addressInfo = $this->dadataService->getAddress($this->app->delivery_address, 1);
+        } elseif (!$this->app->delivery_address->city_fias) {
+            $addressInfo = $this->dadataService->getAddress($this->app->full_address, 1);
+        }
 
         if (isset($addressInfo[0]['data']) && count($addressInfo[0]['data']) > 0) {
             $cityInfo = [
