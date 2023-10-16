@@ -23,7 +23,7 @@ class PartnerOrderDTO
 
         if ($isObiPartner) {
             $addressInfo = $this->dadataService->getAddress($this->app->delivery_address, 1);
-        } elseif (!$this->app->delivery_address->city_fias) {
+        } else {
             $addressInfo = $this->dadataService->getAddress($this->app->full_address, 1);
         }
 
