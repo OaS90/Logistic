@@ -26,7 +26,7 @@ class PartnerOrderDTO
         } else {
             $addressInfo = $this->dadataService->getAddress($this->app->full_address, 1);
         }
-
+        $addressInfo = [];
         if (isset($addressInfo[0]['data']) && count($addressInfo[0]['data']) > 0) {
             $cityInfo = [
                 'cityName' => $addressInfo[0]['data']['city'] ?? $addressInfo[0]['data']['settlement_with_type'],
@@ -95,7 +95,7 @@ class PartnerOrderDTO
                     'fio' => $this->app->client_name,
                     'phone' => $this->app->mobile_phone
                 ],
-                'address' => $address ?? [
+                'address' => count($address) > 0 ? $address : [
                     'regionName'=> $this->app->address->region_name,
                     'cityName'=> $this->app->address->city_name,
                     'cityId'=> $this->app->address->city_fias, // ФИАС код города/населенного пункта
