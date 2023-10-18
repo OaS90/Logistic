@@ -40,18 +40,18 @@ class Application extends Model
     public function getFullAddressAttribute(): string
     {
         $street = $this->address->street ? $this->address->street . ', ': '';
-        $building = $this->address->building ? $this->address->building  . ', ': '';
-        $entrance = $this->address->entrance && $building ? 'п. ' . $this->address->entrance : '';
-        $floor = $this->address->floor &&  $this->address->flat ? 'этаж ' . $this->address->floor : '';
-        $flat = $this->address->flat ? 'кв. ' . $this->address->flat : '';
 
         if ($this->address->city_name == $this->address->region_name) {
-            $cityRegion = $this->address->city_name . ', ';
+            $cityRegion = $this->address->city_name;
         } else {
             $cityRegion = $this->address->city_name . ', ' . $this->address->region_name;
         }
 
-        return $cityRegion .  $street . $building  . $entrance . $floor . $flat;
+        if ($street) {
+            $cityRegion .= ', ' . $street;
+        }
+
+        return $cityRegion;
     }
 
     public function getTotalCostAttribute(): int
