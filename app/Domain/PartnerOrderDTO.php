@@ -20,49 +20,7 @@ class PartnerOrderDTO
     public function make(): array
     {
         $isObiPartner = config('app.obi_user_id') == $this->app->user_id;
-
-        if ($isObiPartner) {
-            $addressInfo = $this->dadataService->getAddress($this->app->delivery_address, 1);
-        } else {
-            $addressInfo = $this->dadataService->getAddress($this->app->full_address, 1);
-        }
-
-        if (isset($addressInfo[0]['data']) && count($addressInfo[0]['data']) > 0) {
-            $cityInfo = [
-                'cityName' => $addressInfo[0]['data']['city'] ?? $addressInfo[0]['data']['settlement_with_type'],
-                'cityFias' => $addressInfo[0]['data']['city_fias_id'] ?? $addressInfo[0]['data']['settlement_fias_id']
-            ];
-
-            $building = $this->app->address->building ?? '';
-            $floor = $this->app->address->floor && $this->app->address->flat ? 'этаж ' . $this->app->address->floor : '';
-            $flat = $this->app->address->flat ? 'кв. ' . $this->app->address->flat : '';
-
-            $address = [
-                'regionName'=> $addressInfo[0]['data']['region_with_type'],
-                'cityName'=> $cityInfo['cityName'],
-                'cityId'=> $cityInfo['cityFias'] ?? '', // ФИАС код города/населенного пункта
-                'street'=> $addressInfo[0]['data']['street_with_type'] ?? '',
-                'streetId'=> $addressInfo[0]['data']['street_fias_id'] ?? '', // ФИАС код улицы
-                'building'=> $building,
-                'floor'=> $floor, // необязательно
-                'flat'=> $flat // необязательно
-            ];
-        } else {
-            if ($isObiPartner) {
-                $address = [
-                    'regionName' => $this->app->delivery_address,
-                    'cityName' => '',
-                    'cityId' => '', // ФИАС код города/населенного пункта
-                    'street' => '',
-                    'streetId' => '', // ФИАС код улицы
-                    'building' => '',
-                    'floor' => '', // необязательно
-                    'flat' => '' // необязательно
-                ];
-            } else {
-                $address = [];
-            }
-        }
+        $address = $this->getAddressInfo($isObiPartner);
 
         if ($isObiPartner) {
             $productsInfo = $this->obiProducts($this->app);
@@ -232,5 +190,70 @@ class PartnerOrderDTO
             'products' => $products,
             'productsComment' => $allProductsString
         ];
+    }
+
+    private function getAddressInfo($isObiPartner = false): array
+    {
+        if ($isObiPartner) {
+            $addressInfo = $this->dadataService->getAddress($this->app->delivery_address, 1);
+        } else {
+            $addressInfo = $this->dadataService->getAddress($this->app->full_address, 1);
+        }
+
+        return $this->parseDadataAddress($addressInfo, $isObiPartner);
+    }
+
+    private function parseDadataAddress(array $addressInfo, bool $isObiPartner): array
+    {
+        if (isset($addressInfo[0]['data']) && count($addressInfo[0]['data']) > 0) {
+            $cityInfo = [
+                'cityName' => $addressInfo[0]['data']['city'] ?? $addressInfo[0]['data']['settlement_with_type'],
+                'cityFias' => $addressInfo[0]['data']['city_fias_id'] ?? $addressInfo[0]['data']['settlement_fias_id']
+            ];
+
+            if (!$isObiPartner) {
+                $address = [
+                    'regionName' => $addressInfo[0]['data']['region_with_type'],
+                    'cityName' => $cityInfo['cityName'],
+                    'cityId' => $cityInfo['cityFias'] ?? '', // ФИАС код города/населенного пункта
+                    'street' => $addressInfo[0]['data']['street_with_type'] ?? '',
+                    'streetId' => $addressInfo[0]['data']['street_fias_id'] ?? '', // ФИАС код улицы
+                    'building' => $addressInfo[0]['data']['house'] ?? '',
+                    'floor' => '', // необязательно
+                    'flat' => '' // необязательно
+                ];
+            } else {
+                $building = $this->app->address->building ?? '';
+                $floor = $this->app->address->floor && $this->app->address->flat ? 'этаж ' . $this->app->address->floor : '';
+                $flat = $this->app->address->flat ? 'кв. ' . $this->app->address->flat : '';
+                $address = [
+                    'regionName' => $addressInfo[0]['data']['region_with_type'],
+                    'cityName' => $cityInfo['cityName'],
+                    'cityId' => $cityInfo['cityFias'] ?? '', // ФИАС код города/населенного пункта
+                    'street' => $addressInfo[0]['data']['street_with_type'] ?? '',
+                    'streetId' => $addressInfo[0]['data']['street_fias_id'] ?? '', // ФИАС код улицы
+                    'building' => $building,
+                    'floor' => $floor, // необязательно
+                    'flat' => $flat // необязательно
+                ];
+            }
+        } else {
+            if ($isObiPartner) {
+                $address = [
+                    'regionName' => $this->app->delivery_address,
+                    'cityName' => '',
+                    'cityId' => '', // ФИАС код города/населенного пункта
+                    'street' => '',
+                    'streetId' => '', // ФИАС код улицы
+                    'building' => '',
+                    'floor' => '', // необязательно
+                    'flat' => '' // необязательно
+                ];
+            } else {
+                $address = [];
+            }
+        }
+
+        return $address;
     }
 }
