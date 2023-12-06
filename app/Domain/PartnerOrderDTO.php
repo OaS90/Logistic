@@ -211,7 +211,7 @@ class PartnerOrderDTO
                 'cityFias' => $addressInfo[0]['data']['city_fias_id'] ?? $addressInfo[0]['data']['settlement_fias_id']
             ];
 
-            if (!$isObiPartner) {
+            if ($isObiPartner) {
                 $address = [
                     'regionName' => $addressInfo[0]['data']['region_with_type'],
                     'cityName' => $cityInfo['cityName'],

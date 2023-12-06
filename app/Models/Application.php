@@ -39,7 +39,7 @@ class Application extends Model
 
     public function getFullAddressAttribute(): string
     {
-        $street = $this->address->street ? $this->address->street . ', ': '';
+        $street = $this->address->street ?? '';
 
         if ($this->address->city_name == $this->address->region_name) {
             $cityRegion = $this->address->city_name;

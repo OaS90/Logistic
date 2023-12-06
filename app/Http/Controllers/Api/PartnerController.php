@@ -52,7 +52,14 @@ class PartnerController extends Controller
 
             foreach ($applications as $app) {
                 if ($app->status == 'created' || $app->doc_ver > $app->old_doc_ver) {
-                    $appDTO = (new PartnerOrderDTO($app))->make();
+
+                    try {
+                        $appDTO = (new PartnerOrderDTO($app))->make();
+                    } catch (\Throwable $e) {
+                        Log::info('Error creating dto for app ' . $app->order_number);
+                        continue;
+                    }
+
                     $apps[] = $appDTO;
                     Log::info('Sent to 1c ' . json_encode($appDTO));
 
