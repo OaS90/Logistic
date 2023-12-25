@@ -4,19 +4,24 @@ namespace App\Application;
 
 use App\Domain\ProductDTO;
 use App\Infrastructure\Api;
+use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\ProductRepository;
 use App\Models\DeliveryAddress;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 
 class ApplicationService
 {
-    protected ApplicationRepository $appRepo;
-    protected ProductRepository $productRepo;
-    protected BarcodeGeneratorDynamicHTML $codeGenerator;
+    private ApplicationRepository $appRepo;
+    private ProductRepository $productRepo;
+    private BarcodeGeneratorDynamicHTML $codeGenerator;
+    private ApplicationObiRepository $applicationObiRepo;
 
     public function __construct(ApplicationRepository $appRepo,
+                                ApplicationObiRepository $applicationObiRepo,
                                 ProductRepository $productRepo,
                                 BarcodeGeneratorDynamicHTML $codeGenerator
     )
@@ -24,6 +29,7 @@ class ApplicationService
         $this->appRepo = $appRepo;
         $this->productRepo = $productRepo;
         $this->codeGenerator = $codeGenerator;
+        $this->applicationObiRepo = $applicationObiRepo;
     }
 
     public function checkAppChanges($app, array $data)
@@ -78,5 +84,12 @@ class ApplicationService
         }
 
         return false;
+    }
+
+    public function getAllApplications(): LengthAwarePaginator
+    {
+        $commonApps = $this->appRepo->getAll();
+
+        return $commonApps;
     }
 }

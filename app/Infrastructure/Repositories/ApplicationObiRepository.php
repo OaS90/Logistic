@@ -45,4 +45,9 @@ class ApplicationObiRepository
             Log::error('Не удалось найти заказ OBI №' . $number);
         }
     }
+
+    public function getAll()
+    {
+        return ApplicationObi::orderByDesc('id')->paginate(20);
+    }
 }

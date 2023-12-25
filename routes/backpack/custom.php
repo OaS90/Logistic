@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\Auth\RegisterController;
 use App\Http\Controllers\Admin\QuotesController;
 use App\Http\Controllers\Admin\QuoteEmailsController;
+use App\Http\Controllers\Admin\SupportController;
 // --------------------------
 // Custom Backpack Routes
 // --------------------------
@@ -43,4 +44,5 @@ Route::group([
     Route::get('download-excel', [QuotesController::class, 'download']);
     Route::crud('regions', 'RegionCrudController');
     Route::crud('quote-warehouse', 'QuoteWarehouseCrudController');
+    Route::get('support-orders', [SupportController::class, 'showOrders']);
 }); // this should be the absolute last line of this file

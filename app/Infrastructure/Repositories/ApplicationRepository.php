@@ -51,4 +51,9 @@ class ApplicationRepository
             Log::error('Не удалось найти заказ №' . $number);
         }
     }
+
+    public function getAll()
+    {
+        return Application::paginate(20);
+    }
 }
