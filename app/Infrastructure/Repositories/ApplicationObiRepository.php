@@ -46,8 +46,11 @@ class ApplicationObiRepository
         }
     }
 
-    public function getAll()
+    public function getAll(int $obiLimit = 100)
     {
-        return ApplicationObi::orderByDesc('id')->paginate(20);
+        return ApplicationObi::with('user')
+            ->orderByDesc('id')
+            ->limit($obiLimit)
+            ->get();
     }
 }

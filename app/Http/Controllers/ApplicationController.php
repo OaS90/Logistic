@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Infrastructure\Imports\ApplicationImport;
+use App\Infrastructure\Imports\ApplicationImportCsv;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Repositories\ProductRepository;
@@ -172,7 +172,7 @@ class ApplicationController extends Controller
         if (Auth::id() == $this->obiUser) {
             return $this->importService->importObi($request->file('file'), new ApplicationObiImport(), Auth::id());
         } else {
-            return $this->importService->import($request->file('file'), new ApplicationImport(), Auth::id());
+            return $this->importService->import($request->file('file'), new ApplicationImportCsv(), Auth::id());
         }
     }
 

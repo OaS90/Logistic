@@ -52,8 +52,11 @@ class ApplicationRepository
         }
     }
 
-    public function getAll()
+    public function getAll(int $limit = 300)
     {
-        return Application::paginate(20);
+        return Application::with('user')
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->get();
     }
 }

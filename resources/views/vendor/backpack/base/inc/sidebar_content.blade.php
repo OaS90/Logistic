@@ -2,14 +2,14 @@
 {{--<li class="nav-item"><a class="nav-link" href="{{ backpack_url('dashboard') }}"><i class="la la-home nav-icon"></i> {{ trans('backpack::base.dashboard') }}</a></li>--}}
 @if(backpack_user()->hasRole('Логисты') || backpack_user()->hasRole('admin'))
     <li class='nav-item'><a class='nav-link' href='{{ backpack_url('partners') }}'><i class="las la-user-tie"></i> Партнёры</a></li>
-    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('applications') }}'><i class="las la-file-alt"></i> Заявки</a></li>
-    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('warehouses') }}'><i class="las la-file-alt"></i> Склады</a></li>
-    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quotes') }}'><i class="las la-user-tie"></i> Квоты</a></li>
+    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('applications') }}'><i class="las la-list-alt"></i> Заявки</a></li>
+    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('warehouses') }}'><i class="las la-store"></i> Склады</a></li>
+    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quotes') }}'><i class="las la-clock"></i> Квоты</a></li>
     @if(!backpack_user()->hasRole('guest'))
-        <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-emails') }}'><i class="las la-user-tie"></i>Email уведомления по квотам</a></li>
+        <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-emails') }}'><i class="las la-mail-bulk"></i> Email уведомления по квотам</a></li>
     @endif
-    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('regions') }}'><i class='nav-icon la la-question'></i>Регионы</a></li>
-    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-warehouse') }}'><i class='nav-icon la la-question'></i>Склады по квотам</a></li>
+    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('regions') }}'><i class='nav-icon la la-map'></i> Регионы</a></li>
+    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-warehouse') }}'><i class='nav-icon la la-store'></i> Склады по квотам</a></li>
 @endif
 <!-- Users, Roles, Permissions -->
 
@@ -30,12 +30,17 @@
 
 <li class="nav-item nav-dropdown">
     <a class="nav-link nav-dropdown-toggle" href="#">
-        <i class="nav-icon la la-question"></i> Поддержка
+        <i class="nav-icon la la-support"></i> Поддержка
     </a>
     <ul class="nav-dropdown-items">
         <li class="nav-item">
-            <a class="nav-link" href="{{ backpack_url('support-orders') }}">
-                <i class="nav-icon la la-user"></i> <span>Заявки</span>
+            <a class="nav-link" href="{{ backpack_url('support/show-apps') }}">
+                <i class="nav-icon la la-check"></i> <span>Статусы Заявок</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ backpack_url('support/show-upload-page') }}">
+                <i class="nav-icon la la-upload"></i><span>Загрузка/Обновление заявок</span>
             </a>
         </li>
     </ul>

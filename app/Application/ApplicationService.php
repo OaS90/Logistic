@@ -86,10 +86,11 @@ class ApplicationService
         return false;
     }
 
-    public function getAllApplications(): LengthAwarePaginator
+    public function getAllApplications()
     {
-        $commonApps = $this->appRepo->getAll();
+        $common = $this->appRepo->getAll();
+        $obi = $this->applicationObiRepo->getAll();
 
-        return $commonApps;
+        return $common->merge($obi);
     }
 }

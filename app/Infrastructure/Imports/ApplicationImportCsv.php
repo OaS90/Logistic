@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
-class ApplicationImport extends DefaultValueBinder implements WithCustomCsvSettings,
+class ApplicationImportCsv extends DefaultValueBinder implements WithCustomCsvSettings,
     ImportEntity, WithCustomValueBinder, WithCalculatedFormulas
 {
     public function getCsvSettings(): array

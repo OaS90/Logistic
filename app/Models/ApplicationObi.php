@@ -50,4 +50,9 @@ class ApplicationObi extends Model
         $deliveryDate = $this->hru_delivery_date ?? $this->delivery_date;
         return Carbon::createFromDate($deliveryDate)->format('d.m.Y');
     }
+
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

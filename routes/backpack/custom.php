@@ -44,5 +44,12 @@ Route::group([
     Route::get('download-excel', [QuotesController::class, 'download']);
     Route::crud('regions', 'RegionCrudController');
     Route::crud('quote-warehouse', 'QuoteWarehouseCrudController');
-    Route::get('support-orders', [SupportController::class, 'showOrders']);
+    Route::prefix('support')->group(function() {
+        Route::get('show-apps', [SupportController::class, 'showAppsStatuses']);
+        Route::get('apps', [SupportController::class, 'getApps']);
+        Route::get('partners', [SupportController::class, 'getPartners']);
+        Route::get('partner-warehouses', [SupportController::class, 'getPartnerWarehouses']);
+        Route::get('show-upload-page', [SupportController::class, 'showUploadPage']);
+        Route::post('import-app', [SupportController::class, 'upload']);
+    });
 }); // this should be the absolute last line of this file
