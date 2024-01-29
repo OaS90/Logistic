@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\Auth\RegisterController;
 use App\Http\Controllers\Admin\QuotesController;
 use App\Http\Controllers\Admin\QuoteEmailsController;
+use App\Http\Controllers\Admin\TransportCompanySettingsController;
 // --------------------------
 // Custom Backpack Routes
 // --------------------------
@@ -43,4 +44,8 @@ Route::group([
     Route::get('download-excel', [QuotesController::class, 'download']);
     Route::crud('regions', 'RegionCrudController');
     Route::crud('quote-warehouse', 'QuoteWarehouseCrudController');
+    Route::crud('transport-company', 'TransportCompanyCrudController');
+    Route::crud('transport-company-warehouse', 'TransportCompanyWarehouseCrudController');
+    Route::get('transport-company-settings', [TransportCompanySettingsController::class, 'show']);
+    Route::post('save-tc-settings', [TransportCompanySettingsController::class, 'save']);
 }); // this should be the absolute last line of this file

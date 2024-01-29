@@ -17,13 +17,14 @@ use GuzzleHttp\Exception\BadResponseException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\QuotesChange;
 use App\Infrastructure\Repositories\Admin\EmailQuoteRepository;
+use Symfony\Component\HttpFoundation\Response;
 
 class QuotesController extends Controller
 {
-    protected $repo;
-    protected $intervalRepo;
-    protected $exportService;
-    protected $emailQuoteRepo;
+    protected QuoteRepository $repo;
+    protected IntervalQuoteRepository $intervalRepo;
+    protected ExcelExportService $exportService;
+    protected EmailQuoteRepository $emailQuoteRepo;
 
     public function __construct(QuoteRepository $repo,
                                 IntervalQuoteRepository $intervalRepo,
@@ -45,12 +46,13 @@ class QuotesController extends Controller
         return view('vendor.backpack.quotes', ['quotes' => collect($quotes), 'guest' => $isGuest]);
     }
 
+    // TODO отрефакторить
     public function save(Request $request)
     {
         $isGuest = (bool) backpack_user()->hasRole('guest');
 
         if ($isGuest) {
-            return response(['message' => 'У вас недостаточно прав.']);
+            return response(['message' => 'У вас недостаточно прав.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $this->intervalRepo->update($request->all());

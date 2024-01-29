@@ -19,6 +19,8 @@ import ProfileForm from "./components/ProfileForm";
 import QuotesTable from "./components/Admin/QuotesTable";
 import QuoteEmailsTable from "./components/Admin/QuoteEmailsTable";
 import LoginForm from "./components/LoginForm";
+import TransportCompanySettings from "./components/Admin/TransportCompanySettings";
+import TcSettings from "./components/Admin/TcSettings";
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -59,7 +61,9 @@ if (document.getElementById('admin-app')) {
         components: {
             QuotesTable,
             DatePicker,
-            QuoteEmailsTable
+            QuoteEmailsTable,
+            TransportCompanySettings,
+            TcSettings
         }
     })
 }
