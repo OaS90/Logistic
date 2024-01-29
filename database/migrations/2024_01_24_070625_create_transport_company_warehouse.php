@@ -15,7 +15,7 @@ class CreateTransportCompanyWarehouse extends Migration
     {
         Schema::create('transport_company_warehouse', function (Blueprint $table) {
             $table->id();
-            $table->char('name', 50);
+            $table->char('name', 150);
             $table->char('code', 20);
             $table->integer('quote')->nullable();
             $table->bigInteger('region_id')->unsigned()->nullable();

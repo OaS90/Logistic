@@ -48,4 +48,5 @@ Route::group([
     Route::crud('transport-company-warehouse', 'TransportCompanyWarehouseCrudController');
     Route::get('transport-company-settings', [TransportCompanySettingsController::class, 'show']);
     Route::post('save-tc-settings', [TransportCompanySettingsController::class, 'save']);
+    Route::get('export', [TransportCompanySettingsController::class, 'export']);
 }); // this should be the absolute last line of this file

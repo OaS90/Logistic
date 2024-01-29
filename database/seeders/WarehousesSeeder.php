@@ -42,8 +42,8 @@ class WarehousesSeeder extends Seeder
             'yandex' => 'Яндекс (На следующий день)',
             'boxberry' => 'Boxberry',
             'cdek' => 'CDEK',
-            'pek' => 'ПЭК',
-            'russian-post' => 'Почта РФ'
+            'pecom' => 'ПЭК',
+            'rupostDirect' => 'Почта РФ'
         ];
 
         foreach ($tcs as $code => $name) {

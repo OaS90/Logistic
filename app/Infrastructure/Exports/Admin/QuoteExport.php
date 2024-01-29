@@ -15,5 +15,4 @@ class QuoteExport implements FromView, ExcelEntity
             'quotes' => Quote::all()
         ]);
     }
-
 }
