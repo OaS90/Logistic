@@ -1,6 +1,10 @@
 <!-- This file is used to store sidebar items, starting with Backpack\Base 0.9.0 -->
 {{--<li class="nav-item"><a class="nav-link" href="{{ backpack_url('dashboard') }}"><i class="la la-home nav-icon"></i> {{ trans('backpack::base.dashboard') }}</a></li>--}}
-@if(backpack_user()->hasRole('Логисты') || backpack_user()->hasRole('admin'))
+@if(backpack_user()->hasRole('Логисты') ||
+    backpack_user()->hasRole('admin') ||
+    backpack_user()->hasRole('transportation department') ||
+    backpack_user()->hasRole('support')
+    )
     <li class="nav-item nav-dropdown">
         <a class="nav-link nav-dropdown-toggle" href="#"><i class="nav-icon la la-users"></i>Борт Удачи</a>
         <ul class="nav-dropdown-items">
@@ -15,11 +19,11 @@
                     Склады</a></li>
         </ul>
     </li>
-    @if(!backpack_user()->hasRole('guest'))
+    @if(!backpack_user()->hasRole('guest') && !backpack_user()->hasRole('transportation department'))
         <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-emails') }}'><i class="las la-mail-bulk"></i> Email уведомления по квотам</a></li>
+        <li class='nav-item'><a class='nav-link' href='{{ backpack_url('regions') }}'><i class='nav-icon la la-map'></i> Регионы</a></li>
+        <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-warehouse') }}'><i class='nav-icon la la-store'></i> Склады по квотам</a></li>
     @endif
-    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('regions') }}'><i class='nav-icon la la-map'></i> Регионы</a></li>
-    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-warehouse') }}'><i class='nav-icon la la-store'></i> Склады по квотам</a></li>
 @endif
 <!-- Users, Roles, Permissions -->
 
@@ -38,6 +42,10 @@
 </li>
 @endif
 
+@if(backpack_user()->hasRole('transportation department') ||
+    backpack_user()->hasRole('support') ||
+    backpack_user()->hasRole('admin')
+)
 <li class="nav-item nav-dropdown">
     <a class="nav-link nav-dropdown-toggle" href="#">
         <i class="nav-icon la la-support"></i> Поддержка
@@ -55,3 +63,4 @@
         </li>
     </ul>
 </li>
+@endif
