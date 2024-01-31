@@ -1,10 +1,20 @@
 <!-- This file is used to store sidebar items, starting with Backpack\Base 0.9.0 -->
 {{--<li class="nav-item"><a class="nav-link" href="{{ backpack_url('dashboard') }}"><i class="la la-home nav-icon"></i> {{ trans('backpack::base.dashboard') }}</a></li>--}}
 @if(backpack_user()->hasRole('Логисты') || backpack_user()->hasRole('admin'))
-    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('partners') }}'><i class="las la-user-tie"></i> Партнёры</a></li>
-    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('applications') }}'><i class="las la-list-alt"></i> Заявки</a></li>
-    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('warehouses') }}'><i class="las la-store"></i> Склады</a></li>
-    <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quotes') }}'><i class="las la-clock"></i> Квоты</a></li>
+    <li class="nav-item nav-dropdown">
+        <a class="nav-link nav-dropdown-toggle" href="#"><i class="nav-icon la la-users"></i>Борт Удачи</a>
+        <ul class="nav-dropdown-items">
+            <li class='nav-item'>
+                <a class='nav-link' href='{{ backpack_url('partners') }}'><i class="las la-user-tie"></i> Партнёры</a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link' href='{{ backpack_url('applications') }}'><i class="las la-file-alt"></i> Заявки</a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link' href='{{ backpack_url('warehouses') }}'><i class="las la-store-alt"></i> Партнёрские
+                    Склады</a></li>
+        </ul>
+    </li>
     @if(!backpack_user()->hasRole('guest'))
         <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-emails') }}'><i class="las la-mail-bulk"></i> Email уведомления по квотам</a></li>
     @endif
@@ -13,7 +23,7 @@
 @endif
 <!-- Users, Roles, Permissions -->
 
-@if(backpack_user()->hasRole('quotes'))
+@if(backpack_user()->hasRole('quotes') || backpack_user()->hasRole('admin'))
     <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quotes') }}'><i class="las la-user-tie"></i> Квоты</a></li>
 @endif
 
@@ -34,7 +44,7 @@
     </a>
     <ul class="nav-dropdown-items">
         <li class="nav-item">
-            <a class="nav-link" href="{{ backpack_url('support/show-apps') }}">
+            <a class="nav-link" href="{{ backpack_url('support/apps') }}">
                 <i class="nav-icon la la-check"></i> <span>Статусы Заявок</span>
             </a>
         </li>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Infrastructure\Admin\Exceptions\ProductWithoutSkuException;
 use App\Infrastructure\Imports\ApplicationImportCsv;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
@@ -12,11 +13,12 @@ use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Application\ExcelExportService;
 use App\Infrastructure\Exports\ApplicationExport;
 use App\Infrastructure\DadataAdapter;
+use Illuminate\View\View;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 use App\Application\CsvImportService;
 use App\Application\ApplicationService;
-use Illuminate\Support\Facades\Response;
-use App\Infrastructure\Imports\ApplicationObiImport;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Response as FResponse;
 
 class ApplicationController extends Controller
 {
@@ -54,7 +56,7 @@ class ApplicationController extends Controller
         $this->obiUser = config('app.obi_user_id');
     }
 
-    public function getList()
+    public function getList(): View
     {
         $userId = Auth::id();
 
@@ -80,7 +82,7 @@ class ApplicationController extends Controller
         return view($view, ['list' => $list, 'statuses' => $statuses]);
     }
 
-    public function current($id)
+    public function current($id): View
     {
         $userId = Auth::id();
 
@@ -95,12 +97,15 @@ class ApplicationController extends Controller
         return view($view, ['application' => $app]);
     }
 
-    public function show()
+    public function show(): View
     {
         return view('application-create', ['userId' => Auth::id(), 'warehouses' => Auth::user()->warehouses]);
     }
 
-    public function create(Request $request)
+    /**
+     * @throws ProductWithoutSkuException
+     */
+    public function create(Request $request): Response
     {
         $data = $request->get('fields');
         $address = $request->get('address');
@@ -141,7 +146,7 @@ class ApplicationController extends Controller
 //        if ($newApplication)
 //            $this->makeCsvAndStore($newApplication);
 
-        return response($request->all(), 200);
+        return response($request->all(), Response::HTTP_OK);
     }
 
     public function makeCsvAndStore($newApp)
@@ -154,7 +159,7 @@ class ApplicationController extends Controller
         return $this->dadataAdapter->getAddress($request->get('input'));
     }
 
-    public function delete($id)
+    public function delete($id): void
     {
         $this->repo->getById($id)->destroy();
     }
@@ -167,21 +172,33 @@ class ApplicationController extends Controller
         return $pdf->download('sticker_' . $application->order_number .'.pdf');
     }
 
-    public function import(Request $request)
+    public function import(Request $request): Response
     {
-        if (Auth::id() == $this->obiUser) {
-            return $this->importService->importObi($request->file('file'), new ApplicationObiImport(), Auth::id());
-        } else {
-            return $this->importService->import($request->file('file'), new ApplicationImportCsv(), Auth::id());
+        $userId = Auth::id();
+        $storeId = $request->get('store_id') ? (int)  $request->get('store_id') : null;
+        $fileExtension = $request->file('document')->getClientOriginalExtension();
+
+        try {
+            if ($userId == $this->obiUser) {
+                $this->importService
+                    ->importObi($request->file('document'), $this->appService->extensionHandler($fileExtension), $userId);
+            } else {
+                $this->importService
+                    ->import($request->file('document'), $this->appService->extensionHandler($fileExtension), $userId, $storeId);
+            }
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+
+        return response()->json(['message' => 'Файл успешно загружен!'], Response::HTTP_OK);
     }
 
     public function downloadFileExample(): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         if (Auth::id() == $this->obiUser) {
-            return Response::download(storage_path('app/public/example-obi.xlsx'));
+            return FResponse::download(storage_path('app/public/example-obi.xlsx'));
         } else {
-            return Response::download(storage_path('app/public/orders_example.csv'));
+            return FResponse::download(storage_path('app/public/orders_example.csv'));
         }
     }
 }

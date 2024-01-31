@@ -5,20 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Application\ApplicationService;
 use App\Application\CsvImportService;
 use App\Http\Controllers\Controller;
-use App\Infrastructure\Imports\ApplicationImportCsv;
-use App\Infrastructure\Imports\ApplicationImportXlsx;
-use App\Infrastructure\Imports\ApplicationObiImport;
 use App\Infrastructure\Repositories\UserRepository;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class SupportController extends Controller
 {
     private ApplicationService $applicationService;
     private CsvImportService $importService;
     private UserRepository $partnerRepository;
-    private $obiUser;
+    private int $obiUser;
 
     public function __construct(ApplicationService $applicationService,
                                 CsvImportService $importService,
@@ -31,7 +30,7 @@ class SupportController extends Controller
         $this->obiUser = config('app.obi_user_id');
     }
 
-    public function showAppsStatuses()
+    public function showAppsStatuses(): View
     {
        return view('vendor.backpack.support-applications');
     }
@@ -48,46 +47,34 @@ class SupportController extends Controller
         return view('vendor.backpack.support-application-upload');
     }
 
-    public function getPartners()
+    public function getPartners(): Collection
     {
         return $this->partnerRepository->getAll();
     }
 
-    public function upload(Request $request)
+    public function upload(Request $request): Response
     {
         $userId = $request->get('user_id');
-        $storeId = $request->get('store_id');
-        $fileExtension = $request->file('document')->extension();
-        dd($storeId);
+        $storeId = (int) $request->get('store_id');
+        $fileExtension = $request->file('document')->getClientOriginalExtension();
+
         try {
             if ($userId == $this->obiUser) {
                 $this->importService
-                    ->importObi($request->file('file'), $this->extensionHandler($fileExtension), $userId);
+                    ->importObi($request->file('document'), $this->applicationService->extensionHandler($fileExtension), $userId);
             } else {
                 $this->importService
-                    ->import($request->file('document'), $this->extensionHandler($fileExtension), $userId, $storeId);
+                    ->import($request->file('document'), $this->applicationService->extensionHandler($fileExtension), $userId, $storeId);
             }
         } catch (\Throwable $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+
+        return response()->json(['message' => 'Файл успешно загружен!'], Response::HTTP_OK);
     }
 
-    public function getPartnerWarehouses(int $partnerId)
+    public function getPartnerWarehouses(int $partnerId): Response
     {
         return response(['id' => $partnerId], 200);
-    }
-
-    /**
-     * @param string $extension
-     * @return ApplicationImportCsv|ApplicationImportXlsx
-     */
-    private function extensionHandler(string $extension)
-    {
-        switch ($extension) {
-            case 'xlsx':
-                return new ApplicationImportXlsx();
-            default:
-                return new ApplicationImportCsv();
-        }
     }
 }

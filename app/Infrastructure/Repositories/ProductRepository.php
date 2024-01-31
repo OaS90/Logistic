@@ -6,6 +6,17 @@ use App\Models\Product;
 
 class ProductRepository
 {
+    public function getById(int $id): Product
+    {
+        return Product::where('id', $id)->first();
+    }
+
+    public function updateByFields(int $id, array $fields): void
+    {
+        $product = $this->getById($id);
+        $product->update($fields);
+    }
+
     public function create(array $data)
     {
         return Product::create($data);

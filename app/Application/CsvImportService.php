@@ -6,6 +6,8 @@ use App\Domain\ApplicationDTO;
 use App\Domain\ApplicationObiDTO;
 use App\Domain\DeliveryAddressDTO;
 use App\Domain\ProductDTO;
+use App\Infrastructure\Admin\Exceptions\CityFiasWrongFormatException;
+use App\Infrastructure\Admin\Exceptions\ProductWithoutSkuException;
 use App\Infrastructure\Exceptions\PartnerWarehouseNotFoundException;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\WarehouseRepository;
@@ -16,7 +18,6 @@ use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Repositories\ProductRepository;
 use App\Infrastructure\Repositories\ObiProductsRepository;
-use Mockery\Exception\InvalidCountException;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 /**
@@ -51,20 +52,19 @@ class CsvImportService
         $this->obiProductsRepo = $obiProductsRepository;
     }
 
-
     /**
      * @throws PartnerWarehouseNotFoundException
+     * @throws CityFiasWrongFormatException|ProductWithoutSkuException
      */
-    public function import($file, ImportEntity $entity, int $userId, ?int $storeId = null)
+    public function import($file, ImportEntity $entity, int $userId, ?int $storeId = null): void
     {
         $dataFromCsv = $this->getDataArraysWithDbRows($entity, $file);
 
         foreach ($dataFromCsv as $data) {
             $existApp = $this->appRepo->getByOrderNumber($data['app']['order_number']);
             $data['app']['user_id'] = $userId;
-
             $data['app']['delivery_time'] = $data['app']['delivery_from'] . '-' . $data['app']['delivery_till'];
-            dd($storeId);
+
             if ($storeId) {
                 $warehouse = $this->warehouseRepo->findByStoreId($storeId);
             } else {
@@ -96,11 +96,9 @@ class CsvImportService
 
             $this->appService->getDeliveryDateFromHru($existApp->order_number, $existApp->address);
         }
-
-        return response(['message' => 'success'], 200);
     }
 
-    public function importObi($file, ImportEntity $entity, $userId)
+    public function importObi($file, ImportEntity $entity, $userId): void
     {
         $dataFromFile = Excel::toArray($entity, $file)[0];
         $rows = (new ApplicationObiDTO())->dbRowsFromXlsx();
@@ -156,8 +154,6 @@ class CsvImportService
                 }
             }
         }
-
-        return response(['message' => 'success'], 200);
     }
 
     /**
@@ -165,6 +161,7 @@ class CsvImportService
      * @param $entity
      * @param $file
      * @return array
+     * @throws CityFiasWrongFormatException
      */
     public function getDataArraysWithDbRows($entity, $file): array
     {
@@ -214,17 +211,25 @@ class CsvImportService
                 $this->isDateExists($appWithDbColumns);
                 $this->isTimeExists($appWithDbColumns);
 
+                if ($appWithDbColumns['city_fias'] && strlen($appWithDbColumns['city_fias']) > 40) {
+                    throw new CityFiasWrongFormatException('Неверный формат ФИАС города в заявке номер ' . $appWithDbColumns['order_number']);
+                }
+
                 $apps[$i]['app'] = (new ApplicationDTO())->dbRows($appWithDbColumns);
                 $apps[$i]['address'] = (new DeliveryAddressDTO())->dbRows($appWithDbColumns);
                 $apps[$i]['products'][] = (new ProductDTO())->dbRows($appWithDbColumns);
-
             }
         }
 
         return $apps;
     }
 
-    private function isDateExists(array &$columns)
+    /**
+     * Если не указано дата доставки, то ставим из последнего записанного
+     * @param array $columns
+     * @return void
+     */
+    private function isDateExists(array &$columns): void
     {
         if (!$columns['delivery_date']) {
             $columns['delivery_date'] = Carbon::parse($this->lastOrderData['date'])->format('Y-m-d');
@@ -233,7 +238,12 @@ class CsvImportService
         }
     }
 
-    private function isTimeExists(array &$columns)
+    /**
+     * Если не указано время доставки, то ставим из последнего записанного
+     * @param array $columns
+     * @return void
+     */
+    private function isTimeExists(array &$columns): void
     {
         if (!$columns['delivery_from']) {
             $columns['delivery_from'] = $this->lastOrderData['timeFrom'];

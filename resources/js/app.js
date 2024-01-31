@@ -21,6 +21,7 @@ import QuoteEmailsTable from "./components/Admin/QuoteEmailsTable";
 import LoginForm from "./components/LoginForm";
 import SupportApps from "./components/Admin/SupportApps";
 import SupportAppImport from "./components/Admin/SupportAppImport";
+import PulseLoader from 'vue-spinner/src/DotLoader';
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -64,6 +65,7 @@ if (document.getElementById('admin-app')) {
             QuoteEmailsTable,
             SupportApps,
             SupportAppImport,
+            PulseLoader
         }
     })
 }

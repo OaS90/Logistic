@@ -82,7 +82,7 @@ export default {
     },
     methods: {
         list() {
-            axios.get('/admin/support/apps')
+            axios.get('/admin/support/apps/get')
                 .then(response => {
                     this.apps = response.data;
                 });
@@ -99,9 +99,19 @@ export default {
 
             // Seconds part from the timestamp
             let seconds = "0" + date.getSeconds();
+            let month = date.getMonth() + 1
+            let day = date.getDate();
+
+            if (month < 10) {
+                month = `0${month}`;
+            }
+
+            if (day < 10) {
+                day = `0${day}`;
+            }
 
             // Will display time in 10:30:23 format
-            return date.getUTCDay() + '-' + date.getMonth() + '-' + date.getFullYear() + ' ' +
+            return day + '-' + month + '-' + date.getFullYear() + ' ' +
                 hours + ':' + minutes.slice(-2) + ':' + seconds.slice(-2)
         },
         isSendedTo1c(app) {

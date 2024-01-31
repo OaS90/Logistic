@@ -3,14 +3,16 @@
 namespace App\Application;
 
 use App\Domain\ProductDTO;
+use App\Infrastructure\Admin\Exceptions\ProductWithoutSkuException;
 use App\Infrastructure\Api;
+use App\Infrastructure\Imports\ApplicationImportCsv;
+use App\Infrastructure\Imports\ApplicationImportXlsx;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\ProductRepository;
 use App\Models\DeliveryAddress;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 
 class ApplicationService
@@ -32,6 +34,9 @@ class ApplicationService
         $this->applicationObiRepo = $applicationObiRepo;
     }
 
+    /**
+     * @throws ProductWithoutSkuException
+     */
     public function checkAppChanges($app, array $data)
     {
         if (!in_array($app->status, ['new', 'refusal'])) {
@@ -43,9 +48,17 @@ class ApplicationService
         return null;
     }
 
+    /**
+     * @throws ProductWithoutSkuException
+     */
     private function checkAppProducts($app, array $data): void
     {
         foreach ($data as $csvProduct) {
+            if (!$csvProduct['sku'] || !isset($csvProduct['sku'])) {
+                throw new ProductWithoutSkuException('У товара ' . $csvProduct['name'] .
+                    ' отсутствует артикул в заявке номер ' . $app->order_number);
+            }
+
             $appProduct = $this->productRepo->getByAppIdSkuBrand($csvProduct['sku'], $app->id);
 
             if (!$appProduct) {
@@ -86,11 +99,23 @@ class ApplicationService
         return false;
     }
 
-    public function getAllApplications()
+    public function getAllApplications(): Collection|array
     {
         $common = $this->appRepo->getAll();
         $obi = $this->applicationObiRepo->getAll();
 
         return $common->merge($obi);
+    }
+
+    /**
+     * @param string $extension
+     * @return ApplicationImportCsv|ApplicationImportXlsx
+     */
+    public function extensionHandler(string $extension): ApplicationImportXlsx|ApplicationImportCsv
+    {
+        return match ($extension) {
+            'xlsx' => new ApplicationImportXlsx(),
+            default => new ApplicationImportCsv(),
+        };
     }
 }

@@ -45,8 +45,8 @@ Route::group([
     Route::crud('regions', 'RegionCrudController');
     Route::crud('quote-warehouse', 'QuoteWarehouseCrudController');
     Route::prefix('support')->group(function() {
-        Route::get('show-apps', [SupportController::class, 'showAppsStatuses']);
-        Route::get('apps', [SupportController::class, 'getApps']);
+        Route::get('apps', [SupportController::class, 'showAppsStatuses']);
+        Route::get('apps/get', [SupportController::class, 'getApps']);
         Route::get('partners', [SupportController::class, 'getPartners']);
         Route::get('partner-warehouses', [SupportController::class, 'getPartnerWarehouses']);
         Route::get('show-upload-page', [SupportController::class, 'showUploadPage']);
