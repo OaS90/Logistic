@@ -344,11 +344,13 @@ class ApplicationCrudController extends CrudController
         ]);
 
         foreach ($this->crud->getCurrentEntry()->products as $id => $product) {
+            $num = $id + 1;
+
             CRUD::addField([   // CustomHTML
                 'tab' => 'Товары',
                 'name'  => 'title_' . $product->id,
                 'type'  => 'custom_html',
-                'value' => '<h2>Товар № ' . $id + 1 . '</h2>'
+                'value' => '<h2>Товар № ' . $num . '</h2>'
             ]);
 
             CRUD::addField([   // CustomHTML

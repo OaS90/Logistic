@@ -195,9 +195,9 @@ class PartnerOrderDTO
     private function getAddressInfo($isObiPartner = false): array
     {
         if ($isObiPartner) {
-            $addressInfo = $this->dadataService->getAddress($this->app->delivery_address, 1);
+            $addressInfo = $this->dadataService->getCleanAddress($this->app->delivery_address);
         } else {
-            $addressInfo = $this->dadataService->getAddress($this->app->full_address, 1);
+            $addressInfo = $this->dadataService->getCleanAddress($this->app->full_address);
         }
 
         return $this->parseDadataAddress($addressInfo, $isObiPartner);
@@ -205,20 +205,20 @@ class PartnerOrderDTO
 
     private function parseDadataAddress(array $addressInfo, bool $isObiPartner): array
     {
-        if (isset($addressInfo[0]['data']) && count($addressInfo[0]['data']) > 0) {
+        if (isset($addressInfo[0]) && count($addressInfo[0]) > 0) {
             $cityInfo = [
-                'cityName' => $addressInfo[0]['data']['city'] ?? $addressInfo[0]['data']['settlement_with_type'],
-                'cityFias' => $addressInfo[0]['data']['city_fias_id'] ?? $addressInfo[0]['data']['settlement_fias_id']
+                'cityName' => $addressInfo[0]['city'] ?? $addressInfo[0]['settlement_with_type'],
+                'cityFias' => $addressInfo[0]['city_fias_id'] ?? $addressInfo[0]['settlement_fias_id']
             ];
 
             if ($isObiPartner) {
                 $address = [
-                    'regionName' => $addressInfo[0]['data']['region_with_type'],
+                    'regionName' => $addressInfo[0]['region_with_type'],
                     'cityName' => $cityInfo['cityName'],
                     'cityId' => $cityInfo['cityFias'] ?? '', // ФИАС код города/населенного пункта
-                    'street' => $addressInfo[0]['data']['street_with_type'] ?? '',
-                    'streetId' => $addressInfo[0]['data']['street_fias_id'] ?? '', // ФИАС код улицы
-                    'building' => $addressInfo[0]['data']['house'] ?? '',
+                    'street' => $addressInfo[0]['street_with_type'] ?? '',
+                    'streetId' => $addressInfo[0]['street_fias_id'] ?? '', // ФИАС код улицы
+                    'building' => $addressInfo[0]['house'] ?? '',
                     'floor' => '', // необязательно
                     'flat' => '' // необязательно
                 ];
@@ -227,11 +227,11 @@ class PartnerOrderDTO
                 $floor = $this->app->address->floor && $this->app->address->flat ? 'этаж ' . $this->app->address->floor : '';
                 $flat = $this->app->address->flat ? 'кв. ' . $this->app->address->flat : '';
                 $address = [
-                    'regionName' => $addressInfo[0]['data']['region_with_type'],
+                    'regionName' => $addressInfo[0]['region_with_type'],
                     'cityName' => $cityInfo['cityName'],
                     'cityId' => $cityInfo['cityFias'] ?? '', // ФИАС код города/населенного пункта
-                    'street' => $addressInfo[0]['data']['street_with_type'] ?? '',
-                    'streetId' => $addressInfo[0]['data']['street_fias_id'] ?? '', // ФИАС код улицы
+                    'street' => $addressInfo[0]['street_with_type'] ?? '',
+                    'streetId' => $addressInfo[0]['street_fias_id'] ?? '', // ФИАС код улицы
                     'building' => $building,
                     'floor' => $floor, // необязательно
                     'flat' => $flat // необязательно

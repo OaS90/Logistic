@@ -80,10 +80,8 @@ class ApplicationService
                 return response(['message' => 'У товара ' . $product->name . ' отсутствует баркод'], 400);
         }
 
-        $pdf = PDF::loadView('sticker', ['codes' => $barcodes, 'application' => $app, 'products' => $app->products])
+        return PDF::loadView('sticker', ['codes' => $barcodes, 'application' => $app, 'products' => $app->products])
             ->setPaper([30, -30, 280.77, 320.16]);
-
-        return $pdf;
     }
 
     public function getDeliveryDateFromHru($appNumber, DeliveryAddress $addressEntity): bool

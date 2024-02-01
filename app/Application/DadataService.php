@@ -10,4 +10,9 @@ class DadataService
     {
         return (new DadataAdapter())->getAddress($address, $count);
     }
+
+    public function getCleanAddress(string $address)
+    {
+        return (new DadataAdapter())->getCleanAddress($address);
+    }
 }

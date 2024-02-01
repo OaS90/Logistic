@@ -156,7 +156,8 @@ class ApplicationController extends Controller
 
     public function getAddress(Request $request)
     {
-        return $this->dadataAdapter->getAddress($request->get('input'));
+        return $this->dadataAdapter->getCleanAddress($request->get('input'));
+//        return $this->dadataAdapter->getAddress($request->get('input'));
     }
 
     public function delete($id): void
