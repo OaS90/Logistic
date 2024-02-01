@@ -27,7 +27,7 @@
                         <th>Настройка ТК</th>
                     </tr>
                     <tr v-for="(warehouse, id) in filteredRows" :key="`warehouse-${id}`" style="text-align:center">
-                        <td><input type="checkbox" @change="toSave(warehouse)"></td>
+                        <td><input type="checkbox" @change="toSave(warehouse)" v-model="warehouse.to_save"></td>
                         <th>{{ warehouse.region}}</th>
                         <td>{{ warehouse.code }}</td>
                         <td>{{ warehouse.name }}</td>
@@ -99,7 +99,14 @@ export default {
     },
     methods: {
         toSave(warehouse) {
-            this.warehousesToSave.push(warehouse)
+            if (warehouse.to_save) {
+                this.warehousesToSave.push(warehouse)
+            } else {
+                let index = this.warehousesToSave.indexOf(warehouse);
+                if (index !== -1) {
+                    this.warehousesToSave.splice(index, 1);
+                }
+            }
         },
         topScroll(e) {
             let currentScrollPosition = e.srcElement.scrollLeft
@@ -130,6 +137,7 @@ export default {
                     this.showModal = !this.showModal
                     this.modalText = errors.response.data.message
                 })
+
             }
         },
         excel() {

@@ -17,7 +17,7 @@ class HruApi
         $this->client = $client;
     }
 
-    public function query(string $uri, array $data, string $method = 'POST'): bool
+    public function query(string $uri, array $data, string $method = 'POST'): bool|array
     {
         if ($method == 'POST') {
             $params = [RequestOptions::JSON => $data];
@@ -32,9 +32,9 @@ class HruApi
             if ($response->getStatusCode() == 200 &&
                 (isset($responseContents['success']) && $responseContents['success'])
             ) {
-                return true;
+                return ['status' => true];
             } else {
-                return false;
+                return ['status' => false, 'message' => $responseContents['error']];
             }
         } catch (ClientException $e) {
             Log::error('Ошибка отправки данных в HRU. URI: ' . $uri . ' Error: ' .

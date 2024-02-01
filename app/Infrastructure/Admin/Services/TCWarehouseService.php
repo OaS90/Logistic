@@ -40,7 +40,8 @@ class TCWarehouseService
                 'region' => $warehouse->region ?->name,
                 'delay_days' => $warehouse->delay_days ?? 0,
                 'show_setting' => false,
-                'settings' => $settings
+                'settings' => $settings,
+                'to_save' => false
             ];
         }
 

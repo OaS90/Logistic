@@ -23,7 +23,7 @@ class TCSettingsService
     }
 
 
-    public function save(array $warehouseSettings): bool
+    public function save(array $warehouseSettings): bool|array
     {
         $warehouseTCSettings = [];
         $warehousesWithSettings = [];

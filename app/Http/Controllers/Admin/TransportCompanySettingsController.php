@@ -46,7 +46,7 @@ class TransportCompanySettingsController extends Controller
 
     public function save(Request $request, TCSettingsService $service): Response
     {
-        $message = 'Данные сохранены.';
+        $message = 'Данные сохранены. ';
 
         try {
             $result = $service->save($request->get('settings'));
@@ -55,8 +55,10 @@ class TransportCompanySettingsController extends Controller
             return response(['message' => 'Ошибка сохранения данных'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        if ($result) {
+        if (isset($result['status']) && $result['status']) {
             $message .= 'Настройки отправлены на сайт HRU';
+        } elseif (isset($result['message'])) {
+            $message .= $result['message'];
         } else {
             $message .= 'Ошибка отправки настроек на сайт!';
         }
