@@ -22,6 +22,14 @@ class ApplicationRepository
         return Application::where('user_id', $userId)->with('products')->get();
     }
 
+    public function getListByUserIdForUpdateStatus(int $userId)
+    {
+        return Application::where('user_id', $userId)
+            ->where('status', 'created')
+            ->orWhere('doc_ver', '>', 'old_doc_ver')
+            ->get();
+    }
+
     public function create(array $data)
     {
         $existsApplication = $this->getByOrderNumber($data['order_number']);

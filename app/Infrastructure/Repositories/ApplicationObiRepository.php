@@ -25,6 +25,14 @@ class ApplicationObiRepository
         return ApplicationObi::where('user_id', $userId)->get();
     }
 
+    public function getListByUserIdForUpdateStatus(int $userId)
+    {
+        return ApplicationObi::where('user_id', $userId)
+            ->where('status', 'created')
+            ->orWhere('doc_ver', '>', 'old_doc_ver')
+            ->get();
+    }
+
     public function getById(int $appId)
     {
         return ApplicationObi::find($appId);

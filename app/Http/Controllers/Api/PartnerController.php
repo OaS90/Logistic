@@ -36,9 +36,9 @@ class PartnerController extends Controller
             $isObiPartner = $this->obiUser == $user->id;
 
             if ($isObiPartner) {
-                $applications = $this->obiRepository->getListByUserId($user->id);
+                $applications = $this->obiRepository->getListByUserIdForUpdateStatus($user->id);
             } else {
-                $applications = $this->repo->getListByUserId($user->id);
+                $applications = $this->repo->getListByUserIdForUpdateStatus($user->id);
             }
 
             if ($applications->count() == 0)
