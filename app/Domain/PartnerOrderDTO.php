@@ -195,9 +195,9 @@ class PartnerOrderDTO
     private function getAddressInfo($isObiPartner = false): array
     {
         if ($isObiPartner) {
-            $addressInfo = $this->dadataService->getCleanAddress($this->app->delivery_address);
+            $addressInfo = $this->dadataService->getAddress($this->app->delivery_address, 1);
         } else {
-            $addressInfo = $this->dadataService->getCleanAddress($this->app->full_address);
+            $addressInfo = $this->dadataService->getAddress($this->app->full_address, 1);
         }
 
         return $this->parseDadataAddress($addressInfo, $isObiPartner);
