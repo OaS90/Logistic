@@ -21,6 +21,7 @@ class ApplicationObiImport extends DefaultValueBinder implements ImportEntity, W
 
 //    public function bindValue(Cell $cell, $value): bool
 //    {
+//    }
 //        if ($value != null && $value != 1)
 //            dd(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value));
 //        // Изменение столбца, если из excel выгрузился по типу 2,1E+10
@@ -31,7 +32,6 @@ class ApplicationObiImport extends DefaultValueBinder implements ImportEntity, W
 //            $value = (int)str_replace(',', '', $value);
 //        }
 //
-//        return parent::bindValue($cell, $value);
 //    }
 //
 //    public function columnFormats(): array

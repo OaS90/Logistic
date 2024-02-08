@@ -17,6 +17,7 @@
             <li class='nav-item'>
                 <a class='nav-link' href='{{ backpack_url('warehouses') }}'><i class="las la-store-alt"></i> Партнёрские
                     Склады</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ backpack_url('application-obi') }}"><i class="las la-file-alt"></i> Заявки Obi</a></li>
         </ul>
     </li>
     @if(!backpack_user()->hasRole('guest') && !backpack_user()->hasRole('transportation department'))

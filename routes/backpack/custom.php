@@ -52,4 +52,5 @@ Route::group([
         Route::get('show-upload-page', [SupportController::class, 'showUploadPage']);
         Route::post('import-app', [SupportController::class, 'upload']);
     });
+    Route::crud('application-obi', 'ApplicationObiCrudController');
 }); // this should be the absolute last line of this file

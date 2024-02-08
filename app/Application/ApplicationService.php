@@ -7,6 +7,7 @@ use App\Infrastructure\Admin\Exceptions\ProductWithoutSkuException;
 use App\Infrastructure\Api;
 use App\Infrastructure\Imports\ApplicationImportCsv;
 use App\Infrastructure\Imports\ApplicationImportXlsx;
+use App\Infrastructure\Imports\ApplicationObiImport;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\ProductRepository;
@@ -107,13 +108,20 @@ class ApplicationService
 
     /**
      * @param string $extension
-     * @return ApplicationImportCsv|ApplicationImportXlsx
+     * @param bool $isObiUser
+     * @return ApplicationImportCsv|ApplicationImportXlsx|ApplicationObiImport
      */
-    public function extensionHandler(string $extension): ApplicationImportXlsx|ApplicationImportCsv
+    public function extensionHandler(string $extension, bool $isObiUser): ApplicationImportXlsx|ApplicationImportCsv|ApplicationObiImport
     {
-        return match ($extension) {
-            'xlsx' => new ApplicationImportXlsx(),
-            default => new ApplicationImportCsv(),
-        };
+        switch ($extension) {
+            case ('xlsx'):
+                if ($isObiUser) {
+                    return new ApplicationObiImport();
+                } else {
+                    return new ApplicationImportXlsx();
+                }
+            default:
+                return new ApplicationImportCsv();
+        }
     }
 }

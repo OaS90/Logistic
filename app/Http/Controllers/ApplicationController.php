@@ -182,10 +182,10 @@ class ApplicationController extends Controller
         try {
             if ($userId == $this->obiUser) {
                 $this->importService
-                    ->importObi($request->file('document'), $this->appService->extensionHandler($fileExtension), $userId);
+                    ->importObi($request->file('document'), $this->appService->extensionHandler($fileExtension, true), $userId);
             } else {
                 $this->importService
-                    ->import($request->file('document'), $this->appService->extensionHandler($fileExtension), $userId, $storeId);
+                    ->import($request->file('document'), $this->appService->extensionHandler($fileExtension, false), $userId, $storeId);
             }
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);

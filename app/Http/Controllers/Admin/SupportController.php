@@ -61,10 +61,10 @@ class SupportController extends Controller
         try {
             if ($userId == $this->obiUser) {
                 $this->importService
-                    ->importObi($request->file('document'), $this->applicationService->extensionHandler($fileExtension), $userId);
+                    ->importObi($request->file('document'), $this->applicationService->extensionHandler($fileExtension, true), $userId);
             } else {
                 $this->importService
-                    ->import($request->file('document'), $this->applicationService->extensionHandler($fileExtension), $userId, $storeId);
+                    ->import($request->file('document'), $this->applicationService->extensionHandler($fileExtension, false), $userId, $storeId);
             }
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use App\Domain\ApplicationStatuses;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ApplicationObi extends Model
 {
+    use CrudTrait;
     use ApplicationStatuses;
 
     protected $table = 'applications_obi';

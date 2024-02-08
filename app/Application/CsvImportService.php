@@ -133,7 +133,7 @@ class CsvImportService
 
                     $phones = implode(', ', $phones);
                 } else {
-                    $phones = parse_phone($appWithDbColumns['phone']);
+                    $phones = str_replace(',', '', parse_phone($appWithDbColumns['phone']));
                 }
                 $appWithDbColumns['phone'] = $phones;
                 unset($appWithDbColumns['order_list']);
