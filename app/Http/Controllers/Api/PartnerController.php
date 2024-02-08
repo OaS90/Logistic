@@ -56,7 +56,7 @@ class PartnerController extends Controller
                     try {
                         $appDTO = (new PartnerOrderDTO($app))->make();
                     } catch (\Throwable $e) {
-                        Log::info('Error creating dto for app ' . $app->order_number);
+                        Log::info('Error creating dto for app ' . $app->order_number . 'error:' . $e->getMessage());
                         continue;
                     }
 
