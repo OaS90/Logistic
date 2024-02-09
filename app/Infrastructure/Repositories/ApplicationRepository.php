@@ -26,7 +26,7 @@ class ApplicationRepository
     {
         return Application::where('user_id', $userId)
             ->where('status', 'created')
-            ->orWhere('doc_ver', '>', 'old_doc_ver')
+            ->orWhereRaw('doc_ver > old_doc_ver')
             ->get();
     }
 

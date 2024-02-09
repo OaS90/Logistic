@@ -61,8 +61,11 @@ class ApplicationCrudController extends CrudController
 
         $this->crud->addColumn([
             'label' => "Партнёр", // Table column heading
-            'type' => 'text',
+            'type' => 'closure',
             'name' => 'user_id',
+            'function' => function ($entry) {
+                return $entry->user->company;
+            },
             'priority' => 2,
         ]);
 
