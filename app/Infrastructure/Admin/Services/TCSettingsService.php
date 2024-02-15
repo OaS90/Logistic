@@ -25,7 +25,6 @@ class TCSettingsService
 
     public function save(array $warehouseSettings): bool|array
     {
-        $warehouseTCSettings = [];
         $warehousesWithSettings = [];
 
         foreach($warehouseSettings as $warehouse) {
@@ -34,7 +33,10 @@ class TCSettingsService
                 'quote' => $warehouse['quote']
             ]);
 
+            $warehouseTCSettings = [];
+
             foreach($warehouse['settings'] as $setting) {
+
                 $tcSettings = $this->settingsRepo->updateFieldsById($setting['id'], [
                     'days' => $setting['days'],
                     'enabled' => $setting['enabled'],

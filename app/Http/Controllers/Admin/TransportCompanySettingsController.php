@@ -8,6 +8,7 @@ use App\Infrastructure\Admin\Services\TCWarehouseService;
 use App\Infrastructure\Exports\Admin\TCSettingsExport;
 use App\Infrastructure\Repositories\Admin\TransportCompanyWarehouseRepository;
 use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 use App\Application\ExcelExportService;
 use Illuminate\Http\Request;
@@ -28,7 +29,7 @@ class TransportCompanySettingsController extends Controller
         $this->exportService = $exportService;
     }
 
-    public function show(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
+    public function show(): View
     {
         try {
             $warehouses = $this->repo->getAllWithSetting();
@@ -40,7 +41,8 @@ class TransportCompanySettingsController extends Controller
             ]);
         } catch (\Throwable $e) {
             Log::error('Settings view error ' . $e->getMessage());
-            return response(['message' => 'Ошибка отображения', Response::HTTP_INTERNAL_SERVER_ERROR]);
+
+            return view('errors.500');
         }
     }
 
