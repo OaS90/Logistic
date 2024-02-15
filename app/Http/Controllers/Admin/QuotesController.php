@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Quote;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use App\Domain\Admin\QuoteDTO;
 use App\Infrastructure\Repositories\Admin\QuoteRepository;
@@ -17,13 +18,15 @@ use GuzzleHttp\Exception\BadResponseException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\QuotesChange;
 use App\Infrastructure\Repositories\Admin\EmailQuoteRepository;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class QuotesController extends Controller
 {
-    protected $repo;
-    protected $intervalRepo;
-    protected $exportService;
-    protected $emailQuoteRepo;
+    protected QuoteRepository $repo;
+    protected IntervalQuoteRepository $intervalRepo;
+    protected ExcelExportService $exportService;
+    protected EmailQuoteRepository $emailQuoteRepo;
 
     public function __construct(QuoteRepository $repo,
                                 IntervalQuoteRepository $intervalRepo,
@@ -37,7 +40,7 @@ class QuotesController extends Controller
         $this->emailQuoteRepo = $emailQuoteRepository;
     }
 
-    public function show()
+    public function show(): View
     {
         $quotes = (new QuoteDTO())->toArrayForVue(Quote::with(['intervals', 'region'])->get());
         $isGuest = (bool) backpack_user()->hasRole('guest');
@@ -45,7 +48,11 @@ class QuotesController extends Controller
         return view('vendor.backpack.quotes', ['quotes' => collect($quotes), 'guest' => $isGuest]);
     }
 
-    public function save(Request $request)
+    /**
+     * @throws GuzzleException
+     * @throws \Exception
+     */
+    public function save(Request $request): Response
     {
         $isGuest = (bool) backpack_user()->hasRole('guest');
 

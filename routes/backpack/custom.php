@@ -53,4 +53,6 @@ Route::group([
         Route::post('import-app', [SupportController::class, 'upload']);
     });
     Route::crud('application-obi', 'ApplicationObiCrudController');
+    Route::crud('tariff', 'TariffCrudController');
+
 }); // this should be the absolute last line of this file

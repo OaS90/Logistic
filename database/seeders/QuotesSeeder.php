@@ -29,7 +29,6 @@ class QuotesSeeder extends Seeder
             foreach ($intervals as $period) {
                 IntervalQuote::create(['quote_id' => $quote->id, 'period' => $period]);
             }
-
         }
     }
 }
