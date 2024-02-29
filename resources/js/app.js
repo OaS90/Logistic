@@ -22,6 +22,10 @@ import LoginForm from "./components/LoginForm";
 import SupportApps from "./components/Admin/SupportApps";
 import SupportAppImport from "./components/Admin/SupportAppImport";
 import PulseLoader from 'vue-spinner/src/DotLoader';
+import TariffRegionSettings from "./components/Admin/TariffRegionEdit";
+import TariffRegions from "./components/Admin/TariffRegions";
+import Multiselect from 'vue-multiselect';
+import TariffCreate from "./components/Admin/TariffCreate";
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -65,7 +69,11 @@ if (document.getElementById('admin-app')) {
             QuoteEmailsTable,
             SupportApps,
             SupportAppImport,
-            PulseLoader
+            PulseLoader,
+            TariffRegionSettings,
+            TariffRegions,
+            Multiselect,
+            TariffCreate
         }
     })
 }

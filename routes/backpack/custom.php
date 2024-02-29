@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Auth\RegisterController;
 use App\Http\Controllers\Admin\QuotesController;
 use App\Http\Controllers\Admin\QuoteEmailsController;
 use App\Http\Controllers\Admin\SupportController;
+use App\Http\Controllers\Admin\TariffController;
 // --------------------------
 // Custom Backpack Routes
 // --------------------------
@@ -53,6 +54,17 @@ Route::group([
         Route::post('import-app', [SupportController::class, 'upload']);
     });
     Route::crud('application-obi', 'ApplicationObiCrudController');
-    Route::crud('tariff', 'TariffCrudController');
-
+    Route::post('tariffs/{tariffId}/add-regions', [TariffController::class, 'addRegions']);
+    Route::delete('tariffs/{tariffId}/delete-region/{regionId}', [TariffController::class, 'deleteRegion']);
+    Route::get('tariffs/{tariffId}/edit/', [TariffController::class, 'edit']);
+    Route::get('tariffs/{tariffId}/edit/regions/{regionId}/edit', [TariffController::class, 'regionEditShow']);
+    Route::post('tariffs/{tariffId}/region/{regionId}/save', [TariffController::class, 'regionSave']);
+    Route::post('tariffs/{tariffId}/region/{regionId}/delete-zone', [TariffController::class, 'zoneDelete']);
+    Route::get('tariffs', [TariffController::class, 'list'])->name('tariff-list');
+    Route::get('tariffs/{tariffId}/clone', [TariffController::class, 'cloneTariff']);
+    Route::get('tariffs/show', [TariffController::class, 'show']);
+    Route::post('tariffs/create', [TariffController::class, 'create']);
+    Route::get('tariffs/{tariffId}/delete', [TariffController::class, 'delete']);
+    Route::crud('tariff-categories', 'TariffCategoriesCrudController');
+//    Route::crud('tariff', 'TariffCrudController');
 }); // this should be the absolute last line of this file

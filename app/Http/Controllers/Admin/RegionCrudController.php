@@ -32,7 +32,7 @@ class RegionCrudController extends CrudController
     {
         CRUD::setModel(\App\Models\Region::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/regions');
-        CRUD::setEntityNameStrings('region', 'regions');
+        CRUD::setEntityNameStrings('регион', 'регионы');
         if (backpack_user()->hasRole('guest')) {
             $this->crud->denyAccess(['update', 'delete', 'show', 'create']);
         }

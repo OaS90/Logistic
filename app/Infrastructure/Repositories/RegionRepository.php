@@ -6,6 +6,7 @@ use App\Domain\DTO\Tariff\RegionDTO;
 use App\Infrastructure\Services\Tariff\Factories\RegionDTOFactory;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Region;
+use Illuminate\Database\Eloquent\Model;
 
 class RegionRepository
 {
@@ -22,6 +23,16 @@ class RegionRepository
         }
 
         return $this->regionDTOFactory->createFromModel($entity);
+    }
+
+    public function getById(int $id): ?Region
+    {
+        return Region::where('id', $id)->first();
+    }
+
+    public function findByIdWithRelationships(int $id, array $relationships)
+    {
+        return Region::where('id', $id)->with($relationships)->first();
     }
 
     public function getAll(): Collection|array

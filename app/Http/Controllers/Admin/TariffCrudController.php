@@ -79,18 +79,64 @@ class TariffCrudController extends CrudController
             ->attributes(['class' => 'form-control'])
             ->wrapper(['class' => 'form-group col-md-3']);
 
-        $regions = $this->regionRepository->getAll();
+        CRUD::addField([
+            'name' => 'separator1',
+            'value' => '<hr> <h3>Регионы</h3>',
+            'type' => 'custom_html'
+        ]);
 
-        if ($this->crud->getCurrentEntry()) {
-            $entityId = $this->crud->getCurrentEntryId();
-            foreach ($regions as $region) {
-                CRUD::addField([
-                    'name' => 'region_' . $region->id,
-                    'value' => '<a href="' . backpack_url('tariff/' . $entityId . '/edit/regions/' . $region->id . '/edit')  .'">' . $region->name . '</a>',
-                    'type' => 'custom_html',
-                ]);
-            }
+        CRUD::addField([
+            'name' => 'separator1',
+            'value' => '<hr> <h3>Регионы</h3>',
+            'type' => 'custom_html'
+        ]);
+
+        if ($this->crud->getCurrentEntryId()) {
+            // regions vue component
+            CRUD::addField([
+                'name' => 'regions',
+                'type' => 'tariff-regions'
+            ]);
+        } else {
+            CRUD::addField([
+                'label' => 'Регионы',
+                'type' => 'select_multiple',
+                'name' => 'regions', // the method that defines the relationship in your Model
+
+                // optional
+                'entity' => 'regions', // the method that defines the relationship in your Model
+                'model'=> "App\Models\Region", // foreign key model
+                'attribute' => 'name', // foreign key attribute that is shown to user
+                'pivot' => true, // on create&update, do you need to add/delete pivot table entries?
+            ]);
         }
+
+//        if ($this->crud->getCurrentEntry()) {
+//            $regions = $this->crud->getCurrentEntry()->regions;
+//            $entityId = $this->crud->getCurrentEntryId();
+//
+//            foreach ($regions as $region) {
+//                CRUD::addField([
+//                    'name' => 'region_' . $region->id,
+//                    'value' => '<a href="' . backpack_url('tariff/' . $entityId .'/edit/regions/' . $region->id . '/edit')  .'">' . $region->name . '</a>',
+//                    'type' => 'custom_html',
+//                    'attributes' => ['class' => 'form-control'],
+//                    'wrapper' => ['class' => 'form-group col-md-3']
+//                ]);
+//            }
+//        } else {
+//            CRUD::addField([
+//                'label' => 'Регионы',
+//                'type' => 'select_multiple',
+//                'name' => 'regions', // the method that defines the relationship in your Model
+//
+//                // optional
+//                'entity' => 'regions', // the method that defines the relationship in your Model
+//                'model'=> "App\Models\Region", // foreign key model
+//                'attribute' => 'name', // foreign key attribute that is shown to user
+//                'pivot' => true, // on create&update, do you need to add/delete pivot table entries?
+//            ]);
+//        }
 //        'attributes' => [
 //        'class' => 'form-control',
 //        'readonly' => 'readonly',

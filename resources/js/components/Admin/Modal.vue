@@ -8,9 +8,7 @@
                             default body
                         </slot>
                         <br>
-                        <button class="btn btn-secondary" @click="$emit('close')">
-                            OK
-                        </button>
+                        <button :class="btnClass" @click="$emit('close')">{{ btnText }}</button>
                     </div>
                 </div>
             </div>
@@ -20,9 +18,24 @@
 
 <script>
 export default {
+    props: ['buttonName', 'buttonClass'],
+    data() {
+        return {
+            btnText: 'OK',
+            btnClass: 'btn btn-secondary'
+        }
+    },
     name: "Modal",
     mounted () {
         $("body").addClass("modal-open")
+
+        if (this.buttonName) {
+            this.btnText = this.buttonName
+        }
+
+        if (this.buttonClass) {
+            this.btnClass = this.buttonClass
+        }
     },
 
     beforeDestroy() {
@@ -35,6 +48,7 @@ export default {
     .btn {
         margin-top: 10px;
         width: 30%;
+        padding: 5px 0;
     }
     .modal-container {
         border-radius: 11px;
