@@ -67,4 +67,5 @@ Route::group([
     Route::get('tariffs/{tariffId}/delete', [TariffController::class, 'delete']);
     Route::crud('tariff-categories', 'TariffCategoriesCrudController');
 //    Route::crud('tariff', 'TariffCrudController');
+    Route::crud('tariff-zones', 'TariffZonesCrudController');
 }); // this should be the absolute last line of this file

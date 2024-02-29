@@ -38,6 +38,7 @@
         <ul class="nav-dropdown-items">
             <li class="nav-item"><a class="nav-link" href="{{ backpack_url('tariffs') }}"><i class="nav-icon la la-file-invoice"></i> Тарифы</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ backpack_url('tariff-categories') }}"><i class="nav-icon la la-list-ul"></i> Категории</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ backpack_url('tariff-zones') }}"><i class="nav-icon la la-map-marked"></i> Зоны</a></li>
         </ul>
     </li>
     <li class="nav-item nav-dropdown">
