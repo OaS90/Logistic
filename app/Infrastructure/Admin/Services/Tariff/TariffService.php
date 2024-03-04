@@ -9,6 +9,7 @@ use App\Infrastructure\Repositories\Admin\TariffRepository;
 use App\Infrastructure\Repositories\RegionRepository;
 use App\Models\TariffRegionZone;
 use App\Infrastructure\Services\Delivery\Api\Api;
+use Illuminate\Database\Eloquent\Collection;
 
 class TariffService
 {
@@ -51,6 +52,13 @@ class TariffService
             $region = $this->regionRepo->getById($regionData['id']);
             $this->tariffRepo->saveRegion($tariff, $region);
         }
+    }
+
+    public function addAllRegions(int $tariffId): void
+    {
+        $tariff = $this->tariffRepo->findById($tariffId);
+        $regions = $this->regionRepo->getAll();
+        $this->tariffRepo->addAllRegions($tariff, $regions);
     }
 
     public function deleteRegion(int $tariffId, int $regionId): void
@@ -177,10 +185,13 @@ class TariffService
                             $price = $this->categoryRepo->getPrices($category, $tariffId, $region->id, $zone->id);
                             $price?->delete();
                         }
+
+                        $this->categorySettingsRepo->delete($tariffId, $region->id, $category->id);
                     }
                 }
             }
         }
+
         $this->tariffRepo->delete($tariff);
     }
 

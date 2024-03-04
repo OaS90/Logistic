@@ -39,4 +39,16 @@ class RegionRepository
     {
         return Region::all();
     }
+
+    public function getTariffCategoryById(Region $region, int $categoryId)
+    {
+        return $region->tariffCategories()
+            ->where('tariff_category_region.category_id', $categoryId)
+            ->first();
+    }
+
+    public function deleteTariffCategoryById(Region $region, int $categoryId): void
+    {
+        $region->tariffCategories()->detach($categoryId);
+    }
 }

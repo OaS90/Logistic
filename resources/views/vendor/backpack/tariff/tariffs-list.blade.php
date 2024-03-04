@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="d-print-none with-border">
-                    <a href="http://logistic.loc/admin/tariffs/show"
+                    <a href="{{ backpack_url('tariffs/show') }}"
                        class="btn btn-primary"
                     >
                         <span class="ladda-label"><i class="la la-plus"></i> Добавить Тариф</span>

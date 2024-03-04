@@ -50,7 +50,7 @@ class TariffController extends Controller
 
     public function edit(int $tariffId): View
     {
-        $tariff = $this->tariffRepo->findByIdWithRelationships($tariffId, ['regions.tariffCategories.prices']);
+        $tariff = $this->tariffRepo->findByIdWithRelationships($tariffId, ['regions']);
         $regions = $this->regionRepo->getAll();
 
         return view(backpack_view('tariff.tariff-edit'), ['tariff' => $tariff, 'regions' => $regions]);
@@ -91,6 +91,17 @@ class TariffController extends Controller
         }
 
         return response(['message' => 'Регион успешно добавлен'], Response::HTTP_OK);
+    }
+
+    public function addAllRegions(int $tariffId): Response
+    {
+        try {
+            $this->tariffService->addAllRegions($tariffId);
+        } catch (\Throwable $e) {
+            return response(['message' => 'Ошибка добавления регионов'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response(['message' => 'Регионы успешно добавлены'], Response::HTTP_OK);
     }
 
     public function deleteRegion(int $tariffId, int $regionId): Response

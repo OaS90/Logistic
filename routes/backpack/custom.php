@@ -55,6 +55,7 @@ Route::group([
     });
     Route::crud('application-obi', 'ApplicationObiCrudController');
     Route::post('tariffs/{tariffId}/add-regions', [TariffController::class, 'addRegions']);
+    Route::post('tariffs/{tariffId}/add-all-regions', [TariffController::class, 'addAllRegions']);
     Route::delete('tariffs/{tariffId}/delete-region/{regionId}', [TariffController::class, 'deleteRegion']);
     Route::get('tariffs/{tariffId}/edit/', [TariffController::class, 'edit']);
     Route::get('tariffs/{tariffId}/edit/regions/{regionId}/edit', [TariffController::class, 'regionEditShow']);

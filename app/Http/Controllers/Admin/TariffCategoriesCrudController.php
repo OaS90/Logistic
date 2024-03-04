@@ -3,6 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\TariffCategoriesRequest;
+use App\Infrastructure\Repositories\Admin\TariffCategoryPricesRepository;
+use App\Infrastructure\Repositories\Admin\TariffCategorySettingsRepository;
+use App\Infrastructure\Repositories\Admin\TariffRepository;
+use App\Infrastructure\Repositories\RegionRepository;
+use App\Models\TariffCategoryPrices;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -18,6 +23,25 @@ class TariffCategoriesCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation { store as traitStore; }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
+
+    protected RegionRepository $regionRepo;
+    protected TariffRepository $tariffRepo;
+    protected TariffCategorySettingsRepository $tariffCategorySettingsRepo;
+    protected TariffCategoryPricesRepository $pricesRepo;
+
+    public function __construct(RegionRepository $regionRepo,
+                                TariffRepository $tariffRepo,
+                                TariffCategorySettingsRepository $tariffCategorySettingsRepo,
+                                TariffCategoryPricesRepository $pricesRepo
+    )
+    {
+        parent::__construct();
+        $this->regionRepo = $regionRepo;
+        $this->tariffRepo = $tariffRepo;
+        $this->tariffCategorySettingsRepo = $tariffCategorySettingsRepo;
+    }
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -83,17 +107,17 @@ class TariffCategoriesCrudController extends CrudController
             'wrapper' => ['class' => 'form-group col-md-3']
         ]);
 
-        CRUD::addField([
-            'label' => 'Регионы',
-            'type' => 'select_multiple',
-            'name' => 'regions', // the method that defines the relationship in your Model
-
-            // optional
-            'entity' => 'regions', // the method that defines the relationship in your Model
-            'model'=> "App\Models\Region", // foreign key model
-            'attribute' => 'name', // foreign key attribute that is shown to user
-            'pivot' => true, // on create&update, do you need to add/delete pivot table entries?
-        ]);
+//        CRUD::addField([
+//            'label' => 'Регионы',
+//            'type' => 'select_multiple',
+//            'name' => 'regions', // the method that defines the relationship in your Model
+//
+//            // optional
+//            'entity' => 'regions', // the method that defines the relationship in your Model
+//            'model'=> "App\Models\Region", // foreign key model
+//            'attribute' => 'name', // foreign key attribute that is shown to user
+//            'pivot' => true, // on create&update, do you need to add/delete pivot table entries?
+//        ]);
 //        CRUD::addField(['name' => 'price', 'type' => 'number']);
 //        CRUD::addField(['name' => 'price', 'type' => 'number']);
 //        CRUD::addField(['name' => 'price', 'type' => 'number']);
@@ -113,5 +137,35 @@ class TariffCategoriesCrudController extends CrudController
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
+    }
+
+    public function store(): \Illuminate\Http\RedirectResponse
+    {
+        $response = $this->traitStore();
+        $categoryId = $this->crud->getCurrentEntryId();
+
+        foreach ($this->tariffRepo->getAll() as $tariff) {
+            foreach ($this->regionRepo->getAll() as $region) {
+                if (!$this->regionRepo->getTariffCategoryById($region, $categoryId)) {
+                    $region->tariffCategories()->attach($categoryId);
+                }
+
+                $this->tariffCategorySettingsRepo->create($tariff->id, $region->id, $categoryId);
+            }
+        }
+
+        return $response;
+    }
+
+    public function destroy($id): bool|string
+    {
+        foreach ($this->tariffRepo->getAll() as $tariff) {
+            foreach ($this->regionRepo->getAll() as $region) {
+                $this->regionRepo->deleteTariffCategoryById($region, $id);
+                $this->tariffCategorySettingsRepo->delete($tariff->id, $region->id, $id);
+            }
+        }
+
+        return CRUD::delete($id);
     }
 }
