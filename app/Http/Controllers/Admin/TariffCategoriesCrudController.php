@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\TariffCategoriesRequest;
-use App\Infrastructure\Repositories\Admin\TariffCategoryPricesRepository;
 use App\Infrastructure\Repositories\Admin\TariffCategorySettingsRepository;
 use App\Infrastructure\Repositories\Admin\TariffRepository;
 use App\Infrastructure\Repositories\RegionRepository;
-use App\Models\TariffCategoryPrices;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -29,12 +27,10 @@ class TariffCategoriesCrudController extends CrudController
     protected RegionRepository $regionRepo;
     protected TariffRepository $tariffRepo;
     protected TariffCategorySettingsRepository $tariffCategorySettingsRepo;
-    protected TariffCategoryPricesRepository $pricesRepo;
 
     public function __construct(RegionRepository $regionRepo,
                                 TariffRepository $tariffRepo,
-                                TariffCategorySettingsRepository $tariffCategorySettingsRepo,
-                                TariffCategoryPricesRepository $pricesRepo
+                                TariffCategorySettingsRepository $tariffCategorySettingsRepo
     )
     {
         parent::__construct();
