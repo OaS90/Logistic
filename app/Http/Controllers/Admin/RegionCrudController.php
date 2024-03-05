@@ -44,7 +44,7 @@ class RegionCrudController extends CrudController
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
-    protected function setupListOperation()
+    protected function setupListOperation(): void
     {
         CRUD::column('id');
         CRUD::column('name')->label('Название региона');
@@ -55,6 +55,7 @@ class RegionCrudController extends CrudController
             'type'  => 'model_function',
             'function_name' => 'getWarehouseNameAttribute'
         ]);
+
         CRUD::column('is_active_for_quotes')->label('Вкл/Выкл в квотах')->type('check');
 
         /**

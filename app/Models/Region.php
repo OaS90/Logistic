@@ -22,7 +22,11 @@ class Region extends Model
 
     public function getWarehouseNameAttribute(): string
     {
-        return $this->warehouse->first()->warehouse_name;
+        if (count($this->warehouse) > 0) {
+            return $this->warehouse->first()->warehouse_name;
+        }
+
+        return '';
     }
 
     public function tariffCategories(): BelongsToMany
