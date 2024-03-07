@@ -30,6 +30,11 @@ class RegionRepository
         return Region::where('id', $id)->first();
     }
 
+    public function getByHruId(int $id) : ?Region
+    {
+        return Region::where('region_id', $id)->first();
+    }
+
     public function findByIdWithRelationships(int $id, array $relationships)
     {
         return Region::where('id', $id)->with($relationships)->first();

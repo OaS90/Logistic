@@ -4,9 +4,15 @@ namespace App\Infrastructure\Repositories\Admin;
 
 use App\Models\TariffCategories;
 use Illuminate\Database\Eloquent\Collection;
+use phpseclib3\Math\BigInteger\Engines\PHP\Reductions\Barrett;
 
 class TariffCategoryRepository
 {
+    public function create(array $data)
+    {
+        return TariffCategories::create($data);
+    }
+
     public function getAll(): Collection
     {
         return TariffCategories::all();
@@ -17,13 +23,23 @@ class TariffCategoryRepository
         return TariffCategories::where('id', $id)->first();
     }
 
-    public function getPrices(TariffCategories $category, int $tariffId, int $regionId, int $zoneId)
+    public function getPrices(TariffCategories $category,
+                              int $tariffId,
+                              int $regionId,
+                              int $zoneId,
+                              int $servicePriceId = null
+    )
     {
-        return $category->prices()
+        $query = $category->prices()
             ->where('tariff_id', $tariffId)
             ->where('region_id', $regionId)
-            ->where('zone_id', $zoneId)
-            ->first();
+            ->where('zone_id', $zoneId);
+
+        if ($servicePriceId) {
+            $query->where('service_price_id');
+        }
+
+        return $query->first();
     }
 
     public function deletePriceByZoneIdAndRegionId(TariffCategories $category,
@@ -37,5 +53,17 @@ class TariffCategoryRepository
             ->where('region_id', $regionId)
             ->where('zone_id', $zoneId)
             ->delete();
+    }
+
+    public function getByCategoryServiceIdAndProductCategoryId(int $productCategoryId, int $tariffCategory): ?TariffCategories
+    {
+        return TariffCategories::where('result_category_id', $tariffCategory)
+            ->where('category_id', $productCategoryId)
+            ->first();
+    }
+
+    public function getByProductCategoryId(int $id): ?TariffCategories
+    {
+        return TariffCategories::where('category_id', $id)->first();
     }
 }

@@ -16,13 +16,11 @@ class TariffController extends Controller
 {
     protected TariffRepository $tariffRepo;
     protected RegionRepository $regionRepo;
-    protected TariffService $tariffService;
 
-    public function __construct(TariffRepository $tariffRepo, RegionRepository $regionRepo, TariffService $tariffService)
+    public function __construct(TariffRepository $tariffRepo, RegionRepository $regionRepo)
     {
         $this->tariffRepo = $tariffRepo;
         $this->regionRepo = $regionRepo;
-        $this->tariffService = $tariffService;
     }
 
     public function list(): View
@@ -37,10 +35,10 @@ class TariffController extends Controller
         return view(backpack_view('tariff.tariff-create'));
     }
 
-    public function create(Request $request): string
+    public function create(Request $request, TariffService $service): string
     {
         try {
-            $this->tariffRepo->create($request->all());
+            $service->create($request->all());
         } catch (\Throwable $e) {
             return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -56,10 +54,10 @@ class TariffController extends Controller
         return view(backpack_view('tariff.tariff-edit'), ['tariff' => $tariff, 'regions' => $regions]);
     }
 
-    public function delete(int $tariffId): Response
+    public function delete(int $tariffId, TariffService $service): Response
     {
         try {
-            $this->tariffService->deleteTariff($tariffId);
+            $service->deleteTariff($tariffId);
         } catch (\Throwable $e) {
             return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -67,9 +65,9 @@ class TariffController extends Controller
         return back();
     }
 
-    public function regionEditShow(int $tariffId, int $regionId): View
+    public function regionEditShow(int $tariffId, int $regionId, TariffService $service): View
     {
-        $data = $this->tariffService->prepareForVue($tariffId, $regionId);
+        $data = $service->prepareForVue($tariffId, $regionId);
 
         return view(backpack_view('tariff.tariff-region-edit'), [
                 'regionId' => $regionId,
@@ -80,12 +78,12 @@ class TariffController extends Controller
         );
     }
 
-    public function addRegions(int $tariffId, Request $request): Response
+    public function addRegions(int $tariffId, Request $request, TariffService $service): Response
     {
         $regions = $request->all();
 
         try {
-            $this->tariffService->addRegions($tariffId, $regions);
+            $service->addRegions($tariffId, $regions);
         } catch (\Throwable $e) {
             return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -93,10 +91,10 @@ class TariffController extends Controller
         return response(['message' => 'Регион успешно добавлен'], Response::HTTP_OK);
     }
 
-    public function addAllRegions(int $tariffId): Response
+    public function addAllRegions(int $tariffId, TariffService $service): Response
     {
         try {
-            $this->tariffService->addAllRegions($tariffId);
+            $service->addAllRegions($tariffId);
         } catch (\Throwable $e) {
             return response(['message' => 'Ошибка добавления регионов'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -104,10 +102,10 @@ class TariffController extends Controller
         return response(['message' => 'Регионы успешно добавлены'], Response::HTTP_OK);
     }
 
-    public function deleteRegion(int $tariffId, int $regionId): Response
+    public function deleteRegion(int $tariffId, int $regionId, TariffService $service): Response
     {
         try {
-            $this->tariffService->deleteRegion($tariffId, $regionId);
+            $service->deleteRegion($tariffId, $regionId);
         } catch (\Throwable $e) {
             return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -115,10 +113,14 @@ class TariffController extends Controller
         return response(['message' => 'Регион успешно удалён'], Response::HTTP_OK);
     }
 
-    public function regionSave(int $tariffId, int $regionId, TariffRegionCategoriesPrices $request): Response
+    public function regionSave(int $tariffId,
+                               int $regionId,
+                               TariffRegionCategoriesPrices $request,
+                               TariffService $service
+    ): Response
     {
         try {
-            $this->tariffService->saveRegionCategoriesPrices($tariffId, $regionId, $request->getDTO());
+            $service->saveRegionCategoriesPrices($tariffId, $regionId, $request->getDTO());
         } catch (\Throwable $e) {
             return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -126,10 +128,10 @@ class TariffController extends Controller
         return response(['message' => 'Настройки сохранены'], Response::HTTP_OK);
     }
 
-    public function zoneDelete(int $tariffId, int $regionId, Request $request): Response
+    public function zoneDelete(int $tariffId, int $regionId, Request $request, TariffService $service): Response
     {
         try {
-            $this->tariffService->deleteZone($tariffId, $regionId, $request->all());
+            $service->deleteZone($tariffId, $regionId, $request->all());
         } catch (\Throwable $e) {
             return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -137,10 +139,21 @@ class TariffController extends Controller
         return response(['message' => 'Зона успешно удалена'], Response::HTTP_OK);
     }
 
-    public function cloneTariff(int $tariffId): RedirectResponse
+    public function cloneTariff(int $tariffId, TariffService $service): RedirectResponse
     {
-        $this->tariffService->cloneTariff($tariffId);
+        $service->cloneTariff($tariffId);
 
         return back();
+    }
+
+    public function getFromService(TariffService $service): Response
+    {
+        try {
+            $service->getFromDeliveryService();
+        } catch (\Throwable $e) {
+            return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response(['message' => 'Тарифы получены'], Response::HTTP_OK);
     }
 }

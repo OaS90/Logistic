@@ -68,4 +68,9 @@ class TariffRepository
     {
         return Tariff::all()->last()->id;
     }
+
+    public function findByTariffServiceId(int $id)
+    {
+        return Tariff::where('delivery_service_tariff_id', $id)->first();
+    }
 }

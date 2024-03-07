@@ -9,7 +9,7 @@ use App\Infrastructure\Repositories\Admin\TariffRepository;
 use App\Infrastructure\Repositories\RegionRepository;
 use App\Models\TariffRegionZone;
 use App\Infrastructure\Services\Delivery\Api\Api;
-use Illuminate\Database\Eloquent\Collection;
+use App\Infrastructure\Repositories\Admin\ZoneRepository;
 
 class TariffService
 {
@@ -18,12 +18,14 @@ class TariffService
     protected TariffCategoryRepository $categoryRepo;
     protected TariffCategorySettingsRepository $categorySettingsRepo;
     protected Api $deliveryServiceApi;
+    protected ZoneRepository $zoneRepo;
 
     public function __construct(TariffRepository $tariffRepo,
                                 RegionRepository $regionRepo,
                                 TariffCategoryRepository $categoryRepo,
                                 TariffCategorySettingsRepository $categorySettingsRepo,
-                                Api $deliveryServiceApi
+                                Api $deliveryServiceApi,
+                                ZoneRepository $zoneRepo
     )
     {
         $this->tariffRepo = $tariffRepo;
@@ -31,11 +33,13 @@ class TariffService
         $this->categoryRepo = $categoryRepo;
         $this->categorySettingsRepo = $categorySettingsRepo;
         $this->deliveryServiceApi = $deliveryServiceApi;
+        $this->zoneRepo = $zoneRepo;
     }
 
     public function create(array $data): void
     {
         $newTariff = $this->tariffRepo->create($data);
+
         $response = $this->deliveryServiceApi
             ->query('settings/calculation/courier-delivery-price-tariffs', $data);
 
@@ -153,7 +157,7 @@ class TariffService
                     'tariff_id' => $tariff->delivery_service_tariff_id,
                     'region_id' => $region->region_id,
                     'zone' => $priceInfo->zoneName,
-                    'product_delivery_category_id' => $categoryEntity->category_id,
+                    'product_delivery_category_id' => $categoryEntity->category_result,
                     'price' => $price->price,
                     'price_second' => $price->second_price
                 ]);
@@ -209,6 +213,68 @@ class TariffService
             foreach ($clone->regions as $cloneRegion) {
                 foreach ($region->tariffCategories as $category) {
                     $cloneRegion->tariffCategories()->attach($category);
+                }
+            }
+        }
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function getFromDeliveryService(): void
+    {
+        $tariffsFromService = $this->deliveryServiceApi
+            ->query('settings/calculation/courier-delivery-price-tariffs', [], 'GET');
+
+        $pricesFromService = $this->deliveryServiceApi
+            ->query('settings/calculation/courier-delivery-prices', [], 'GET');
+
+        foreach ($tariffsFromService as $tariffFromService) {
+            $localTariff = $this->tariffRepo->findByTariffServiceId($tariffFromService['id']);
+
+            if (!$localTariff) {
+                $localTariff = $this->tariffRepo->create([
+                    'name' => $tariffFromService['name'],
+                    'alias' => $tariffFromService['alias'],
+                    'delivery_service_tariff_id' => $tariffFromService['id']
+                ]);
+            }
+
+            foreach ($pricesFromService as $priceFromService) {
+                $region = $this->regionRepo->getByHruId($priceFromService['region_id']);
+                $zone = $this->zoneRepo->getByCode($priceFromService['zone']);
+                $category = $this->categoryRepo->getByProductCategoryId($priceFromService['product_delivery_category_id']);
+
+                if (!$zone) {
+                    $zone = $this->zoneRepo->create([
+                        'name' => 'Зона ' . $priceFromService['zone'],
+                        'code' => $priceFromService['zone']
+                    ]);
+                }
+                if ($region && $zone && $category) {
+                    $price = $this->categoryRepo
+                        ->getPrices($category, $localTariff->id, $region->id, $zone->id);
+
+                    if ($price && $price->service_price_id != $priceFromService['id']) {
+                        $price->update(['service_price_id' => $priceFromService['id']]);
+                    } else {
+                        $category->prices()->create([
+                            'tariff_id' => $localTariff->id,
+                            'region_id' => $region->id,
+                            'zone_id' => $zone->id,
+                            'price' => $priceFromService['price'],
+                            'second_price' => $priceFromService['price_second'],
+                            'service_price_id' => $priceFromService['id']
+                        ]);
+                    }
+                } else {
+                    if (!$region) {
+                        throw new \Exception('region ' . $priceFromService['region_id'] . ' not found');
+                    } elseif (!$category) {
+                        throw new \Exception('category ' . $priceFromService['product_delivery_category_id'] . ' not found');
+                    } else {
+                        throw new \Exception('zone ' . $priceFromService['zone'] . ' not found');
+                    }
                 }
             }
         }

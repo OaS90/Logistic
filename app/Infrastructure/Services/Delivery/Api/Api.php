@@ -17,7 +17,7 @@ class Api
         $this->client = $client;
     }
 
-    public function query(string $uri, array $data, $method = 'POST'): array
+    public function query(string $uri, array $data = [], $method = 'POST'): array
     {
         $parameters = [];
         $result = [];
@@ -28,10 +28,14 @@ class Api
             $parameters[RequestOptions::QUERY] = $data;
         }
 
+        if (env('APP_ENV') != 'production') {
+            $parameters[RequestOptions::AUTH] = ['holodilnik', 'Fin7Dater-Gola'];
+        }
+
         try {
             $request = $this->client->request($method, $uri, $parameters);
             $content = $request->getBody()->getContents();
-            $result = json_decode($content);
+            $result = json_decode($content, true);
         } catch (ClientException $e) {
             Log::error('Sending to delivery service error:' . $e->getResponse()->getBody()->getContents());
         } catch (GuzzleException $e) {

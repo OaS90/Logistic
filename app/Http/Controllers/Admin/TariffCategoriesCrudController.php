@@ -6,6 +6,7 @@ use App\Http\Requests\TariffCategoriesRequest;
 use App\Infrastructure\Repositories\Admin\TariffCategorySettingsRepository;
 use App\Infrastructure\Repositories\Admin\TariffRepository;
 use App\Infrastructure\Repositories\RegionRepository;
+use App\Models\TariffCategoryPrices;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -161,6 +162,9 @@ class TariffCategoriesCrudController extends CrudController
                 $this->tariffCategorySettingsRepo->delete($tariff->id, $region->id, $id);
             }
         }
+
+        // TODO переписать под репозиторий
+        TariffCategoryPrices::where('category_id', $id)->delete();
 
         return CRUD::delete($id);
     }

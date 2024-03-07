@@ -69,4 +69,5 @@ Route::group([
     Route::crud('tariff-categories', 'TariffCategoriesCrudController');
 //    Route::crud('tariff', 'TariffCrudController');
     Route::crud('tariff-zones', 'TariffZonesCrudController');
+    Route::post('tariffs-holodilnik/get', [TariffController::class, 'getFromService']);
 }); // this should be the absolute last line of this file

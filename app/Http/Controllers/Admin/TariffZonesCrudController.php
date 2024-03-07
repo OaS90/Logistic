@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\TariffZonesRequest;
+use App\Models\TariffCategoryPrices;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -18,6 +19,12 @@ class TariffZonesCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -95,8 +102,16 @@ class TariffZonesCrudController extends CrudController
      * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */
-    protected function setupUpdateOperation()
+    protected function setupUpdateOperation(): void
     {
         $this->setupCreateOperation();
+    }
+
+    public function destroy($id): bool|string
+    {
+        // TODO переписать под репозиторий
+        TariffCategoryPrices::where('zone_id', $id)->delete();
+
+        return CRUD::delete($id);
     }
 }

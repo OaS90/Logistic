@@ -6,9 +6,9 @@
                     <div class="modal-body">
                         <slot name="body">
                             default body
+                            <br>
+                            <button :class="btnClass" @click="$emit('close')">{{ btnText }}</button>
                         </slot>
-                        <br>
-                        <button :class="btnClass" @click="$emit('close')">{{ btnText }}</button>
                     </div>
                 </div>
             </div>

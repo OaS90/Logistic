@@ -33,7 +33,7 @@ return [
         'token' => env('DADATA_TOKEN', ''),
         'secret' => env('DADATA_SECRET', '')
     ],
-    'delivery_service' => [
-        'uri' => env('DELIVERY_SERVICE', 'http://holodilnik-delivery.delivery-stage.adeal.ru/')
+    'delivery_holodilnik_service' => [
+        'uri' => env('DELIVERY_HOLODILNIK_SERVICE', 'http://holodilnik-delivery.delivery-stage.adeal.ru/')
     ]
 ];

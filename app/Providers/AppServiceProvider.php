@@ -20,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(Api::class, function () {
             return new Api(
                 new Client([
-                    'base_uri' => config('services.delivery_service.uri')
+                    'base_uri' => config('services.delivery_holodilnik_service.uri')
                 ])
             );
         });
