@@ -25,6 +25,7 @@
             <thead>
             <tr>
                 <th>ID</th>
+                <th>ID в сервисе</th>
                 <th>Наименование</th>
                 <th>Алиас</th>
                 <th>Действие</th>
@@ -34,6 +35,7 @@
             @foreach($tariffs as $tariff)
                 <tr>
                     <td>{{ $tariff->id }}</td>
+                    <td>{{ $tariff->delivery_service_tariff_id }}</td>
                     <td>{{ $tariff->name }}</td>
                     <td>{{ $tariff->alias }}</td>
                     <td>

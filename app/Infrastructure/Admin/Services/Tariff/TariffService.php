@@ -39,7 +39,6 @@ class TariffService
     public function create(array $data): void
     {
         $newTariff = $this->tariffRepo->create($data);
-
         $response = $this->deliveryServiceApi
             ->query('settings/calculation/courier-delivery-price-tariffs', $data);
 
@@ -127,6 +126,7 @@ class TariffService
     {
         $tariff = $this->tariffRepo->findById($tariffId);
         $region = $this->regionRepo->getById($regionId);
+        $pricesForSave = [];
 
         foreach ($dto->categories as $category) {
             $categoryEntity = $this->categoryRepo->getById($category->categoryId);
@@ -153,19 +153,22 @@ class TariffService
                     ]);
                 }
 
-                $result = $this->deliveryServiceApi->query('settings/calculation/courier-delivery-prices', [
+                $pricesForSave['items'][$price->id] = [
                     'tariff_id' => $tariff->delivery_service_tariff_id,
                     'region_id' => $region->region_id,
                     'zone' => $priceInfo->zoneName,
                     'product_delivery_category_id' => $categoryEntity->category_result,
                     'price' => $price->price,
                     'price_second' => $price->second_price
-                ]);
-
-//                if (!$result) {
-//                    throw new \Exception('Не удалось обновить цены в сервисе');
-//                }
+                ];
             }
+        }
+
+        $result = $this->deliveryServiceApi
+            ->query('settings/calculation/courier-delivery-prices', $pricesForSave , 'PUT');
+
+        if (!$result) {
+            throw new \Exception('Не удалось обновить цены в сервисе');
         }
     }
 

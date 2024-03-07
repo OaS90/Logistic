@@ -29,7 +29,9 @@ class Api
         }
 
         if (env('APP_ENV') != 'production') {
-            $parameters[RequestOptions::AUTH] = ['holodilnik', 'Fin7Dater-Gola'];
+            $parameters[RequestOptions::HEADERS] = [
+                'Authorization' => 'Bearer 40|FyuR2WPKM4jXhjxlsOeMgIg6Y6wdCa3HhJV3bNQI'
+            ];
         }
 
         try {
