@@ -22,11 +22,11 @@
             <i class="la la-close delete-region" title="Удалить регион" @click="setRegionForDeleting(region.id, index)"></i>
 
         </div>
-        <modal v-if="showModal" @close="deleteRegion(regionForDeleting.id, regionForDeleting.index)"
-               :button-name="modalBtnName"
-               :button-class="modelBtnClass">
+        <modal v-if="showModal">
             <span slot="body">
                 {{ modalText }}
+                <br>
+                <button :class="btnClass" @click="deleteRegion(regionForDeleting.id, regionForDeleting.index)">{{ btnText }}</button>
             </span>
             <span slot="footer"></span>
         </modal>
@@ -52,7 +52,9 @@ export default {
             modalBtnName: 'Удалить',
             modelBtnClass: 'btn btn-danger',
             tariffRegionData: null,
-            regionForDeleting: {}
+            regionForDeleting: {},
+            btnText: 'OK',
+            btnClass: 'btn btn-secondary'
         }
     },
     mounted() {

@@ -59,7 +59,11 @@
         </table>
 
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body">{{ modalText }}</span>
+            <span slot="body">
+                {{ modalText }}
+                <br>
+                <button :class="btnClass" @click="showModal = !showModal">{{ btnText }}</button>
+            </span>
             <span slot="footer"></span>
         </modal>
     </div>
@@ -83,7 +87,9 @@ export default {
             addedZones: [],
             dataForSave: [],
             showModal: false,
-            modalText: ''
+            modalText: '',
+            btnText: 'OK',
+            btnClass: 'btn btn-secondary'
         }
     },
     mounted() {
