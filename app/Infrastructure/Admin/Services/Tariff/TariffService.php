@@ -41,7 +41,7 @@ class TariffService
         $newTariff = $this->tariffRepo->create($data);
         $token = $this->deliveryServiceApi
             ->query('auth/login', [
-                'login' => config('services.delivery_holodilnik_service.login'),
+                'email' => config('services.delivery_holodilnik_service.login'),
                 'password' => config('services.delivery_holodilnik_service.password'),
             ]);
 
