@@ -51,7 +51,10 @@ class TariffController extends Controller
         $tariff = $this->tariffRepo->findByIdWithRelationships($tariffId, ['regions']);
         $regions = $this->regionRepo->getAll();
 
-        return view(backpack_view('tariff.tariff-edit'), ['tariff' => $tariff, 'regions' => $regions]);
+        return view(backpack_view('tariff.tariff-edit'), [
+            'tariff' => $tariff,
+            'regions' => $regions
+        ]);
     }
 
     public function delete(int $tariffId, TariffService $service): Response

@@ -58,7 +58,7 @@ export default {
         }
     },
     mounted() {
-        this.tariffRegionData = this.regions
+        this.tariffRegionData = this.tariffRegions
     },
     methods: {
         setRegionForDeleting(regionId, index) {
@@ -78,9 +78,9 @@ export default {
                 }
             }).then((response) => {
                 if (response.status === 200) {
-                    // const filteredPeople = people.filter((item) => item.id !== idToRemove);
-                //     this.showModal = true
-                //     this.modalText = response.data.message
+                    const filteredPeople = people.filter((item) => item.id !== idToRemove);
+                    this.showModal = true
+                    this.modalText = response.data.message
                 }
             }).catch((error) => {
                 if (error.response.status === 500) {
@@ -112,7 +112,6 @@ export default {
                     accept: 'application/json', 'Content-Type': 'application/json'
                 }
             }).then((response) => {
-                console.log(response.data)
                 this.tariffRegionData = response.data.regions
             }).catch((error) => {
                 if (error.response.status === 500) {

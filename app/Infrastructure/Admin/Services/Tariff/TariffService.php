@@ -39,11 +39,21 @@ class TariffService
     public function create(array $data): void
     {
         $newTariff = $this->tariffRepo->create($data);
-        $response = $this->deliveryServiceApi
-            ->query('settings/calculation/courier-delivery-price-tariffs', $data);
+        $token = $this->deliveryServiceApi
+            ->query('auth/login', [
+                'login' => config('services.delivery_holodilnik_service.login'),
+                'password' => config('services.delivery_holodilnik_service.password'),
+            ]);
 
-        if ($response) {
-            $this->tariffRepo->updateByFields($newTariff, ['delivery_service_tariff_id' => $response['created_id']]);
+        if ($token) {
+            $response = $this->deliveryServiceApi
+                ->query('settings/calculation/courier-delivery-price-tariffs', $data, 'POST', $token['access_token']);
+
+            if ($response) {
+                $this->tariffRepo->updateByFields($newTariff, ['delivery_service_tariff_id' => $response['created_id']]);
+            }
+        } else {
+            throw new \Exception('Не удалось авторизоваться в сервисе Delivery');
         }
     }
 

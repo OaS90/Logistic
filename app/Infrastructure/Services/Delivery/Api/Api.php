@@ -17,7 +17,7 @@ class Api
         $this->client = $client;
     }
 
-    public function query(string $uri, array $data = [], $method = 'POST'): array
+    public function query(string $uri, array $data = [], $method = 'POST', string $token = ''): array
     {
         $parameters = [];
         $result = [];
@@ -28,9 +28,9 @@ class Api
             $parameters[RequestOptions::QUERY] = $data;
         }
 
-        if (env('APP_ENV') != 'production') {
+        if (env('APP_ENV') != 'production' && $token) {
             $parameters[RequestOptions::HEADERS] = [
-                'Authorization' => 'Bearer 40|FyuR2WPKM4jXhjxlsOeMgIg6Y6wdCa3HhJV3bNQI'
+                'Authorization' => 'Bearer ' . $token
             ];
         }
 
