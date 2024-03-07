@@ -162,9 +162,9 @@ class TariffService
                     'price_second' => $price->second_price
                 ]);
 
-                if (!$result) {
-                    throw new \Exception('Не удалось обновить цены в сервисе');
-                }
+//                if (!$result) {
+//                    throw new \Exception('Не удалось обновить цены в сервисе');
+//                }
             }
         }
     }
@@ -241,39 +241,45 @@ class TariffService
             }
 
             foreach ($pricesFromService as $priceFromService) {
-                $region = $this->regionRepo->getByHruId($priceFromService['region_id']);
-                $zone = $this->zoneRepo->getByCode($priceFromService['zone']);
-                $category = $this->categoryRepo->getByProductCategoryId($priceFromService['product_delivery_category_id']);
+                if ($priceFromService['tariff_id'] == $localTariff->delivery_service_tariff_id) {
+                    $region = $this->regionRepo->getByHruId($priceFromService['region_id']);
+                    $zone = $this->zoneRepo->getByCode($priceFromService['zone']);
+                    $category = $this->categoryRepo
+                        ->getByProductCategoryId($priceFromService['product_delivery_category_id']);
 
-                if (!$zone) {
-                    $zone = $this->zoneRepo->create([
-                        'name' => 'Зона ' . $priceFromService['zone'],
-                        'code' => $priceFromService['zone']
-                    ]);
-                }
-                if ($region && $zone && $category) {
-                    $price = $this->categoryRepo
-                        ->getPrices($category, $localTariff->id, $region->id, $zone->id);
-
-                    if ($price && $price->service_price_id != $priceFromService['id']) {
-                        $price->update(['service_price_id' => $priceFromService['id']]);
-                    } else {
-                        $category->prices()->create([
-                            'tariff_id' => $localTariff->id,
-                            'region_id' => $region->id,
-                            'zone_id' => $zone->id,
-                            'price' => $priceFromService['price'],
-                            'second_price' => $priceFromService['price_second'],
-                            'service_price_id' => $priceFromService['id']
+                    if (!$zone) {
+                        $zone = $this->zoneRepo->create([
+                            'name' => 'Зона ' . $priceFromService['zone'],
+                            'code' => $priceFromService['zone']
                         ]);
                     }
-                } else {
-                    if (!$region) {
-                        throw new \Exception('region ' . $priceFromService['region_id'] . ' not found');
-                    } elseif (!$category) {
-                        throw new \Exception('category ' . $priceFromService['product_delivery_category_id'] . ' not found');
+
+                    if ($region && $zone && $category) {
+                        $price = $this->categoryRepo
+                            ->getPrices($category, $localTariff->id, $region->id, $zone->id, $priceFromService['id']);
+
+                        if (!$price) {
+                            $category->prices()->create([
+                                'tariff_id' => $localTariff->id,
+                                'region_id' => $region->id,
+                                'zone_id' => $zone->id,
+                                'price' => $priceFromService['price'],
+                                'second_price' => $priceFromService['price_second'],
+                                'service_price_id' => $priceFromService['id']
+                            ]);
+                        } else {
+                            if ($price->service_price_id != $priceFromService['id']) {
+                                $price->update(['service_price_id' => $priceFromService['id']]);
+                            }
+                        }
                     } else {
-                        throw new \Exception('zone ' . $priceFromService['zone'] . ' not found');
+                        if (!$region) {
+                            throw new \Exception('region ' . $priceFromService['region_id'] . ' not found');
+                        } elseif (!$category) {
+                            throw new \Exception('category ' . $priceFromService['product_delivery_category_id'] . ' not found');
+                        } else {
+                            throw new \Exception('zone ' . $priceFromService['zone'] . ' not found');
+                        }
                     }
                 }
             }
