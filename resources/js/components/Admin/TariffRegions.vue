@@ -51,9 +51,12 @@ export default {
             modalText: 'Удалить регион?',
             modalBtnName: 'Удалить',
             modelBtnClass: 'btn btn-danger',
-            tariffRegionData: this.tariffRegions,
+            tariffRegionData: null,
             regionForDeleting: {}
         }
+    },
+    mounted() {
+        this.tariffRegionData = this.regions
     },
     methods: {
         setRegionForDeleting(regionId, index) {
