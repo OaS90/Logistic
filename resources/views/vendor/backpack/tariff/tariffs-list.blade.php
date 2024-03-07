@@ -24,7 +24,6 @@
         <table id="warehouses" class="table-content bg-white table table-striped table-hover nowrap rounded shadow-xs border-xs mt-2 dataTable dtr-inline collapsed has-hidden-columns">
             <thead>
             <tr>
-                <th>ID</th>
                 <th>ID в сервисе</th>
                 <th>Наименование</th>
                 <th>Алиас</th>
@@ -34,7 +33,6 @@
             <tbody>
             @foreach($tariffs as $tariff)
                 <tr>
-                    <td>{{ $tariff->id }}</td>
                     <td>{{ $tariff->delivery_service_tariff_id }}</td>
                     <td>{{ $tariff->name }}</td>
                     <td>{{ $tariff->alias }}</td>

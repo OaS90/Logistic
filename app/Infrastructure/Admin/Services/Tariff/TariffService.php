@@ -98,7 +98,8 @@ class TariffService
                     $prices[$category->id][$zone->code] = [
                         'price' => $priceEntity->price,
                         'secondPrice' => $priceEntity->second_price,
-                        'zone' => $priceEntity->zone_id
+                        'zone' => $priceEntity->zone_id,
+                        'service_price_id' => $priceEntity->service_price_id
                     ];
                 }
 

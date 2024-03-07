@@ -46,6 +46,8 @@
                     <td>{{ category.name }}</td>
                     <td><input type="checkbox" :checked="category.isUse" v-model="category.isUse"></td>
                     <td v-for="(details, index) in category.prices">
+                        <span class="extra-label"><b>ID цены в сервисе {{ details.service_price_id }}</b></span>
+                        <br>
                         <span class="extra-label">Стоимость первой единицы</span>
                         <input type="text" class="form-control col-md-12" v-model="details.price">
                         <span class="extra-label">Стоимость второй единицы</span>
