@@ -10,6 +10,7 @@ use App\Infrastructure\Repositories\RegionRepository;
 use App\Models\TariffRegionZone;
 use App\Infrastructure\Services\Delivery\Api\Api;
 use App\Infrastructure\Repositories\Admin\ZoneRepository;
+use http\QueryString;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
@@ -153,7 +154,18 @@ class TariffService
                 $price = $this->categoryRepo->getPrices($categoryEntity, $tariffId, $regionId, $priceInfo->zoneId);
 
                 if ($price) {
-                    $price->update(['price' => $priceInfo->price, 'second_price' => $priceInfo->secondPrice]);
+                    if ($price->price != $priceInfo->price || $price->second_price != $priceInfo->secondPrice) {
+                        $price->update(['price' => $priceInfo->price, 'second_price' => $priceInfo->secondPrice]);
+
+                        $pricesForSave['items'][] = [
+                            'tariff_id' => $tariff->delivery_service_tariff_id,
+                            'region_id' => $region->region_id,
+                            'zone' => $priceInfo->zoneName,
+                            'product_delivery_category_id' => $categoryEntity->result_category_id,
+                            'price' => $price->price,
+                            'price_second' => $price->second_price
+                        ];
+                    }
                 } else {
                     $price = $categoryEntity->prices()->create([
                         'tariff_id' => $tariffId,
@@ -162,16 +174,16 @@ class TariffService
                         'price' => $priceInfo->price,
                         'second_price' => $priceInfo->secondPrice
                     ]);
-                }
 
-                $pricesForSave['items'][] = [
-                    'tariff_id' => $tariff->delivery_service_tariff_id,
-                    'region_id' => $region->region_id,
-                    'zone' => $priceInfo->zoneName,
-                    'product_delivery_category_id' => $categoryEntity->result_category_id,
-                    'price' => $price->price,
-                    'price_second' => $price->second_price
-                ];
+                    $pricesForSave['items'][] = [
+                        'tariff_id' => $tariff->delivery_service_tariff_id,
+                        'region_id' => $region->region_id,
+                        'zone' => $priceInfo->zoneName,
+                        'product_delivery_category_id' => $categoryEntity->result_category_id,
+                        'price' => $price->price,
+                        'price_second' => $price->second_price
+                    ];
+                }
             }
         }
 

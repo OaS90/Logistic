@@ -28,11 +28,12 @@ class Api
             $parameters[RequestOptions::QUERY] = $data;
         }
 
+        if (env('APP_ENV') != 'production') {
+            $parameters[RequestOptions::HEADERS]['Authorization'] = 'Basic ' . base64_encode('holodilnik:Fin7Dater-Gola');
+        }
+
         if ($token) {
-            $parameters[RequestOptions::HEADERS] = [
-                'Authorization' => 'Bearer ' . $token,
-                'Content-Type' => 'application/json'
-            ];
+            $parameters[RequestOptions::HEADERS]['Authorization'] .= ', Bearer ' . $token;
         }
 
         try {
