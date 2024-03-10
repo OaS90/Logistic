@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
 
 class TariffController extends Controller
 {
@@ -40,7 +41,8 @@ class TariffController extends Controller
         try {
             $service->create($request->all());
         } catch (\Throwable $e) {
-            return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            Log::error('Tariff creatign error:' . $e->getMessage());
+//            return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return route('tariff-list');

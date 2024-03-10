@@ -22,15 +22,16 @@ class Api
         $parameters = [];
         $result = [];
 
-        if ($method == 'POST') {
+        if ($method != 'GET' && $method != 'DELETE') {
             $parameters[RequestOptions::JSON] = $data;
         } else {
             $parameters[RequestOptions::QUERY] = $data;
         }
 
-        if (env('APP_ENV') != 'production' && $token) {
+        if ($token) {
             $parameters[RequestOptions::HEADERS] = [
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
             ];
         }
 

@@ -34,7 +34,7 @@ return [
         'secret' => env('DADATA_SECRET', '')
     ],
     'delivery_holodilnik_service' => [
-        'uri' => env('DELIVERY_HOLODILNIK_SERVICE', 'http://holodilnik-delivery.delivery-stage.adeal.ru/'),
+        'uri' => env('DELIVERY_HOLODILNIK_SERVICE', 'http://gateway-stage.adeal.ru/v1.0/holodilnik-delivery/api/v1/'),
         'login' => env('DELIVERY_HOLODILNIK_LOGIN', 'test@test.ru'),
         'password' => env('DELIVERY_HOLODILNIK_LOGIN', '123'),
     ]

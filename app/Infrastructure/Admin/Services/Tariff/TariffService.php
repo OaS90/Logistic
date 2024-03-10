@@ -10,6 +10,8 @@ use App\Infrastructure\Repositories\RegionRepository;
 use App\Models\TariffRegionZone;
 use App\Infrastructure\Services\Delivery\Api\Api;
 use App\Infrastructure\Repositories\Admin\ZoneRepository;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class TariffService
 {
@@ -36,24 +38,19 @@ class TariffService
         $this->zoneRepo = $zoneRepo;
     }
 
+    /**
+     * @throws Exception
+     */
     public function create(array $data): void
     {
         $newTariff = $this->tariffRepo->create($data);
-        $token = $this->deliveryServiceApi
-            ->query('auth/login', [
-                'email' => config('services.delivery_holodilnik_service.login'),
-                'password' => config('services.delivery_holodilnik_service.password'),
-            ]);
+        $token = $this->getServiceToken();
+        $response = $this->deliveryServiceApi
+                ->query('settings/calculation/courier-delivery-price-tariffs', $data, 'POST', $token);
+        Log::info('response ' . json_encode($response));
 
-        if ($token) {
-            $response = $this->deliveryServiceApi
-                ->query('settings/calculation/courier-delivery-price-tariffs', $data, 'POST', $token['access_token']);
-
-            if ($response) {
-                $this->tariffRepo->updateByFields($newTariff, ['delivery_service_tariff_id' => $response['created_id']]);
-            }
-        } else {
-            throw new \Exception('Не удалось авторизоваться в сервисе Delivery');
+        if ($response) {
+            $this->tariffRepo->updateByFields($newTariff, ['delivery_service_tariff_id' => $response['created_id']]);
         }
     }
 
@@ -133,6 +130,9 @@ class TariffService
         return $data;
     }
 
+    /**
+     * @throws Exception
+     */
     public function saveRegionCategoriesPrices(int $tariffId, int $regionId, TariffRegionCategoriesPricesDTO $dto): void
     {
         $tariff = $this->tariffRepo->findById($tariffId);
@@ -164,22 +164,23 @@ class TariffService
                     ]);
                 }
 
-                $pricesForSave['items'][$price->id] = [
+                $pricesForSave['items'][] = [
                     'tariff_id' => $tariff->delivery_service_tariff_id,
                     'region_id' => $region->region_id,
                     'zone' => $priceInfo->zoneName,
-                    'product_delivery_category_id' => $categoryEntity->category_result,
+                    'product_delivery_category_id' => $categoryEntity->result_category_id,
                     'price' => $price->price,
                     'price_second' => $price->second_price
                 ];
             }
         }
 
+        $token = $this->getServiceToken();
         $result = $this->deliveryServiceApi
-            ->query('settings/calculation/courier-delivery-prices', $pricesForSave , 'PUT');
+            ->query('settings/calculation/courier-delivery-prices', $pricesForSave , 'PUT', $token);
 
         if (!$result) {
-            throw new \Exception('Не удалось обновить цены в сервисе');
+            throw new Exception('Не удалось обновить цены в сервисе');
         }
     }
 
@@ -191,6 +192,9 @@ class TariffService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function deleteTariff(int $tariffId): void
     {
         $tariff = $this->tariffRepo->findById($tariffId);
@@ -211,6 +215,14 @@ class TariffService
         }
 
         $this->tariffRepo->delete($tariff);
+
+        $token = $this->getServiceToken();
+        $result = $this->deliveryServiceApi
+            ->query('settings/calculation/courier-delivery-price-tariffs/', ['id' => $tariffId] , 'DELETE', $token);
+
+        if (!$result) {
+            throw new Exception('Не удалось удалить тариф в сервисе');
+        }
     }
 
     public function cloneTariff(int $tariffId): void
@@ -233,7 +245,7 @@ class TariffService
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function getFromDeliveryService(): void
     {
@@ -288,15 +300,32 @@ class TariffService
                         }
                     } else {
                         if (!$region) {
-                            throw new \Exception('region ' . $priceFromService['region_id'] . ' not found');
+                            throw new Exception('region ' . $priceFromService['region_id'] . ' not found');
                         } elseif (!$category) {
-                            throw new \Exception('category ' . $priceFromService['product_delivery_category_id'] . ' not found');
+                            throw new Exception('category ' . $priceFromService['product_delivery_category_id'] . ' not found');
                         } else {
-                            throw new \Exception('zone ' . $priceFromService['zone'] . ' not found');
+                            throw new Exception('zone ' . $priceFromService['zone'] . ' not found');
                         }
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getServiceToken(): string
+    {
+        $authResponse = $this->deliveryServiceApi->query('auth/login', [
+            'email' => config('services.delivery_holodilnik_service.login'),
+            'password' => config('services.delivery_holodilnik_service.password')
+        ]);
+
+        if ($authResponse && isset($authResponse['access_token'])) {
+            return $authResponse['access_token'];
+        } else {
+            throw new Exception('Не удалось авторизоваться в сервисе Delivery');
         }
     }
 }
