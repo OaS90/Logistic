@@ -22,7 +22,7 @@ class Api
         $parameters = [];
         $result = [];
 
-        if ($method != 'GET' && $method != 'DELETE') {
+        if ($method != 'GET') {
             $parameters[RequestOptions::JSON] = $data;
         } else {
             $parameters[RequestOptions::QUERY] = $data;

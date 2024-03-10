@@ -19,7 +19,7 @@
                     <th>Вкл/Выкл</th>
                     <th v-for="(details, index) in headers" class="th-title">
                         {{ details.title }}
-                        <i class="la la-window-close-o" @click="deleteZone(index, details.zoneName, details.zone)"></i>
+                        <i class="la la-window-close-o" @click="beforeDeleteZone(index, details.zoneName, details.zone)"></i>
                     </th>
                     <th>
                         <label for="zones">Добавить зону <i class="la la-plus-circle"></i></label>
@@ -66,6 +66,16 @@
             </span>
             <span slot="footer"></span>
         </modal>
+
+        <modal v-if="deleteModal">
+            <span slot="body">
+                Удалить зону с ценами ?
+                <br>
+                <button class="btn btn-danger" @click="deleteZone">Удалить</button>
+                <button class="btn btn-secondary" @click="cancelZoneDelete()">Отмена</button>
+            </span>
+            <span slot="footer"></span>
+        </modal>
     </div>
 </template>
 
@@ -89,7 +99,9 @@ export default {
             showModal: false,
             modalText: '',
             btnText: 'OK',
-            btnClass: 'btn btn-secondary'
+            btnClass: 'btn btn-secondary',
+            deleteModal: false,
+            zoneForDelete: null
         }
     },
     mounted() {
@@ -133,20 +145,35 @@ export default {
                 zoneName:  zoneIndex[0]
             })
         },
-        deleteZone(index, zone, zoneId) {
+        beforeDeleteZone(index, zone, zoneId) {
+            this.deleteModal = !this.deleteModal
+            this.zoneForDelete = {
+                index: index,
+                zone: zone,
+                zoneId: zoneId
+            }
+        },
+        cancelZoneDelete() {
+            this.zoneForDelete = null
+            this.deleteModal = !this.deleteModal
+        },
+        deleteZone() {
             let categories = []
-
+            this.deleteModal = !this.deleteModal
             this.dataForSave.forEach((category) => {
-                categories.push(category.id)
-                delete category.prices[zone]
+                categories.push({
+                    id: category.id,
+                    service_price_id: category.prices[this.zoneForDelete.zone].service_price_id
+                })
+                delete category.prices[this.zoneForDelete.zone]
             })
 
-            this.headers.splice(index, 1)
+            this.headers.splice(this.zoneForDelete.index, 1)
             this.selectedZone = 'none'
-            this.zones[index].enabled = false
+            this.zones[this.zoneForDelete.index].enabled = false
 
             axios.post('/admin/tariffs/' + this.tariffId +'/region/' + this.regionId +'/delete-zone',
-                {zoneId: zoneId, categories: categories}
+                {zoneId: this.zoneForDelete.zoneId, categories: categories}
             )
         },
         save() {

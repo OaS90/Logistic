@@ -10,7 +10,6 @@ use App\Infrastructure\Repositories\RegionRepository;
 use App\Models\TariffRegionZone;
 use App\Infrastructure\Services\Delivery\Api\Api;
 use App\Infrastructure\Repositories\Admin\ZoneRepository;
-use http\QueryString;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
@@ -196,11 +195,25 @@ class TariffService
         }
     }
 
-    public function deleteZone(int $tariffId, int $regionId, array $zoneData): void
+    /**
+     * @throws Exception
+     */
+    public function deleteZone(array $zoneData): void
     {
-        foreach ($zoneData['categories'] as $category) {
-            $category = $this->categoryRepo->getById($category);
-            $this->categoryRepo->deletePriceByZoneIdAndRegionId($category, $tariffId, $regionId, $zoneData['zoneId']);
+        $token = $this->getServiceToken();
+
+        foreach ($zoneData['categories'] as $categoryInfo) {
+            $category = $this->categoryRepo->getById($categoryInfo['id']);
+            $price = $this->categoryRepo->getByServicePriceId($category, $categoryInfo['service_price_id']);
+            // TODO переписать в дто
+            $result = $this->deliveryServiceApi
+                ->query('settings/calculation/courier-delivery-prices/' . $price->service_price_id, [], 'DELETE', $token);
+
+            if (!$result) {
+                throw new Exception('Не удалось удалить цены в сервисе');
+            }
+
+            $this->categoryRepo->deleteByServicePriceId($category, $categoryInfo['service_price_id']);
         }
     }
 
@@ -227,12 +240,9 @@ class TariffService
         }
 
         $this->tariffRepo->delete($tariff);
-
         $token = $this->getServiceToken();
         $result = $this->deliveryServiceApi
-            ->query('settings/calculation/courier-delivery-price-tariffs/',
-                ['id' => $tariffId] , 'DELETE', $token
-            );
+            ->query('settings/calculation/courier-delivery-price-tariffs/' . $tariff->delivery_service_tariff_id, [], 'DELETE', $token);
 
         if (!$result) {
             throw new Exception('Не удалось удалить тариф в сервисе');

@@ -133,10 +133,10 @@ class TariffController extends Controller
         return response(['message' => 'Настройки сохранены'], Response::HTTP_OK);
     }
 
-    public function zoneDelete(int $tariffId, int $regionId, Request $request, TariffService $service): Response
+    public function zoneDelete(Request $request, TariffService $service): Response
     {
         try {
-            $service->deleteZone($tariffId, $regionId, $request->all());
+            $service->deleteZone($request->all());
         } catch (\Throwable $e) {
             return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
