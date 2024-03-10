@@ -161,7 +161,7 @@ class TariffService
                             'tariff_id' => $tariff->delivery_service_tariff_id,
                             'region_id' => $region->region_id,
                             'zone' => $priceInfo->zoneName,
-                            'product_delivery_category_id' => $categoryEntity->result_category_id,
+                            'product_delivery_category_id' => $categoryEntity->category_id,
                             'price' => $price->price,
                             'price_second' => $price->second_price
                         ];
@@ -179,7 +179,7 @@ class TariffService
                         'tariff_id' => $tariff->delivery_service_tariff_id,
                         'region_id' => $region->region_id,
                         'zone' => $priceInfo->zoneName,
-                        'product_delivery_category_id' => $categoryEntity->result_category_id,
+                        'product_delivery_category_id' => $categoryEntity->category_id,
                         'price' => $price->price,
                         'price_second' => $price->second_price
                     ];
@@ -293,6 +293,7 @@ class TariffService
                     }
 
                     if ($region && $zone && $category) {
+                        $this->tariffRepo->saveRegion($localTariff, $region);
                         $price = $this->categoryRepo
                             ->getPrices($category, $localTariff->id, $region->id, $zone->id, $priceFromService['id']);
 
