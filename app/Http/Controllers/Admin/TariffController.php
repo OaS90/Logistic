@@ -64,7 +64,7 @@ class TariffController extends Controller
         try {
             $service->deleteTariff($tariffId);
         } catch (\Throwable $e) {
-            return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            Log::error('Deleting tariff error: ' . $e->getMessage());
         }
 
         return back();

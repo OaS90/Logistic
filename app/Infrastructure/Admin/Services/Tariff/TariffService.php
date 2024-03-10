@@ -230,7 +230,9 @@ class TariffService
 
         $token = $this->getServiceToken();
         $result = $this->deliveryServiceApi
-            ->query('settings/calculation/courier-delivery-price-tariffs/', ['id' => $tariffId] , 'DELETE', $token);
+            ->query('settings/calculation/courier-delivery-price-tariffs/',
+                ['id' => $tariffId] , 'DELETE', $token
+            );
 
         if (!$result) {
             throw new Exception('Не удалось удалить тариф в сервисе');
