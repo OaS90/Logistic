@@ -73,4 +73,9 @@ class TariffRepository
     {
         return Tariff::where('delivery_service_tariff_id', $id)->first();
     }
+
+    public function findByTariffServiceAlias(string $alias)
+    {
+        return Tariff::where('alias', $alias)->first();
+    }
 }

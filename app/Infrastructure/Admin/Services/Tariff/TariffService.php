@@ -304,12 +304,16 @@ class TariffService
             $localTariff = $this->tariffRepo->findByTariffServiceId($tariffFromService['id']);
 
             if (!$localTariff) {
-                $localTariff = $this->tariffRepo->create([
-                    'name' => $tariffFromService['name'],
-                    'alias' => $tariffFromService['alias'],
-                    'delivery_service_tariff_id' => $tariffFromService['id'],
-                    'author_id' => 0
-                ]);
+                $localTariff = $this->tariffRepo->findByTariffServiceAlias($tariffFromService['alias']);
+
+                if (!$localTariff) {
+                    $localTariff = $this->tariffRepo->create([
+                        'name' => $tariffFromService['name'],
+                        'alias' => $tariffFromService['alias'],
+                        'delivery_service_tariff_id' => $tariffFromService['id'],
+                        'author_id' => 0
+                    ]);
+                }
             }
 
             foreach ($pricesFromService as $priceFromService) {
