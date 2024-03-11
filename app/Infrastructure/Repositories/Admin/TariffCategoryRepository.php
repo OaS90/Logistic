@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repositories\Admin;
 
 use App\Models\TariffCategories;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use phpseclib3\Math\BigInteger\Engines\PHP\Reductions\Barrett;
 
 class TariffCategoryRepository
@@ -28,7 +29,7 @@ class TariffCategoryRepository
                               int $regionId,
                               int $zoneId,
                               int $servicePriceId = null
-    )
+    ): ?Model
     {
         $query = $category->prices()
             ->where('tariff_id', $tariffId)

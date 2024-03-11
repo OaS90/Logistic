@@ -54,7 +54,7 @@
                         @if($tariff->author_id == backpack_user()->id || backpack_user()->hasRole('admin'))
                             <a href="{{ backpack_url('tariffs/' . $tariff->id . '/delete') }}" class="btn btn-sm btn-link"><i class="la la-trash"></i> Удалить</a>
                         @endif
-                        @if($tariff->author_id != backpack_user()->id)
+                        @if($tariff->author_id != backpack_user()->id || !backpack_user()->hasRole('admin'))
                             <tariff-permission-request-button></tariff-permission-request-button>
                         @endif
                     </td>
