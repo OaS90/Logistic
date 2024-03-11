@@ -139,7 +139,7 @@ class TariffService
     {
         $tariff = $this->tariffRepo->findById($tariffId);
         $region = $this->regionRepo->getById($regionId);
-        $pricesForSave = [];
+        $token = $this->getServiceToken();
 
         foreach ($dto->categories as $category) {
             $categoryEntity = $this->categoryRepo->getById($category->categoryId);
@@ -184,16 +184,25 @@ class TariffService
                         'price' => $price->price,
                         'price_second' => $price->second_price
                     ];
+                    // Нужно чтобы сервис возвращал id цены и я обновлял её
+//                    $result = $this->deliveryServiceApi
+//                        ->query('settings/calculation/courier-delivery-prices', [
+//                            'tariff_id' => $tariff->delivery_service_tariff_id,
+//                            'region_id' => $region->region_id,
+//                            'zone' => $priceInfo->zoneName,
+//                            'product_delivery_category_id' => $categoryEntity->category_id,
+//                            'price' => $price->price,
+//                            'price_second' => $price->second_price
+//                        ] , 'POST', $token);
+
+
+//                if (!$result) {
+//                    throw new Exception('Не удалось обновить цены в сервисе');
+//                } else {
+//                    $price->update(['price_service_id' => ]);
+//                }
                 }
             }
-        }
-
-        $token = $this->getServiceToken();
-        $result = $this->deliveryServiceApi
-            ->query('settings/calculation/courier-delivery-prices', $pricesForSave , 'PUT', $token);
-
-        if (!$result) {
-            throw new Exception('Не удалось обновить цены в сервисе');
         }
     }
 
@@ -207,7 +216,7 @@ class TariffService
         foreach ($zoneData['categories'] as $categoryInfo) {
             $category = $this->categoryRepo->getById($categoryInfo['id']);
 
-            if ($categoryInfo['service_price_id']) {
+            if (isset($categoryInfo['service_price_id'])) {
                 $price = $this->categoryRepo->getByServicePriceId($category, $categoryInfo['service_price_id']);
 
                 // TODO переписать в дто
