@@ -9,6 +9,8 @@
         <tariff-regions :tariff-regions="{{ $tariff->regions }}"
                         :regions="{{ $regions }}"
                         :tariff-id="{{ $tariff->id }}"
+                        :user-id="{{ $userId }}"
+                        :tariff-author="{{ $tariff->author_id }}"
         >
         </tariff-regions>
     </div>

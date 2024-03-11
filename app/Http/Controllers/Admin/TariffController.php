@@ -7,7 +7,10 @@ use App\Http\Requests\Admin\Tariff\TariffRegionCategoriesPrices;
 use App\Infrastructure\Repositories\Admin\TariffRepository;
 use App\Infrastructure\Repositories\RegionRepository;
 use App\Infrastructure\Admin\Services\Tariff\TariffService;
+use App\Mail\TariffPermissionRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,7 +42,12 @@ class TariffController extends Controller
     public function create(Request $request, TariffService $service): string
     {
         try {
-            $service->create($request->all());
+            $data = [
+                'name' => $request->get('name'),
+                'alias' => $request->get('alias'),
+                'author_id' => backpack_user()->id
+            ];
+            $service->create($data);
         } catch (\Throwable $e) {
             Log::error('Tariff creatign error:' . $e->getMessage());
 //            return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -55,7 +63,8 @@ class TariffController extends Controller
 
         return view(backpack_view('tariff.tariff-edit'), [
             'tariff' => $tariff,
-            'regions' => $regions
+            'regions' => $regions,
+            'userId' => backpack_user()->id
         ]);
     }
 
@@ -78,7 +87,9 @@ class TariffController extends Controller
                 'regionId' => $regionId,
                 'tariffId' => $tariffId,
                 'categories' => $data['categories'],
-                'zones' => $data['zones']
+                'zones' => $data['zones'],
+                'authorId' => $data['authorId'],
+                'userId' => backpack_user()->id
             ]
         );
     }
@@ -160,5 +171,12 @@ class TariffController extends Controller
         }
 
         return response(['message' => 'Тарифы получены'], Response::HTTP_OK);
+    }
+
+    public function permissionsRequest(int $tariffId)
+    {
+        $tariff = $this->tariffRepo->findById($tariffId);
+        $user = backpack_user();
+        Mail::to(config('tariff_emails'))->send(new TariffPermissionRequest($tariff, $user));
     }
 }

@@ -81,10 +81,12 @@ class TariffService
     public function prepareForVue(int $tariffId, int $regionId): array
     {
         $region = $this->regionRepo->findByIdWithRelationships($regionId, ['tariffCategories']);
+        $tariff = $this->tariffRepo->findById($tariffId);
         $zones = TariffRegionZone::all();
         $data = [];
         $enabledZone = [];
         $prices = [];
+        $data['authorId'] = $tariff->author_id;
 
         foreach ($zones as $zone) {
             $data['zones'][$zone->id] = [
@@ -249,12 +251,26 @@ class TariffService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function cloneTariff(int $tariffId): void
     {
         $tariff = $this->tariffRepo->findById($tariffId);
         $lastTariffId = $this->tariffRepo->getLastId();
         $clone = $tariff->replicate();
         $clone->alias = $tariff->alias . 'Clone_' . $lastTariffId;
+        $token = $this->getServiceToken();
+        $response = $this->deliveryServiceApi
+            ->query('settings/calculation/courier-delivery-price-tariffs', [
+                'name' => $clone->name,
+                'alias' => $clone->alias
+            ], 'POST', $token);
+
+        if ($response) {
+            $this->tariffRepo->updateByFields($clone, ['delivery_service_tariff_id' => $response['created_id']]);
+        }
+
         $clone->save();
 
         foreach ($tariff->regions as $region) {

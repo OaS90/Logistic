@@ -5,58 +5,93 @@
             <i class="la la-angle-double-left"></i>Вернуться к настройкам тарифа
         </a>
         <hr>
-        <div class="row">
-            <div class="col-md-12">
-                <input type="button" class="btn btn-success" value="Сохранить" @click="save">
+        <div v-if="userId === authorId">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="button" class="btn btn-success" value="Сохранить" @click="save">
+                </div>
             </div>
+            <table id="categories"
+                   class="table-content bg-white table table-striped table-hover nowrap rounded shadow-xs border-xs mt-2 dataTable dtr-inline collapsed"
+            >
+                <thead>
+                    <tr>
+                        <th>Категория</th>
+                        <th>Вкл/Выкл</th>
+                        <th v-for="(details, index) in headers" class="th-title">
+                            {{ details.title }}
+                            <i class="la la-window-close-o" @click="beforeDeleteZone(index, details.zoneName, details.zone)"></i>
+                        </th>
+                        <th>
+                            <label for="zones">Добавить зону <i class="la la-plus-circle"></i></label>
+                            <select name="zones"
+                                    id="zones"
+                                    v-model="selectedZone"
+                                    @change="addColumn($event)"
+                                    class="form-control col-md-12"
+                            >
+                                <option value="none" selected disabled hidden>Выберите зону</option>
+                                <option v-for="(zone, index) in zones"
+                                        :value="zone.name + '_' + index"
+                                        :disabled="zone.enabled"
+                                >
+                                    Зона {{ zone.name }}
+                                </option>
+                            </select>
+
+                        </th>
+                    </tr>
+                </thead>
+                <tbody ref="categories">
+                    <tr v-for="(category, catIndex) in dataForSave">
+                        <td>{{ category.name }}</td>
+                        <td><input type="checkbox" :checked="category.isUse" v-model="category.isUse"></td>
+                        <td v-for="(details, index) in category.prices">
+                            <span class="extra-label"><b>ID цены в сервисе {{ details.service_price_id }}</b></span>
+                            <br>
+                            <span class="extra-label">Стоимость первой единицы</span>
+                            <input type="text" class="form-control col-md-12" v-model="details.price">
+                            <span class="extra-label">Стоимость второй единицы</span>
+                            <input type="text" class="form-control col-md-12" v-model="details.secondPrice">
+                        </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <table id="categories"
-               class="table-content bg-white table table-striped table-hover nowrap rounded shadow-xs border-xs mt-2 dataTable dtr-inline collapsed"
-        >
-            <thead>
+
+<!--        Отображение для пользователей без прав на редактирование-->
+        <div v-else>
+            <table id="categories"
+                   class="table-content bg-white table table-striped table-hover nowrap rounded shadow-xs border-xs mt-2 dataTable dtr-inline collapsed"
+            >
+                <thead>
                 <tr>
                     <th>Категория</th>
                     <th>Вкл/Выкл</th>
                     <th v-for="(details, index) in headers" class="th-title">
                         {{ details.title }}
-                        <i class="la la-window-close-o" @click="beforeDeleteZone(index, details.zoneName, details.zone)"></i>
-                    </th>
-                    <th>
-                        <label for="zones">Добавить зону <i class="la la-plus-circle"></i></label>
-                        <select name="zones"
-                                id="zones"
-                                v-model="selectedZone"
-                                @change="addColumn($event)"
-                                class="form-control col-md-12"
-                        >
-                            <option value="none" selected disabled hidden>Выберите зону</option>
-                            <option v-for="(zone, index) in zones"
-                                    :value="zone.name + '_' + index"
-                                    :disabled="zone.enabled"
-                            >
-                                Зона {{ zone.name }}
-                            </option>
-                        </select>
-
                     </th>
                 </tr>
-            </thead>
-            <tbody ref="categories">
+                </thead>
+                <tbody ref="categories">
                 <tr v-for="(category, catIndex) in dataForSave">
                     <td>{{ category.name }}</td>
-                    <td><input type="checkbox" :checked="category.isUse" v-model="category.isUse"></td>
+                    <td><input type="checkbox" :checked="category.isUse" v-model="category.isUse" disabled></td>
                     <td v-for="(details, index) in category.prices">
                         <span class="extra-label"><b>ID цены в сервисе {{ details.service_price_id }}</b></span>
                         <br>
                         <span class="extra-label">Стоимость первой единицы</span>
-                        <input type="text" class="form-control col-md-12" v-model="details.price">
+                        <span class="form-control col-md-12">{{ details.price }}</span>
                         <span class="extra-label">Стоимость второй единицы</span>
-                        <input type="text" class="form-control col-md-12" v-model="details.secondPrice">
+                        <span class="form-control col-md-12">{{ details.secondPrice }}</span>
                     </td>
                     <td></td>
                 </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
+
 
         <modal v-if="showModal" @close="showModal = false">
             <span slot="body">
@@ -84,7 +119,7 @@ import Modal from "./Modal";
 
 export default {
     name: "TariffRegionSettings",
-    props: ['tariffId', 'regionId', 'categories', 'zones'],
+    props: ['tariffId', 'regionId', 'categories', 'zones', 'authorId', 'userId'],
     components: {
         Modal
     },

@@ -14,8 +14,9 @@
                 </div>
             </div>
 
-            <tariffs-get-from-service-button></tariffs-get-from-service-button>
-
+            @if(backpack_user()->hasRole('admin'))
+                <tariffs-get-from-service-button></tariffs-get-from-service-button>
+            @endif
             <div class="col-sm-7">
                 <div id="datatable_search_stack" class="mt-sm-0 mt-2 d-print-none"><div id="crudTable_filter" class="dataTables_filter"><label><input type="search" class="form-control" placeholder="Поиск..." aria-controls="crudTable"></label></div></div>
             </div>
@@ -37,11 +38,25 @@
                     <td>{{ $tariff->name }}</td>
                     <td>{{ $tariff->alias }}</td>
                     <td>
-                        <a href="{{ backpack_url('tariffs/' . $tariff->id . '/edit') }}" class="btn btn-sm btn-link">
-                            <i class="la la-eye"></i> Редактировать
-                        </a>
-                        <a href="{{ backpack_url('tariffs/' . $tariff->id . '/clone') }}" class="btn btn-sm btn-link"><i class="la la-clone"></i> Клонировать</a>
-                        <a href="{{ backpack_url('tariffs/' . $tariff->id . '/delete') }}" class="btn btn-sm btn-link"><i class="la la-trash"></i> Удалить</a>
+                        @if($tariff->author_id == backpack_user()->id)
+                            <a href="{{ backpack_url('tariffs/' . $tariff->id . '/edit') }}" class="btn btn-sm btn-link">
+                                <i class="la la-eye"></i> Редактировать
+                            </a>
+                        @else
+                            <a href="{{ backpack_url('tariffs/' . $tariff->id . '/edit') }}" class="btn btn-sm btn-link">
+                                <i class="la la-eye"></i> Просмотр
+                            </a>
+                        @endif
+                        @if($tariff->alias == 'main')
+                            <a href="{{ backpack_url('tariffs/' . $tariff->id . '/clone') }}" class="btn btn-sm btn-link"><i class="la la-clone"></i> Клонировать</a>
+                        @endif
+
+                        @if($tariff->author_id == backpack_user()->id)
+                            <a href="{{ backpack_url('tariffs/' . $tariff->id . '/delete') }}" class="btn btn-sm btn-link"><i class="la la-trash"></i> Удалить</a>
+                        @endif
+                        @if($tariff->author_id != backpack_user()->id)
+                            <tariff-permission-request-button></tariff-permission-request-button>
+                        @endif
                     </td>
                 </tr>
             @endforeach

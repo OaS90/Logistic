@@ -14,6 +14,8 @@
                 :region-id="{{ $regionId }}"
                 :categories="{{ json_encode($categories) }}"
                 :zones="{{ json_encode($zones) }}"
+                :author-id="{{ $authorId }}"
+                :user-id="{{ $userId }}"
         ></tariff-region-settings>
     </div>
 @endsection

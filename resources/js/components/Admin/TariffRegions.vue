@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div class="form-group col-md-7">
+        <div class="form-group col-md-7" v-if="userId === tariffAuthor">
             <multiselect :options="regions"
                          placeholder="Выберите регион(ы)"
                          v-model="selected"
@@ -11,16 +11,18 @@
             </multiselect>
 
         </div>
-        <div class="form-group col-md-2">
+        <div class="form-group col-md-2" v-if="userId === tariffAuthor">
             <button class="btn btn-default" @click="addRegions">Добавить регион(ы)</button>
         </div>
-        <div class="form-group col-md-3">
+        <div class="form-group col-md-3" v-if="userId === tariffAuthor">
             <button class="btn btn-behance" @click="addAllRegions">Добавить <b>все</b> регионы</button>
         </div>
         <div v-for="(region, index) in tariffRegionData" class="form-group col-md-2 region-column">
             <a :href=regionUrl(region.id)>{{ region.name }}</a>
-            <i class="la la-close delete-region" title="Удалить регион" @click="setRegionForDeleting(region.id, index)"></i>
-
+            <i class="la la-close delete-region"
+               v-if="userId === tariffAuthor"
+               title="Удалить регион"
+               @click="setRegionForDeleting(region.id, index)"></i>
         </div>
         <modal v-if="showModal">
             <span slot="body">
@@ -39,7 +41,7 @@ import Modal from "./Modal";
 
 export default {
     name: "TariffRegions",
-    props: ['tariffRegions', 'regions', 'tariffId'],
+    props: ['tariffRegions', 'regions', 'tariffId', 'userId', 'tariffAuthor'],
     components: {
         Multiselect,
         Modal
@@ -112,7 +114,7 @@ export default {
                     accept: 'application/json', 'Content-Type': 'application/json'
                 }
             }).then((response) => {
-                this.tariffRegionData = response.data.regions
+                this.tariffRegionData = regionsData
             }).catch((error) => {
                 if (error.response.status === 500) {
                     this.showModal = true
