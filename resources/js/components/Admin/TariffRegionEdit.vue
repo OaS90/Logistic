@@ -179,6 +179,7 @@ export default {
                 zone: this.zones[zoneIndex[1]].id,
                 zoneName:  zoneIndex[0]
             })
+            this.zones[zoneIndex[1]].enabled = true
         },
         beforeDeleteZone(index, zone, zoneId) {
             this.deleteModal = !this.deleteModal
