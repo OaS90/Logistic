@@ -16,6 +16,7 @@
                 :zones="{{ json_encode($zones) }}"
                 :author-id="{{ $authorId }}"
                 :user-id="{{ $userId }}"
+                :is-admin="{{ $isAdmin }}"
         ></tariff-region-settings>
     </div>
 @endsection

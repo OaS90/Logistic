@@ -64,7 +64,8 @@ class TariffController extends Controller
         return view(backpack_view('tariff.tariff-edit'), [
             'tariff' => $tariff,
             'regions' => $regions,
-            'userId' => backpack_user()->id
+            'userId' => backpack_user()->id,
+            'isAdmin' => backpack_user()->hasRole('admin')
         ]);
     }
 
@@ -89,7 +90,8 @@ class TariffController extends Controller
                 'categories' => $data['categories'],
                 'zones' => $data['zones'],
                 'authorId' => $data['authorId'],
-                'userId' => backpack_user()->id
+                'userId' => backpack_user()->id,
+                'isAdmin' => backpack_user()->hasRole('admin')
             ]
         );
     }
@@ -155,6 +157,9 @@ class TariffController extends Controller
         return response(['message' => 'Зона успешно удалена'], Response::HTTP_OK);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function cloneTariff(int $tariffId, TariffService $service): RedirectResponse
     {
         $service->cloneTariff($tariffId);

@@ -5,7 +5,7 @@
             <i class="la la-angle-double-left"></i>Вернуться к настройкам тарифа
         </a>
         <hr>
-        <div v-if="userId === authorId">
+        <div v-if="userId === authorId || isAdmin">
             <div class="row">
                 <div class="col-md-12">
                     <input type="button" class="btn btn-success" value="Сохранить" @click="save">
@@ -119,7 +119,7 @@ import Modal from "./Modal";
 
 export default {
     name: "TariffRegionSettings",
-    props: ['tariffId', 'regionId', 'categories', 'zones', 'authorId', 'userId'],
+    props: ['tariffId', 'regionId', 'categories', 'zones', 'authorId', 'userId', 'isAdmin'],
     components: {
         Modal
     },
@@ -206,7 +206,11 @@ export default {
 
             this.headers.splice(this.zoneForDelete.index, 1)
             this.selectedZone = 'none'
-            this.zones[this.zoneForDelete.index].enabled = false
+            this.zones.forEach((zone) => {
+                if (zone.id === this.zoneForDelete.zoneId) {
+                    zone.enabled = false
+                }
+            })
 
             axios.post('/admin/tariffs/' + this.tariffId +'/region/' + this.regionId +'/delete-zone',
                 {zoneId: this.zoneForDelete.zoneId, categories: categories}

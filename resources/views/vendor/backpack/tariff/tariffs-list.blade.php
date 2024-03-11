@@ -38,7 +38,7 @@
                     <td>{{ $tariff->name }}</td>
                     <td>{{ $tariff->alias }}</td>
                     <td>
-                        @if($tariff->author_id == backpack_user()->id)
+                        @if($tariff->author_id == backpack_user()->id || backpack_user()->hasRole('admin'))
                             <a href="{{ backpack_url('tariffs/' . $tariff->id . '/edit') }}" class="btn btn-sm btn-link">
                                 <i class="la la-eye"></i> Редактировать
                             </a>
@@ -51,7 +51,7 @@
                             <a href="{{ backpack_url('tariffs/' . $tariff->id . '/clone') }}" class="btn btn-sm btn-link"><i class="la la-clone"></i> Клонировать</a>
                         @endif
 
-                        @if($tariff->author_id == backpack_user()->id)
+                        @if($tariff->author_id == backpack_user()->id || backpack_user()->hasRole('admin'))
                             <a href="{{ backpack_url('tariffs/' . $tariff->id . '/delete') }}" class="btn btn-sm btn-link"><i class="la la-trash"></i> Удалить</a>
                         @endif
                         @if($tariff->author_id != backpack_user()->id)
