@@ -47,7 +47,7 @@
                                 <i class="la la-eye"></i> Просмотр
                             </a>
                         @endif
-                        @if($tariff->alias == 'main')
+                        @if($tariff->alias == 'main' || $tariff->author_id == backpack_user()->id)
                             <a href="{{ backpack_url('tariffs/' . $tariff->id . '/clone') }}" class="btn btn-sm btn-link"><i class="la la-clone"></i> Клонировать</a>
                         @endif
 
