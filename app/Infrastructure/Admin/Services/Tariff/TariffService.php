@@ -266,6 +266,8 @@ class TariffService
         $clone = $tariff->replicate();
         $clone->alias = $tariff->alias . 'Clone_' . $lastTariffId;
         $token = $this->getServiceToken();
+        $clone->save();
+
         $response = $this->deliveryServiceApi
             ->query('settings/calculation/courier-delivery-price-tariffs', [
                 'name' => $clone->name,
@@ -273,10 +275,9 @@ class TariffService
             ], 'POST', $token);
 
         if ($response) {
+            Log::info($response['created_id']);
             $this->tariffRepo->updateByFields($clone, ['delivery_service_tariff_id' => $response['created_id']]);
         }
-
-        $clone->save();
 
         foreach ($tariff->regions as $region) {
             $clone->regions()->attach($region);
