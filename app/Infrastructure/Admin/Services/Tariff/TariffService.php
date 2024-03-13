@@ -275,17 +275,12 @@ class TariffService
             ], 'POST', $token);
 
         if ($response) {
-            Log::info($response['created_id']);
             $this->tariffRepo->updateByFields($clone, ['delivery_service_tariff_id' => $response['created_id']]);
         }
 
-        foreach ($tariff->regions as $region) {
-            $clone->regions()->attach($region);
-
-            foreach ($clone->regions as $cloneRegion) {
-                foreach ($region->tariffCategories as $category) {
-                    $cloneRegion->tariffCategories()->attach($category);
-                }
+        if ($tariff->regions) {
+            foreach ($tariff->regions as $region) {
+                $clone->regions()->attach($region);
             }
         }
     }
