@@ -56,7 +56,6 @@ class TariffCategory extends Command
                     $category = $this->categoryRepo->create([
                         'name' => $this->toCp1251($item[4]),
                         'result_category_id' => $item[3],
-                        'category_id' => $item[2],
                     ]);
                 }
 
