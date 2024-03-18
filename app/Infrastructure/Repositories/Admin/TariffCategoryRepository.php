@@ -66,11 +66,9 @@ class TariffCategoryRepository
             ->delete();
     }
 
-    public function getByCategoryServiceIdAndProductCategoryId(int $productCategoryId, int $tariffCategory): ?TariffCategories
+    public function getByCategoryServiceIdAndProductCategoryId(int $tariffCategory): ?TariffCategories
     {
-        return TariffCategories::where('result_category_id', $tariffCategory)
-            ->where('category_id', $productCategoryId)
-            ->first();
+        return TariffCategories::where('result_category_id', $tariffCategory)->first();
     }
 
     public function getByProductCategoryId(int $id): ?TariffCategories

@@ -50,7 +50,7 @@ class TariffCategory extends Command
 
         foreach ($this->regionRepo->getAll() as $region) {
             foreach ($dataFromFile as $item) {
-                $category = $this->categoryRepo->getByCategoryServiceIdAndProductCategoryId($item[2], $item[3]);
+                $category = $this->categoryRepo->getByCategoryServiceIdAndProductCategoryId($item[3]);
 
                 if (!$category) {
                     $category = $this->categoryRepo->create([
