@@ -62,11 +62,12 @@ Route::group([
     Route::post('tariffs/{tariffId}/region/{regionId}/save', [TariffController::class, 'regionSave']);
     Route::post('tariffs/{tariffId}/region/{regionId}/delete-zone', [TariffController::class, 'zoneDelete']);
     Route::get('tariffs', [TariffController::class, 'list'])->name('tariff-list');
-    Route::get('tariffs/{tariffId}/clone', [TariffController::class, 'cloneTariff']);
+    Route::get('tariffs/get', [TariffController::class, 'getAll']);
+    Route::post('tariffs/{tariffId}/clone', [TariffController::class, 'cloneTariff']);
     Route::post('tariffs/{tariffId}/request', [TariffController::class, 'permissionsRequest']);
     Route::get('tariffs/show', [TariffController::class, 'show']);
     Route::post('tariffs/create', [TariffController::class, 'create']);
-    Route::get('tariffs/{tariffId}/delete', [TariffController::class, 'delete']);
+    Route::delete('tariffs/{tariffId}/delete', [TariffController::class, 'delete']);
     Route::crud('tariff-categories', 'TariffCategoriesCrudController');
 //    Route::crud('tariff', 'TariffCrudController');
     Route::crud('tariff-zones', 'TariffZonesCrudController');

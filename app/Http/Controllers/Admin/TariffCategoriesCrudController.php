@@ -62,7 +62,7 @@ class TariffCategoriesCrudController extends CrudController
     {
         CRUD::column('id')->type('number')->label('ID');
         CRUD::column('name')->type('text')->label('Наименование');
-        CRUD::column('category_id')->type('number')->label('ID категории');
+        CRUD::column('result_category_id')->type('number')->label('ID категории');
         CRUD::column('description')->type('textarea')->label('Описание');
 
         /**
@@ -89,9 +89,9 @@ class TariffCategoriesCrudController extends CrudController
             'wrapper' => ['class' => 'form-group col-md-5']
         ]);
         CRUD::addField([
-            'name' => 'category_id',
+            'name' => 'result_category_id',
             'type' => 'number',
-            'label' => 'ID категории',
+            'label' => 'ID категории товара',
             'attributes' => ['class' => 'form-control'],
             'wrapper' => ['class' => 'form-group col-md-3']
         ]);

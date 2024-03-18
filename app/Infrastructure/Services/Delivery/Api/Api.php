@@ -22,7 +22,7 @@ class Api
         $parameters = [];
         $result = [];
 
-        if ($method != 'GET') {
+        if ($method != 'GET' && $method != 'DELETE') {
             $parameters[RequestOptions::JSON] = $data;
         } else {
             $parameters[RequestOptions::QUERY] = $data;
@@ -40,6 +40,10 @@ class Api
             $request = $this->client->request($method, $uri, $parameters);
             $content = $request->getBody()->getContents();
             $result = json_decode($content, true);
+
+            if (!is_array($result)) {
+                return [];
+            }
         } catch (ClientException $e) {
             Log::error('Sending to delivery service error:' . $e->getResponse()->getBody()->getContents());
         } catch (GuzzleException $e) {

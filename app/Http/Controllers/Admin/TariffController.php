@@ -8,11 +8,10 @@ use App\Infrastructure\Repositories\Admin\TariffRepository;
 use App\Infrastructure\Repositories\RegionRepository;
 use App\Infrastructure\Admin\Services\Tariff\TariffService;
 use App\Mail\TariffPermissionRequest;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
 
@@ -30,8 +29,9 @@ class TariffController extends Controller
     public function list(): View
     {
         $tariffs = $this->tariffRepo->getAll();
+        $isAdmin = backpack_user()->hasRole('admin');
 
-        return view(backpack_view('tariff.tariffs-list'), ['tariffs' => $tariffs]);
+        return view(backpack_view('tariff.tariffs-list'), ['tariffs' => $tariffs, 'isAdmin' => $isAdmin]);
     }
 
     public function show(): View
@@ -77,7 +77,7 @@ class TariffController extends Controller
             Log::error('Deleting tariff error: ' . $e->getMessage());
         }
 
-        return back();
+        return response(['message' => 'Тариф успешно удалён!'], Response::HTTP_OK);
     }
 
     public function regionEditShow(int $tariffId, int $regionId, TariffService $service): View
@@ -160,11 +160,17 @@ class TariffController extends Controller
     /**
      * @throws \Exception
      */
-    public function cloneTariff(int $tariffId, TariffService $service): RedirectResponse
+    public function cloneTariff(int $tariffId, TariffService $service): Response
     {
-        $service->cloneTariff($tariffId);
+        try {
+            $service->cloneTariff($tariffId);
+        } catch (\Throwable $e) {
+            Log::error('Clone error ' . $e->getMessage());
 
-        return back();
+            return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response(['uri' => 'tariffs'], 200);
     }
 
     public function getFromService(TariffService $service): Response
@@ -183,5 +189,10 @@ class TariffController extends Controller
         $tariff = $this->tariffRepo->findById($tariffId);
         $user = backpack_user();
         Mail::to(config('tariff_emails'))->send(new TariffPermissionRequest($tariff, $user));
+    }
+
+    public function getAll(): Collection
+    {
+        return $this->tariffRepo->getAll();
     }
 }

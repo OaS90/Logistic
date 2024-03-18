@@ -75,6 +75,6 @@ class TariffCategoryRepository
 
     public function getByProductCategoryId(int $id): ?TariffCategories
     {
-        return TariffCategories::where('category_id', $id)->first();
+        return TariffCategories::where('result_category_id', $id)->first();
     }
 }
