@@ -50,7 +50,7 @@
                     <td>{{ tariff.name }}</td>
                     <td>{{ tariff.alias }}</td>
                     <td>
-                        <a v-if="userId === tariff.author_id || isAdmin" :href="'tariffs/' + tariff.id + '/edit'"
+                        <a v-if="userId === tariff.author_id || isAdmin || tariff.isEditable" :href="'tariffs/' + tariff.id + '/edit'"
                            class="btn btn-sm btn-link">
                             <i class="la la-eye"></i> Редактировать
                         </a>
@@ -63,13 +63,13 @@
                         >
                             <i class="la la-clone"></i> Клонировать
                         </a>
-                        <a v-if="userId === tariff.author_id || isAdmin"
+                        <a v-if="userId === tariff.author_id || isAdmin || tariff.isEditable"
                            class="btn btn-sm btn-link"
                            @click="beforeDelete(tariff.id, index)"
                         >
                             <i class="la la-trash"></i> Удалить
                         </a>
-                        <tariff-permission-request-button v-if="userId !== tariff.author_id && !isAdmin"></tariff-permission-request-button>
+                        <tariff-permission-request-button v-if="userId !== tariff.author_id && !isAdmin && !tariff.isEditable"></tariff-permission-request-button>
                     </td>
                 </tr>
             </tbody>
