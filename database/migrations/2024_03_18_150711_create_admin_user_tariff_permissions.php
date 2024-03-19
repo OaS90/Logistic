@@ -17,7 +17,6 @@ class CreateAdminUserTariffPermissions extends Migration
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('tariff_id')->unsigned();
-            $table->boolean('edit')->default(false);
             $table->timestamps();
         });
 
