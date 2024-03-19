@@ -46,7 +46,8 @@ class TariffController extends Controller
                 'id' => $tariff->id,
                 'name' => $tariff->name,
                 'alias' => $tariff->alias,
-                'isEditable' => $isEditable
+                'isEditable' => $isEditable,
+                'isAuthor' => $userId == $tariff->author_id
             ];
         }
 
