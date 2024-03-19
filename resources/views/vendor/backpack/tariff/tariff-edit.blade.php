@@ -11,7 +11,8 @@
                         :tariff-id="{{ $tariff->id }}"
                         :user-id="{{ $userId }}"
                         :tariff-author="{{ $tariff->author_id }}"
-                        :is-admin="{{ $isAdmin }}"
+                        :is-admin="{{ json_encode($isAdmin) }}"
+                        :is-editable="{{ json_encode($isEditable) }}"
         >
         </tariff-regions>
     </div>

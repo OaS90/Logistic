@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\QuotesController;
 use App\Http\Controllers\Admin\QuoteEmailsController;
 use App\Http\Controllers\Admin\SupportController;
 use App\Http\Controllers\Admin\TariffController;
+use App\Http\Controllers\Admin\AdminUserTariffsController;
 // --------------------------
 // Custom Backpack Routes
 // --------------------------
@@ -72,4 +73,6 @@ Route::group([
 //    Route::crud('tariff', 'TariffCrudController');
     Route::crud('tariff-zones', 'TariffZonesCrudController');
     Route::post('tariffs-holodilnik/get', [TariffController::class, 'getFromService']);
+    Route::post('admin-user/tariff/permission-edit/add', [AdminUserTariffsController::class, 'addTariff']);
+    Route::post('admin-user/tariff/permission-edit/remove', [AdminUserTariffsController::class, 'removeTariff']);
 }); // this should be the absolute last line of this file

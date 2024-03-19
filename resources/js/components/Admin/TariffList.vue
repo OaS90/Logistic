@@ -102,7 +102,6 @@ export default {
     name: "TariffList",
     data() {
         return {
-            tariffs: [],
             pageSize: 20,
             currentPage: 1,
             filter: '',
@@ -117,9 +116,9 @@ export default {
         TariffPermissionRequestButton,
         Modal
     },
-    props: ['isAdmin', 'userId'],
+    props: ['isAdmin', 'userId', 'tariffs'],
     mounted() {
-        this.list()
+        // this.list()
     },
     methods: {
         cancelDelete() {

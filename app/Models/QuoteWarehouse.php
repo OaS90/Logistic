@@ -17,6 +17,6 @@ class QuoteWarehouse extends Model
 
     public function regions(): BelongsToMany
     {
-        return $this->BelongsToMany(Region::class, 'quote_warehouse_region', 'quote_warehouse_id', 'region_id');
+        return $this->belongsToMany(Region::class, 'quote_warehouse_region', 'quote_warehouse_id', 'region_id');
     }
 }

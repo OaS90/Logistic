@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Tariff\TariffRegionCategoriesPrices;
 use App\Infrastructure\Repositories\Admin\TariffRepository;
+use App\Infrastructure\Repositories\Admin\UserTariffPermissionRepo;
 use App\Infrastructure\Repositories\RegionRepository;
 use App\Infrastructure\Admin\Services\Tariff\TariffService;
 use App\Mail\TariffPermissionRequest;
@@ -19,19 +20,37 @@ class TariffController extends Controller
 {
     protected TariffRepository $tariffRepo;
     protected RegionRepository $regionRepo;
+    protected UserTariffPermissionRepo $permissionRepo;
 
-    public function __construct(TariffRepository $tariffRepo, RegionRepository $regionRepo)
+    public function __construct(TariffRepository $tariffRepo,
+                                RegionRepository $regionRepo,
+                                UserTariffPermissionRepo $permissionRepo
+    )
     {
         $this->tariffRepo = $tariffRepo;
         $this->regionRepo = $regionRepo;
+        $this->permissionRepo = $permissionRepo;
     }
 
     public function list(): View
     {
         $tariffs = $this->tariffRepo->getAll();
         $isAdmin = backpack_user()->hasRole('admin');
+        $data = [];
 
-        return view(backpack_view('tariff.tariffs-list'), ['tariffs' => $tariffs, 'isAdmin' => $isAdmin]);
+        foreach ($tariffs as $tariff) {
+            $userId = backpack_user()->id;
+            $isEditable = $this->permissionRepo->getByUserIdAndTariffId($userId, $tariff->id);
+
+            $data[] = [
+                'id' => $tariff->id,
+                'name' => $tariff->name,
+                'alias' => $tariff->alias,
+                'isEditable' => $isEditable
+            ];
+        }
+
+        return view(backpack_view('tariff.tariffs-list'), ['tariffs' => $data, 'isAdmin' => $isAdmin]);
     }
 
     public function show(): View
@@ -60,12 +79,15 @@ class TariffController extends Controller
     {
         $tariff = $this->tariffRepo->findByIdWithRelationships($tariffId, ['regions']);
         $regions = $this->regionRepo->getAll();
+        $userId = backpack_user()->id;
+        $isEditable = $this->permissionRepo->getByUserIdAndTariffId($userId, $tariffId);
 
         return view(backpack_view('tariff.tariff-edit'), [
             'tariff' => $tariff,
             'regions' => $regions,
-            'userId' => backpack_user()->id,
-            'isAdmin' => backpack_user()->hasRole('admin')
+            'userId' => $userId,
+            'isAdmin' => backpack_user()->hasRole('admin'),
+            'isEditable' => (bool) $isEditable
         ]);
     }
 
@@ -83,6 +105,8 @@ class TariffController extends Controller
     public function regionEditShow(int $tariffId, int $regionId, TariffService $service): View
     {
         $data = $service->prepareForVue($tariffId, $regionId);
+        $userId = backpack_user()->id;
+        $isEditable = $this->permissionRepo->getByUserIdAndTariffId($userId, $tariffId);
 
         return view(backpack_view('tariff.tariff-region-edit'), [
                 'regionId' => $regionId,
@@ -90,8 +114,9 @@ class TariffController extends Controller
                 'categories' => $data['categories'],
                 'zones' => $data['zones'],
                 'authorId' => $data['authorId'],
-                'userId' => backpack_user()->id,
-                'isAdmin' => backpack_user()->hasRole('admin')
+                'userId' => $userId,
+                'isAdmin' => backpack_user()->hasRole('admin'),
+                'isEditable' => (bool) $isEditable
             ]
         );
     }

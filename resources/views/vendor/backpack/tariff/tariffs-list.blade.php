@@ -3,7 +3,8 @@
 @section('content')
     <div id="admin-app">
         <tariff-list :user-id="{{ backpack_user()->id }}"
-                     :is-admin="{{ (bool) $isAdmin }}"
+                     :is-admin="{{ json_encode($isAdmin) }}"
+                     :tariffs="{{ json_encode($tariffs) }}"
         ></tariff-list>
 {{--    <h2><span class="text-capitalize">Тарифы</span></h2>--}}
 {{--        <div class="row">--}}

@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div class="form-group col-md-7" v-if="userId === tariffAuthor || isAdmin">
+        <div class="form-group col-md-7" v-if="userId === tariffAuthor || isAdmin || isEditable">
             <multiselect :options="regions"
                          placeholder="Выберите регион(ы)"
                          v-model="selected"
@@ -11,16 +11,16 @@
             </multiselect>
 
         </div>
-        <div class="form-group col-md-2" v-if="userId === tariffAuthor || isAdmin">
+        <div class="form-group col-md-2" v-if="userId === tariffAuthor || isAdmin || isEditable">
             <button class="btn btn-default" @click="addRegions">Добавить регион(ы)</button>
         </div>
-        <div class="form-group col-md-3" v-if="userId === tariffAuthor || isAdmin">
+        <div class="form-group col-md-3" v-if="userId === tariffAuthor || isAdmin || isEditable">
             <button class="btn btn-behance" @click="addAllRegions">Добавить <b>все</b> регионы</button>
         </div>
         <div v-for="(region, index) in tariffRegionData" class="form-group col-md-2 region-column">
             <a :href=regionUrl(region.id)>{{ region.name }}</a>
             <i class="la la-close delete-region"
-               v-if="userId === tariffAuthor || isAdmin"
+               v-if="userId === tariffAuthor || isAdmin || isEditable"
                title="Удалить регион"
                @click="setRegionForDeleting(region.id, index)"></i>
         </div>
@@ -41,7 +41,7 @@ import Modal from "./Modal";
 
 export default {
     name: "TariffRegions",
-    props: ['tariffRegions', 'regions', 'tariffId', 'userId', 'tariffAuthor', 'isAdmin'],
+    props: ['tariffRegions', 'regions', 'tariffId', 'userId', 'tariffAuthor', 'isAdmin', 'isEditable'],
     components: {
         Multiselect,
         Modal

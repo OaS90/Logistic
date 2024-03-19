@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->app->bind(Api::class, function () {
             return new Api(
@@ -24,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
                 ])
             );
         });
+
+        $this->app->bind(
+            \Backpack\PermissionManager\app\Http\Controllers\UserCrudController::class,
+            \App\Http\Controllers\Admin\UserCrudController::class
+            );
     }
 
     /**

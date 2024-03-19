@@ -16,7 +16,8 @@
                 :zones="{{ json_encode($zones) }}"
                 :author-id="{{ $authorId }}"
                 :user-id="{{ $userId }}"
-                :is-admin="{{ $isAdmin }}"
+                :is-admin="{{ json_encode($isAdmin) }}"
+                :is-editable="{{ json_encode($isEditable) }}"
         ></tariff-region-settings>
     </div>
 @endsection

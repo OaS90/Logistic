@@ -5,7 +5,7 @@
             <i class="la la-angle-double-left"></i>Вернуться к настройкам тарифа
         </a>
         <hr>
-        <div v-if="userId === authorId || isAdmin">
+        <div v-if="userId === authorId || isAdmin || isEditable">
             <div class="row">
                 <div class="col-md-12">
                     <input type="button" class="btn btn-success" value="Сохранить" @click="save">
@@ -117,7 +117,7 @@ import Modal from "./Modal";
 
 export default {
     name: "TariffRegionSettings",
-    props: ['tariffId', 'regionId', 'categories', 'zones', 'authorId', 'userId', 'isAdmin'],
+    props: ['tariffId', 'regionId', 'categories', 'zones', 'authorId', 'userId', 'isAdmin', 'isEditable'],
     components: {
         Modal
     },
