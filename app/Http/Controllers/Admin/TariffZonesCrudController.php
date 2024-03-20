@@ -46,6 +46,13 @@ class TariffZonesCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        if (backpack_user()->hasRole('admin')) {
+            $this->crud->allowAccess(['update', 'delete', 'show', 'create']);
+        } else {
+            $this->crud->removeAllButtons();
+        }
+
+
         CRUD::column('id')->type('number')->label('ID');
         CRUD::column('name')->type('string')->label('Наименование');
         CRUD::column('code')->type('string')->label('Код');

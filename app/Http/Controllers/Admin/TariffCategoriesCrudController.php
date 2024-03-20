@@ -60,6 +60,12 @@ class TariffCategoriesCrudController extends CrudController
      */
     protected function setupListOperation(): void
     {
+        if (backpack_user()->hasRole('admin')) {
+            $this->crud->allowAccess(['update', 'delete', 'show', 'create']);
+        } else {
+            $this->crud->removeAllButtons();
+        }
+
         CRUD::column('id')->type('number')->label('ID');
         CRUD::column('name')->type('text')->label('Наименование');
         CRUD::column('result_category_id')->type('number')->label('ID категории');
