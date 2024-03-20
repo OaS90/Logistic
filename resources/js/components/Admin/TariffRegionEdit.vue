@@ -54,7 +54,7 @@
                                    @keyup="checkFewZeros($event, details)"
                             >
                             <span class="extra-label">Стоимость второй единицы</span>
-                            <input type="text" min="0" max="9999" class="form-control col-md-12"
+                            <input type="number" min="0" max="9999" class="form-control col-md-12"
                                    v-model="details.secondPrice"
                                    @keydown="checkInputNumbers($event, details.price)"
                                    @keyup="checkFewZeros($event, details)"
