@@ -48,13 +48,13 @@
                         <td><input type="checkbox" :checked="category.isUse" v-model="category.isUse"></td>
                         <td v-for="(details, index) in category.prices">
                             <span class="extra-label">Стоимость первой единицы</span>
-                            <input type="number" min="0" class="form-control col-md-12"
+                            <input type="number" min="0" max="9999" class="form-control col-md-12"
                                    v-model="details.price"
                                    @keydown="checkInputNumbers($event, details.price)"
                                    @keyup="checkFewZeros($event, details)"
                             >
                             <span class="extra-label">Стоимость второй единицы</span>
-                            <input type="text" min="0" class="form-control col-md-12"
+                            <input type="text" min="0" max="9999" class="form-control col-md-12"
                                    v-model="details.secondPrice"
                                    @keydown="checkInputNumbers($event, details.price)"
                                    @keyup="checkFewZeros($event, details)"

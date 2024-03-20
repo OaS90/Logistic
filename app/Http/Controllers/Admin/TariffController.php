@@ -44,6 +44,7 @@ class TariffController extends Controller
 
             $data[] = [
                 'id' => $tariff->id,
+                'service_tariff_id' => $tariff->delivery_service_tariff_id,
                 'name' => $tariff->name,
                 'alias' => $tariff->alias,
                 'isEditable' => $isEditable,

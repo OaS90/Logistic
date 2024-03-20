@@ -195,13 +195,14 @@ class TariffService
     public function deleteZone(int $tariffId, int $regionId, array $zoneData): void
     {
         $token = $this->getServiceToken();
+        $tariff = $this->tariffRepo->findById($tariffId);
 
         foreach ($zoneData['categories'] as $categoryInfo) {
             $category = $this->categoryRepo->getById($categoryInfo['id']);
             $result = $this->deliveryServiceApi
                     ->query('settings/calculation/group/courier-delivery-prices', [
                         'region_id' => $regionId,
-                        'tariff_id' => $tariffId,
+                        'tariff_id' => $tariff->delivery_service_tariff_id,
                         'zone' => $zoneData['zone'],
                         'product_delivery_category_id' => $category->result_category_id,
                     ], 'DELETE', $token);

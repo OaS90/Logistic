@@ -25,12 +25,7 @@ class Api
         if ($method != 'GET' && $method != 'DELETE') {
             $parameters[RequestOptions::JSON] = $data;
         } else {
-            if ($method == 'DELETE') {
-                $uri .= '?region_id=' . $data['region_id'] . '&tariff_id=' . $data['tariff_id'] .
-                    '&zone=' . $data['zone'] . '&product_delivery_category_id=' . $data['product_delivery_category_id'];
-            } else {
-                $parameters[RequestOptions::QUERY] = $data;
-            }
+            $parameters[RequestOptions::QUERY] = $data;
         }
 
         if (env('APP_ENV') != 'production') {
@@ -60,8 +55,10 @@ class Api
                 return [];
             }
         } catch (ClientException $e) {
+            Log::info('Request:' . json_encode($parameters));
             Log::error('Sending to delivery service error:' . $e->getResponse()->getBody()->getContents());
         } catch (GuzzleException $e) {
+            Log::info('Request:' . json_encode($data));
             Log::error('Sending to delivery service error:' . $e->getMessage());
         }
 

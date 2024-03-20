@@ -46,7 +46,7 @@
             </thead>
             <tbody>
                 <tr v-for="(tariff, index) in filteredRows">
-                    <td>{{ tariff.delivery_service_tariff_id }}</td>
+                    <td>{{ tariff.service_tariff_id }}</td>
                     <td>{{ tariff.name }}</td>
                     <td>{{ tariff.alias }}</td>
                     <td>
