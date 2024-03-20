@@ -41,6 +41,16 @@ class Api
             $content = $request->getBody()->getContents();
             $result = json_decode($content, true);
 
+            // не разобрался, почему именно на PUT не приходит json в ответе, но
+            // цены создаются и обновляются в сервисе
+            // костыль
+            if ($method == 'PUT' && $request->getStatusCode() === 204) {
+                return [
+                    'status' => true,
+                    'message' => 'Prices created or updated.'
+                ];
+            }
+
             if (!is_array($result)) {
                 return [];
             }
