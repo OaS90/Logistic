@@ -211,7 +211,7 @@ export default {
             })
 
             axios.post('/admin/tariffs/' + this.tariffId +'/region/' + this.regionId +'/delete-zone',
-                {zoneId: this.zoneForDelete.zoneId, categories: categories}
+                {zoneId: this.zoneForDelete.zoneId, zone: this.zoneForDelete.zone, categories: categories}
             )
         },
         save() {

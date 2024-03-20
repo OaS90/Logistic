@@ -25,7 +25,12 @@ class Api
         if ($method != 'GET' && $method != 'DELETE') {
             $parameters[RequestOptions::JSON] = $data;
         } else {
-            $parameters[RequestOptions::QUERY] = $data;
+            if ($method == 'DELETE') {
+                $uri .= '?region_id=' . $data['region_id'] . '&tariff_id=' . $data['tariff_id'] .
+                    '&zone=' . $data['zone'] . '&product_delivery_category_id=' . $data['product_delivery_category_id'];
+            } else {
+                $parameters[RequestOptions::QUERY] = $data;
+            }
         }
 
         if (env('APP_ENV') != 'production') {
@@ -41,10 +46,10 @@ class Api
             $content = $request->getBody()->getContents();
             $result = json_decode($content, true);
 
-            // не разобрался, почему именно на PUT не приходит json в ответе, но
-            // цены создаются и обновляются в сервисе
+            // не разобрался, почему именно на PUT и DELETE не приходит json в ответе, но
+            // цены создаются/обновляются/удаляются в сервисе
             // костыль
-            if ($method == 'PUT' && $request->getStatusCode() === 204) {
+            if ($request->getStatusCode() === 204) {
                 return [
                     'status' => true,
                     'message' => 'Prices created or updated.'
