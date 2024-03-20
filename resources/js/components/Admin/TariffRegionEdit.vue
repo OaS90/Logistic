@@ -51,13 +51,13 @@
                             <input type="number" min="0" max="9999" class="form-control col-md-12"
                                    v-model="details.price"
                                    @keydown="checkInputNumbers($event, details.price)"
-                                   @keyup="checkFewZeros($event, details)"
+                                   @keyup="checkFewZeros($event, details, 'price')"
                             >
                             <span class="extra-label">Стоимость второй единицы</span>
                             <input type="number" min="0" max="9999" class="form-control col-md-12"
                                    v-model="details.secondPrice"
-                                   @keydown="checkInputNumbers($event, details.price)"
-                                   @keyup="checkFewZeros($event, details)"
+                                   @keydown="checkInputNumbers($event, details.secondPrice)"
+                                   @keyup="checkFewZeros($event, details, 'secondPrice')"
                             >
                         </td>
                         <td></td>
@@ -187,7 +187,7 @@ export default {
             })
             this.zones[zoneIndex[1]].enabled = true
         },
-        checkInputNumbers(event, price) {
+        checkInputNumbers(event) {
             const keysAllowed = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Backspace'];
             const keyPressed = event.key;
 
@@ -195,16 +195,18 @@ export default {
                 event.preventDefault()
             }
         },
-        checkFewZeros(event, price) {
-            if (price.price[0] === '0') {
-                price.price = 0
+        checkFewZeros(event, price, type) {
+            let zonePrice = price
+
+            if (price[type][0] === '0') {
+                price[type] = 0
                 return event.preventDefault()
             }
 
-            // делаю по-тупому
-            if (price.price.length > 4) {
-                let lastValidPriceString = price.price[0] + price.price[1] + price.price[2] + price.price[3]
-                price.price = lastValidPriceString * 1
+                // делаю по-тупому
+            if (price[type].length > 4) {
+                let lastValidPriceString = price[type][0] + price[type][1] + price[type][2] + price[type][3]
+                price[type] = lastValidPriceString * 1
                 return event.preventDefault()
             }
         },
