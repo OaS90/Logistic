@@ -48,9 +48,17 @@
                         <td><input type="checkbox" :checked="category.isUse" v-model="category.isUse"></td>
                         <td v-for="(details, index) in category.prices">
                             <span class="extra-label">Стоимость первой единицы</span>
-                            <input type="text" class="form-control col-md-12" v-model="details.price">
+                            <input type="number" min="0" class="form-control col-md-12"
+                                   v-model="details.price"
+                                   @keydown="checkInputNumbers($event, details.price)"
+                                   @keyup="checkFewZeros($event, details)"
+                            >
                             <span class="extra-label">Стоимость второй единицы</span>
-                            <input type="text" class="form-control col-md-12" v-model="details.secondPrice">
+                            <input type="text" min="0" class="form-control col-md-12"
+                                   v-model="details.secondPrice"
+                                   @keydown="checkInputNumbers($event, details.price)"
+                                   @keyup="checkFewZeros($event, details)"
+                            >
                         </td>
                         <td></td>
                     </tr>
@@ -178,6 +186,20 @@ export default {
                 zoneName:  zoneIndex[0]
             })
             this.zones[zoneIndex[1]].enabled = true
+        },
+        checkInputNumbers(event, price) {
+            const keysAllowed = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Backspace'];
+            const keyPressed = event.key;
+
+            if (!keysAllowed.includes(keyPressed)) {
+                event.preventDefault()
+            }
+        },
+        checkFewZeros(event, price) {
+            if (price.price[0] === '0') {
+                price.price = 0
+                return event.preventDefault()
+            }
         },
         beforeDeleteZone(index, zone, zoneId) {
             this.deleteModal = !this.deleteModal
