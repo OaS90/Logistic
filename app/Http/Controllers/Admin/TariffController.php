@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Tariff\TariffRegionCategoriesPrices;
 use App\Infrastructure\Repositories\Admin\TariffRepository;
-use App\Infrastructure\Repositories\Admin\UserTariffPermissionRepo;
+use App\Infrastructure\Repositories\Admin\UserTariffPermissionRepository;
 use App\Infrastructure\Repositories\RegionRepository;
 use App\Infrastructure\Admin\Services\Tariff\TariffService;
 use App\Mail\TariffPermissionRequest;
@@ -20,11 +20,11 @@ class TariffController extends Controller
 {
     protected TariffRepository $tariffRepo;
     protected RegionRepository $regionRepo;
-    protected UserTariffPermissionRepo $permissionRepo;
+    protected UserTariffPermissionRepository $permissionRepo;
 
     public function __construct(TariffRepository $tariffRepo,
                                 RegionRepository $regionRepo,
-                                UserTariffPermissionRepo $permissionRepo
+                                UserTariffPermissionRepository $permissionRepo
     )
     {
         $this->tariffRepo = $tariffRepo;
@@ -99,6 +99,8 @@ class TariffController extends Controller
             $service->deleteTariff($tariffId);
         } catch (\Throwable $e) {
             Log::error('Deleting tariff error: ' . $e->getMessage());
+
+            return response(['message' => 'Не удалось удалить тариф!'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return response(['message' => 'Тариф успешно удалён!'], Response::HTTP_OK);

@@ -4,18 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Infrastructure\Repositories\Admin\AdminUserRepository;
 use App\Infrastructure\Repositories\Admin\TariffRepository;
-use App\Infrastructure\Repositories\Admin\UserTariffPermissionRepo;
+use App\Infrastructure\Repositories\Admin\UserTariffPermissionRepository;
 use Backpack\PermissionManager\app\Http\Controllers\UserCrudController as CrudController;
 use Backpack\PermissionManager\app\Http\Requests\UserStoreCrudRequest as StoreRequest;
 use Backpack\PermissionManager\app\Http\Requests\UserUpdateCrudRequest as UpdateRequest;
 
 class UserCrudController extends CrudController
 {
-    protected UserTariffPermissionRepo $permissionRepo;
+    protected UserTariffPermissionRepository $permissionRepo;
     protected TariffRepository $tariffRepo;
 
-    public function __construct(UserTariffPermissionRepo $permissionRepo,
-                                TariffRepository $tariffRepo
+    public function __construct(UserTariffPermissionRepository $permissionRepo,
+                                TariffRepository               $tariffRepo
     )
     {
         parent::__construct();

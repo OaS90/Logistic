@@ -200,6 +200,13 @@ export default {
                 price.price = 0
                 return event.preventDefault()
             }
+
+            // делаю по-тупому
+            if (price.price.length > 4) {
+                let lastValidPriceString = price.price[0] + price.price[1] + price.price[2] + price.price[3]
+                price.price = lastValidPriceString * 1
+                return event.preventDefault()
+            }
         },
         beforeDeleteZone(index, zone, zoneId) {
             this.deleteModal = !this.deleteModal

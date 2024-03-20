@@ -2,10 +2,9 @@
 
 namespace App\Infrastructure\Repositories\Admin;
 
-
 use App\Models\UserTariffPermission;
 
-class UserTariffPermissionRepo
+class UserTariffPermissionRepository
 {
     public function getByUserId(int $userId)
     {
@@ -31,5 +30,10 @@ class UserTariffPermissionRepo
                 'user_id' => $userId
             ]);
         }
+    }
+
+    public function deleteByTariffId(int $tariffId)
+    {
+        return UserTariffPermission::where('tariff_id', $tariffId)->delete();
     }
 }

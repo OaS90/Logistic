@@ -6,6 +6,7 @@ use App\Domain\DTO\Requests\Tariff\TariffRegionCategoriesPricesDTO;
 use App\Infrastructure\Repositories\Admin\TariffCategoryRepository;
 use App\Infrastructure\Repositories\Admin\TariffCategorySettingsRepository;
 use App\Infrastructure\Repositories\Admin\TariffRepository;
+use App\Infrastructure\Repositories\Admin\UserTariffPermissionRepository;
 use App\Infrastructure\Repositories\RegionRepository;
 use App\Models\TariffCategoryPrices;
 use App\Models\TariffRegionZone;
@@ -22,13 +23,15 @@ class TariffService
     protected TariffCategorySettingsRepository $categorySettingsRepo;
     protected Api $deliveryServiceApi;
     protected ZoneRepository $zoneRepo;
+    protected UserTariffPermissionRepository $permissionRepo;
 
     public function __construct(TariffRepository $tariffRepo,
                                 RegionRepository $regionRepo,
                                 TariffCategoryRepository $categoryRepo,
                                 TariffCategorySettingsRepository $categorySettingsRepo,
                                 Api $deliveryServiceApi,
-                                ZoneRepository $zoneRepo
+                                ZoneRepository $zoneRepo,
+                                UserTariffPermissionRepository $permissionRepo
     )
     {
         $this->tariffRepo = $tariffRepo;
@@ -37,6 +40,7 @@ class TariffService
         $this->categorySettingsRepo = $categorySettingsRepo;
         $this->deliveryServiceApi = $deliveryServiceApi;
         $this->zoneRepo = $zoneRepo;
+        $this->permissionRepo = $permissionRepo;
     }
 
     /**
@@ -237,6 +241,7 @@ class TariffService
             }
         }
 
+        $this->permissionRepo->deleteByTariffId($tariffId);
         $this->tariffRepo->delete($tariff);
         $token = $this->getServiceToken();
         $result = $this->deliveryServiceApi
