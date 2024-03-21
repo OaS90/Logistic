@@ -154,6 +154,27 @@ class TariffCategoriesCrudController extends CrudController
                 }
 
                 $this->tariffCategorySettingsRepo->create($tariff->id, $region->id, $categoryId);
+                $categories = $region->tariffCategories;
+
+                foreach ($categories as $category) {
+                    $prices = $category->prices()->where('tariff_id', $tariff->id)
+                        ->where('region_id', $region->id)
+                        ->where('category_id', $category->id)
+                        ->get()->unique('zone_id');
+
+                    if ($prices->count() > 0) {
+                        foreach ($prices as $price) {
+                            $this->crud->getCurrentEntry()->prices()->create([
+                                'tariff_id' => $tariff->id,
+                                'region_id' => $region->id,
+                                'zone_id' => $price->zone_id,
+                                'price' => 0,
+                                'second_price' => 0
+                            ]);
+                        }
+                    }
+                }
+
             }
         }
 

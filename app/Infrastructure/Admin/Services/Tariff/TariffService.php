@@ -157,38 +157,40 @@ class TariffService
 
             $priceForUpdate = [];
 
-            foreach ($category->prices as $priceInfo) {
-                $price = $this->categoryRepo->getPrices($categoryEntity, $tariffId, $regionId, $priceInfo->zoneId);
+            if ($category->prices) {
+                foreach ($category->prices as $priceInfo) {
+                    $price = $this->categoryRepo->getPrices($categoryEntity, $tariffId, $regionId, $priceInfo->zoneId);
 
-                if ($price) {
-                    if ($price->price != $priceInfo->price || $price->second_price != $priceInfo->secondPrice) {
-                        $price->update(['price' => $priceInfo->price, 'second_price' => $priceInfo->secondPrice]);
+                    if ($price) {
+                        if ($price->price != $priceInfo->price || $price->second_price != $priceInfo->secondPrice) {
+                            $price->update(['price' => $priceInfo->price, 'second_price' => $priceInfo->secondPrice]);
+                        }
+                    } else {
+                        $categoryEntity->prices()->create([
+                            'tariff_id' => $tariffId,
+                            'region_id' => $regionId,
+                            'zone_id' => $priceInfo->zoneId,
+                            'price' => $priceInfo->price,
+                            'second_price' => $priceInfo->secondPrice
+                        ]);
                     }
-                } else {
-                    $categoryEntity->prices()->create([
-                        'tariff_id' => $tariffId,
-                        'region_id' => $regionId,
-                        'zone_id' => $priceInfo->zoneId,
+
+                    $priceForUpdate['items'][] = [
+                        'region_id' => $region->region_id,
+                        'tariff_id' => $tariff->delivery_service_tariff_id,
+                        'zone' => $priceInfo->zoneName,
+                        'product_delivery_category_id' => $categoryEntity->result_category_id,
                         'price' => $priceInfo->price,
-                        'second_price' => $priceInfo->secondPrice
-                    ]);
+                        'price_second' => $priceInfo->secondPrice
+                    ];
                 }
 
-                $priceForUpdate['items'][] = [
-                    'region_id' => $region->region_id,
-                    'tariff_id' => $tariff->delivery_service_tariff_id,
-                    'zone' => $priceInfo->zoneName,
-                    'product_delivery_category_id' => $categoryEntity->result_category_id,
-                    'price' => $priceInfo->price,
-                    'price_second' => $priceInfo->secondPrice
-                ];
-            }
+                $result = $this->deliveryServiceApi
+                    ->query('settings/calculation/group/courier-delivery-prices', $priceForUpdate, 'PUT', $token);
 
-            $result = $this->deliveryServiceApi
-                ->query('settings/calculation/group/courier-delivery-prices', $priceForUpdate, 'PUT', $token);
-
-            if (!$result) {
-                throw new Exception('Не удалось обновить цены в сервисе');
+                if (!$result) {
+                    throw new Exception('Не удалось обновить цены в сервисе');
+                }
             }
         }
     }
@@ -276,6 +278,24 @@ class TariffService
         if ($tariff->regions) {
             foreach ($tariff->regions as $region) {
                 $clone->regions()->attach($region);
+                $categories = $region->tariffCategories;
+
+                foreach ($categories as $category) {
+                    $prices = $category->prices()->where('region_id', $region->id)
+                        ->where('tariff_id', $tariff->id)->get();
+
+                    if ($prices) {
+                        foreach ($prices as $price) {
+                            $category->prices()->create([
+                                'tariff_id' => $clone->id,
+                                'region_id' => $region->id,
+                                'zone_id' => $price->zone_id,
+                                'price' => $price->price,
+                                'second_price' => $price->second_price
+                            ]);
+                        }
+                    }
+                }
             }
         }
     }
@@ -350,5 +370,19 @@ class TariffService
         } else {
             throw new Exception('Не удалось авторизоваться в сервисе Delivery');
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function updateNameOrAlias(int $tariffId, array $data): void
+    {
+        $tariff = $this->tariffRepo->findById($tariffId);
+        $this->tariffRepo->updateByFields($tariff, $data);
+        $token = $this->getServiceToken();
+        $this->deliveryServiceApi
+            ->query('settings/calculation/courier-delivery-price-tariffs/' . $tariff->delivery_service_tariff_id,
+                $data, 'PATCH', $token);
+
     }
 }

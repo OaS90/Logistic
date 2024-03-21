@@ -89,7 +89,8 @@ class TariffController extends Controller
             'regions' => $regions,
             'userId' => $userId,
             'isAdmin' => backpack_user()->hasRole('admin'),
-            'isEditable' => (bool) $isEditable
+            'isEditable' => (bool) $isEditable,
+            'isAuthor' => $userId == $tariff->author_id
         ]);
     }
 
@@ -223,5 +224,18 @@ class TariffController extends Controller
     public function getAll(): Collection
     {
         return $this->tariffRepo->getAll();
+    }
+
+    public function updateNameOrAlias(int $tariffId, Request $request, TariffService $service): Response
+    {
+        try {
+            $service->updateNameOrAlias($tariffId, $request->all());
+        } catch (\Throwable $e) {
+            Log::error('Update name or alias error ' . $e->getMessage());
+
+            return response(['message' => 'Ошибка обновления'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response(['message' => 'Тариф успешно обновлён'], Response::HTTP_OK);
     }
 }

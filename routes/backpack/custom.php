@@ -69,6 +69,7 @@ Route::group([
     Route::get('tariffs/show', [TariffController::class, 'show']);
     Route::post('tariffs/create', [TariffController::class, 'create']);
     Route::delete('tariffs/{tariffId}/delete', [TariffController::class, 'delete']);
+    Route::post('tariffs/{tariffId}/update-name-or-alias', [TariffController::class, 'updateNameOrAlias']);
     Route::crud('tariff-categories', 'TariffCategoriesCrudController');
 //    Route::crud('tariff', 'TariffCrudController');
     Route::crud('tariff-zones', 'TariffZonesCrudController');

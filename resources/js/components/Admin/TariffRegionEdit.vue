@@ -198,7 +198,7 @@ export default {
         checkFewZeros(event, price, type) {
             let zonePrice = price
 
-            if (price[type][0] === '0') {
+            if (price[type][0] === '0' || price[type].length === 0) {
                 price[type] = 0
                 return event.preventDefault()
             }

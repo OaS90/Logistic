@@ -30,6 +30,7 @@ import TariffsGetFromServiceButton from "./components/Admin/TariffsGetFromServic
 import TariffPermissionRequestButton from "./components/Admin/TariffPermissionRequestButton";
 import TariffList from "./components/Admin/TariffList";
 import UserTariffPermissions from "./components/Admin/UserTariffPermissions";
+import TariffNameAliasForm from "./components/Admin/TariffNameAliasForm";
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -81,7 +82,8 @@ if (document.getElementById('admin-app')) {
             TariffsGetFromServiceButton,
             TariffPermissionRequestButton,
             TariffList,
-            UserTariffPermissions
+            UserTariffPermissions,
+            TariffNameAliasForm
         }
     })
 }
