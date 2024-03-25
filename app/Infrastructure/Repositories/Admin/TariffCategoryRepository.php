@@ -75,4 +75,9 @@ class TariffCategoryRepository
     {
         return TariffCategories::where('result_category_id', $id)->first();
     }
+
+    public function deletePricesByTariffId(TariffCategories $category, int $tariffId)
+    {
+        return $category->prices()->where('tariff_id', $tariffId)->delete();
+    }
 }

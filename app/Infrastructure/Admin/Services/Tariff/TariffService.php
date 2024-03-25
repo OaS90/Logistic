@@ -8,7 +8,6 @@ use App\Infrastructure\Repositories\Admin\TariffCategorySettingsRepository;
 use App\Infrastructure\Repositories\Admin\TariffRepository;
 use App\Infrastructure\Repositories\Admin\UserTariffPermissionRepository;
 use App\Infrastructure\Repositories\RegionRepository;
-use App\Models\TariffCategoryPrices;
 use App\Models\TariffRegionZone;
 use App\Infrastructure\Services\Delivery\Api\Api;
 use App\Infrastructure\Repositories\Admin\ZoneRepository;
@@ -227,17 +226,13 @@ class TariffService
     public function deleteTariff(int $tariffId): void
     {
         $tariff = $this->tariffRepo->findById($tariffId);
+        $tariff->categorySettings()->delete();
 
         if ($tariff->regions) {
             foreach ($tariff->regions as $region) {
                 if ($region->tariffCategories) {
                     foreach ($region->tariffCategories as $category) {
-                        foreach (TariffRegionZone::all() as $zone) {
-                            $price = $this->categoryRepo->getPrices($category, $tariffId, $region->id, $zone->id);
-                            $price?->delete();
-                        }
-
-                        $this->categorySettingsRepo->delete($tariffId, $region->id, $category->id);
+                        $this->categoryRepo->deletePricesByTariffId($category, $tariffId);
                     }
                 }
             }

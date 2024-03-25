@@ -18,7 +18,7 @@ class TariffRepository
         $tariff->update($fields);
     }
 
-    public function findById(int $id)
+    public function findById(int $id): ?Tariff
     {
         return Tariff::where('id', $id)->first();
     }
