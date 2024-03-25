@@ -325,6 +325,10 @@ class TariffService
                 }
             }
 
+            if (count($localTariff->regions) > 0) {
+                $regions = $localTariff->regions;
+            }
+
             foreach ($regions as $region) {
                 $this->tariffRepo->saveRegion($localTariff, $region);
                 $pricesFromService = $this->deliveryServiceApi

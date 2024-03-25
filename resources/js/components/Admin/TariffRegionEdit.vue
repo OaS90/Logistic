@@ -52,12 +52,14 @@
                                    v-model="details.price"
                                    @keydown="checkInputNumbers($event, details.price)"
                                    @keyup="checkFewZeros($event, details, 'price')"
+                                   @focusout="checkIsEmpty($event, details, 'price')"
                             >
                             <span class="extra-label">Стоимость второй единицы</span>
                             <input type="number" min="0" max="9999" class="form-control col-md-12"
                                    v-model="details.secondPrice"
                                    @keydown="checkInputNumbers($event, details.secondPrice)"
                                    @keyup="checkFewZeros($event, details, 'secondPrice')"
+                                   @focusout="checkIsEmpty($event, details, 'secondPrice')"
                             >
                         </td>
                         <td></td>
@@ -195,15 +197,19 @@ export default {
                 event.preventDefault()
             }
         },
+        checkIsEmpty(event, price, type) {
+            if (price[type].length === 0) {
+                price[type] = 0
+                return event.preventDefault()
+            }
+        },
         checkFewZeros(event, price, type) {
-            let zonePrice = price
-
-            if (price[type][0] === '0' || price[type].length === 0) {
+            if (price[type][0] === '0') {
                 price[type] = 0
                 return event.preventDefault()
             }
 
-                // делаю по-тупому
+            // делаю по-тупому
             if (price[type].length > 4) {
                 let lastValidPriceString = price[type][0] + price[type][1] + price[type][2] + price[type][3]
                 price[type] = lastValidPriceString * 1
