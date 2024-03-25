@@ -226,18 +226,6 @@ class TariffService
     public function deleteTariff(int $tariffId): void
     {
         $tariff = $this->tariffRepo->findById($tariffId);
-        $tariff->categorySettings()->delete();
-
-        if ($tariff->regions) {
-            foreach ($tariff->regions as $region) {
-                if ($region->tariffCategories) {
-                    foreach ($region->tariffCategories as $category) {
-                        $this->categoryRepo->deletePricesByTariffId($category, $tariffId);
-                    }
-                }
-            }
-        }
-
         $this->permissionRepo->deleteByTariffId($tariffId);
         $this->tariffRepo->delete($tariff);
         $token = $this->getServiceToken();

@@ -61,6 +61,8 @@ class TariffRepository
     public function delete(Tariff $tariff): void
     {
         $tariff->regions()->detach();
+        $tariff->categorySettings()->delete();
+        $tariff->categoryPrices()->delete();
         $tariff->delete();
     }
 

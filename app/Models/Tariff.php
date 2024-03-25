@@ -47,6 +47,11 @@ class Tariff extends Model
     {
         return $this->hasMany(TariffRegionCategorySetting::class, 'tariff_id', 'id');
     }
+
+    public function categoryPrices(): hasMany
+    {
+        return $this->hasMany(TariffCategoryPrices::class, 'tariff_id', 'id');
+    }
     /*
     |--------------------------------------------------------------------------
     | SCOPES
