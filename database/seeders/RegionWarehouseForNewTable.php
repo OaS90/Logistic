@@ -2,8 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Infrastructure\Imports\ApplicationImportCsv;
+use App\Models\QuoteWarehouse;
 use App\Models\Region;
 use Illuminate\Database\Seeder;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RegionWarehouseForNewTable extends Seeder
 {
@@ -14,11 +17,14 @@ class RegionWarehouseForNewTable extends Seeder
      */
     public function run(): void
     {
-        $regions = Region::with('warehouse')->get();
+        $dataFromFile = Excel::toArray(new ApplicationImportCsv(), storage_path('app/public/regions_from_lk.csv'))[0];
+        unset($dataFromFile[0]);
+        foreach ($dataFromFile as $regionWarehouse) {
+            $region = Region::where('region_id', $regionWarehouse[2])->first();
+            $quoteWarehouse = QuoteWarehouse::find($regionWarehouse[3]);
 
-        foreach ($regions as $region) {
             try {
-                $region->warehouse->regions()->attach($region);
+                $region->warehouse()->attach($quoteWarehouse);
             } catch (\Throwable $e) {
                 dd($e->getMessage());
             }
