@@ -40,7 +40,28 @@
         <li class="nav-item"><a class="nav-link" href="{{ backpack_url('tariff-zones') }}"><i class="nav-icon la la-map-marked"></i> Зоны</a></li>
     </ul>
 </li>
-
+<li class="nav-item nav-dropdown">
+    <a class="nav-link nav-dropdown-toggle" href="#">
+        <i class="nav-icon la la-shuttle-van"></i> Транспортные компании
+    </a>
+    <ul class="nav-dropdown-items">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ backpack_url('transport-company') }}">
+                <i class="nav-icon la la-briefcase"></i> Компании
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ backpack_url('transport-company-warehouse') }}">
+                <i class="nav-icon la la-store-alt"></i> Склады
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ backpack_url('transport-company-settings') }}">
+                <i class="nav-icon la la-gears"></i> Настройки
+            </a>
+        </li>
+    </ul>
+</li>
 @if(backpack_user()->hasRole('admin'))
     <li class="nav-item nav-dropdown">
     <a class="nav-link nav-dropdown-toggle" href="#"><i class="nav-icon la la-users"></i>Настройки ролей</a>
