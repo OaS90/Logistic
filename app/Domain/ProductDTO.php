@@ -11,7 +11,7 @@ class ProductDTO
         $data['sku'] = $allRows['sku'];
         $data['count'] = $allRows['count'];
         $data['cost'] = floatval(str_replace(' ', '',str_replace(',', '.', $allRows['cost'])));
-        $data['vat'] = $allRows['vat'];
+        $data['vat'] = $allRows['vat'] ?? 20;
         $data['width'] = floatval(str_replace(',', '.', $allRows['width']));
         $data['height'] = floatval(str_replace(',', '.', $allRows['height']));
         $data['depth'] = floatval(str_replace(',', '.', $allRows['depth']));

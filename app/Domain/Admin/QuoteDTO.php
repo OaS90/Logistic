@@ -3,6 +3,7 @@
 namespace App\Domain\Admin;
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class QuoteDTO
 {
@@ -27,31 +28,33 @@ class QuoteDTO
                     str_replace('-', ', ', $quote->blocked_date_until)
                 ];
 
-            $quoteInfo = [
-                'id' => $quote->id,
-                'to_save' => false,
-                'division' => $quote->region->name,
-                'warehouse' => $quote->region->warehouse->warehouse_name,
-                'quote' => $quote->quote,
-                'tmp_quote' => $quote->tmp_quote,
-                'tmp_date' => $tmpQuoteDate,
-                'days' => $quote->days ?? [
-                    1 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //пн
-                    2 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //вт
-                    3 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //ср
-                    4 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //чт
-                    5 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //пт
-                    6 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //сб
-                    7 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false] //вс
-                ],
-                'time_last' => $quote->time_last,
-                'delivery_hours' => $quote->delivery_hours ?? ['from' => null, 'till' => null],
-                'blocked_dates' => $blockedDates,
-                'deliveryDaysFromMoscow' => $quote->delivery_days_from_moscow,
-                'in_day_limitation' => $quote->in_day_limitation
-            ];
+            if ($quote->region->is_active_for_quotes) {
+                $quoteInfo = [
+                    'id' => $quote->id,
+                    'to_save' => false,
+                    'division' => $quote->region->name,
+                    'warehouse' => $quote->region->warehouse_name,
+                    'quote' => $quote->quote,
+                    'tmp_quote' => $quote->tmp_quote,
+                    'tmp_date' => $tmpQuoteDate,
+                    'days' => $quote->days ?? [
+                            1 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //пн
+                            2 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //вт
+                            3 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //ср
+                            4 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //чт
+                            5 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //пт
+                            6 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false], //сб
+                            7 => ['zone_a' => false, 'zone_b' => false, 'zone_c' => false] //вс
+                        ],
+                    'time_last' => $quote->time_last,
+                    'delivery_hours' => $quote->delivery_hours ?? ['from' => null, 'till' => null],
+                    'blocked_dates' => $blockedDates,
+                    'deliveryDaysFromMoscow' => $quote->delivery_days_from_moscow,
+                    'in_day_limitation' => $quote->in_day_limitation
+                ];
 
-            $data[] = array_merge($quoteInfo, $intervals);
+                $data[] = array_merge($quoteInfo, $intervals);
+            }
         }
 
         return $data;

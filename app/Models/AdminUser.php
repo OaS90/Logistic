@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -31,4 +32,9 @@ class AdminUser extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function tariffsPermissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Tariff::class, 'admin_user_tariff_permissions', 'user_id', 'tariff_id');
+    }
 }

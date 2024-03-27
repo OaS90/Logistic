@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Infrastructure\Imports\ApplicationImport;
+use App\Infrastructure\Imports\ApplicationImportCsv;
 use App\Models\Division;
 use App\Models\IntervalQuote;
 use App\Models\Quote;
@@ -19,7 +19,7 @@ class QuotesSeeder extends Seeder
      */
     public function run()
     {
-//        $dataFromFile = Excel::toArray(new ApplicationImport(), storage_path('app/public/divisions.csv'))[0];
+//        $dataFromFile = Excel::toArray(new ApplicationImportCsv(), storage_path('app/public/divisions.csv'))[0];
         $intervals = ['10-14', '14-18', '18-22', 'inDay', 'inHour'];
         $regions = Region::all();
 
@@ -29,7 +29,6 @@ class QuotesSeeder extends Seeder
             foreach ($intervals as $period) {
                 IntervalQuote::create(['quote_id' => $quote->id, 'period' => $period]);
             }
-
         }
     }
 }

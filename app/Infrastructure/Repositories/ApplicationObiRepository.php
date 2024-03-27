@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Repositories;
 
 use App\Models\ApplicationObi;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 
 class ApplicationObiRepository
@@ -25,6 +26,15 @@ class ApplicationObiRepository
         return ApplicationObi::where('user_id', $userId)->get();
     }
 
+    public function getListByUserIdForUpdateStatus(int $userId)
+    {
+        return ApplicationObi::where('user_id', $userId)
+            ->where(function (Builder $query) {
+                $query->where('status', 'created')
+                    ->orWhereRaw('doc_ver > old_doc_ver');
+            })->get();
+    }
+
     public function getById(int $appId)
     {
         return ApplicationObi::find($appId);
@@ -44,5 +54,13 @@ class ApplicationObiRepository
         } else {
             Log::error('Не удалось найти заказ OBI №' . $number);
         }
+    }
+
+    public function getAll(int $obiLimit = 100)
+    {
+        return ApplicationObi::with('user')
+            ->orderByDesc('id')
+            ->limit($obiLimit)
+            ->get();
     }
 }

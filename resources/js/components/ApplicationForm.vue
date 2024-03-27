@@ -239,7 +239,7 @@ export default {
         },
         previewFiles(event) {
             let formData = new FormData()
-            formData.append('file', event.target.files[0])
+            formData.append('document', event.target.files[0])
 
             axios.post('import-app', formData).then((response) => {
                 this.csvModal = true

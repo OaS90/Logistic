@@ -6,17 +6,20 @@ use Dadata\DadataClient;
 
 class DadataAdapter
 {
-    private const TOKEN = "233c60b99c5782f690d9d79e01fc3b7deb3e5ad7";
-    private const SECRET = "d53e93ccd79201a428663c154ae669efa28064c7";
-    protected $dadataClient;
+    protected DadataClient $dadataClient;
 
     public function __construct()
     {
-        $this->dadataClient = new DadataClient(self::TOKEN, self::SECRET);
+        $this->dadataClient = new DadataClient(config('services.dadata.token'), config('services.dadata.secret'));
     }
 
     public function getAddress($address, $count = 5)
     {
         return $this->dadataClient->suggest('address', $address, $count);
+    }
+
+    public function getCleanAddress(string $address)
+    {
+        return $this->dadataClient->clean('address', $address);
     }
 }

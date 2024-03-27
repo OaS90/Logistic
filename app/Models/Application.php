@@ -78,4 +78,9 @@ class Application extends Model
         $deliveryDate = $this->hru_delivery_date ?? $this->delivery_date;
         return Carbon::createFromDate($deliveryDate)->format('d.m.Y');
     }
+
+    public function getProductNameAttribute()
+    {
+        return $this->products[0]->name;
+    }
 }

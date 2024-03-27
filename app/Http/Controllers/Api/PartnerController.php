@@ -36,9 +36,9 @@ class PartnerController extends Controller
             $isObiPartner = $this->obiUser == $user->id;
 
             if ($isObiPartner) {
-                $applications = $this->obiRepository->getListByUserId($user->id);
+                $applications = $this->obiRepository->getListByUserIdForUpdateStatus($user->id);
             } else {
-                $applications = $this->repo->getListByUserId($user->id);
+                $applications = $this->repo->getListByUserIdForUpdateStatus($user->id);
             }
 
             if ($applications->count() == 0)
@@ -56,7 +56,7 @@ class PartnerController extends Controller
                     try {
                         $appDTO = (new PartnerOrderDTO($app))->make();
                     } catch (\Throwable $e) {
-                        Log::info('Error creating dto for app ' . $app->order_number);
+                        Log::info('Error creating dto for app ' . $app->order_number . 'error:' . $e->getMessage());
                         continue;
                     }
 

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Infrastructure\Imports\ApplicationImport;
+use App\Infrastructure\Imports\ApplicationImportCsv;
 use App\Models\QuoteWarehouse as Warehouse;
 use App\Models\Region;
 use Illuminate\Database\Seeder;
@@ -18,7 +18,7 @@ class NewRegionWarehouseQuoteSeeder extends Seeder
      */
     public function run()
     {
-        $dataFromFile = Excel::toArray(new ApplicationImport(), storage_path('app/public/regions.csv'))[0];
+        $dataFromFile = Excel::toArray(new ApplicationImportCsv(), storage_path('app/public/regions.csv'))[0];
 
         foreach ($dataFromFile as $region) {
             $newWarehouse = Warehouse::where('warehouse_name', $region[0])->first();

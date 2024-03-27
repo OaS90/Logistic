@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Infrastructure\Services\Delivery\Api\Api;
+use GuzzleHttp\Client;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Routing\UrlGenerator;
@@ -13,9 +15,20 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
-        //
+        $this->app->bind(Api::class, function () {
+            return new Api(
+                new Client([
+                    'base_uri' => config('services.delivery_holodilnik_service.uri')
+                ])
+            );
+        });
+
+        $this->app->bind(
+            \Backpack\PermissionManager\app\Http\Controllers\UserCrudController::class,
+            \App\Http\Controllers\Admin\UserCrudController::class
+            );
     }
 
     /**
@@ -23,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(UrlGenerator $url)
+    public function boot(UrlGenerator $url): void
     {
         Schema::defaultStringLength(191);
 

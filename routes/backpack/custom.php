@@ -6,6 +6,9 @@ use App\Http\Controllers\Admin\Auth\RegisterController;
 use App\Http\Controllers\Admin\QuotesController;
 use App\Http\Controllers\Admin\QuoteEmailsController;
 use App\Http\Controllers\Admin\TransportCompanySettingsController;
+use App\Http\Controllers\Admin\SupportController;
+use App\Http\Controllers\Admin\TariffController;
+use App\Http\Controllers\Admin\AdminUserTariffsController;
 // --------------------------
 // Custom Backpack Routes
 // --------------------------
@@ -49,4 +52,34 @@ Route::group([
     Route::get('transport-company-settings', [TransportCompanySettingsController::class, 'show']);
     Route::post('save-tc-settings', [TransportCompanySettingsController::class, 'save']);
     Route::get('export', [TransportCompanySettingsController::class, 'export']);
+    Route::prefix('support')->group(function() {
+        Route::get('apps', [SupportController::class, 'showAppsStatuses']);
+        Route::get('apps/get', [SupportController::class, 'getApps']);
+        Route::get('partners', [SupportController::class, 'getPartners']);
+        Route::get('partner-warehouses', [SupportController::class, 'getPartnerWarehouses']);
+        Route::get('show-upload-page', [SupportController::class, 'showUploadPage']);
+        Route::post('import-app', [SupportController::class, 'upload']);
+    });
+    Route::crud('application-obi', 'ApplicationObiCrudController');
+    Route::post('tariffs/{tariffId}/add-regions', [TariffController::class, 'addRegions']);
+    Route::post('tariffs/{tariffId}/add-all-regions', [TariffController::class, 'addAllRegions']);
+    Route::delete('tariffs/{tariffId}/delete-region/{regionId}', [TariffController::class, 'deleteRegion']);
+    Route::get('tariffs/{tariffId}/edit/', [TariffController::class, 'edit']);
+    Route::get('tariffs/{tariffId}/edit/regions/{regionId}/edit', [TariffController::class, 'regionEditShow']);
+    Route::post('tariffs/{tariffId}/region/{regionId}/save', [TariffController::class, 'regionSave']);
+    Route::post('tariffs/{tariffId}/region/{regionId}/delete-zone', [TariffController::class, 'zoneDelete']);
+    Route::get('tariffs', [TariffController::class, 'list'])->name('tariff-list');
+    Route::get('tariffs/get', [TariffController::class, 'getAll']);
+    Route::post('tariffs/{tariffId}/clone', [TariffController::class, 'cloneTariff']);
+    Route::post('tariffs/{tariffId}/request', [TariffController::class, 'permissionsRequest']);
+    Route::get('tariffs/show', [TariffController::class, 'show']);
+    Route::post('tariffs/create', [TariffController::class, 'create']);
+    Route::delete('tariffs/{tariffId}/delete', [TariffController::class, 'delete']);
+    Route::post('tariffs/{tariffId}/update-name-or-alias', [TariffController::class, 'updateNameOrAlias']);
+    Route::crud('tariff-categories', 'TariffCategoriesCrudController');
+//    Route::crud('tariff', 'TariffCrudController');
+    Route::crud('tariff-zones', 'TariffZonesCrudController');
+    Route::post('tariffs-holodilnik/get', [TariffController::class, 'getFromService']);
+    Route::post('admin-user/tariff/permission-edit/add', [AdminUserTariffsController::class, 'addTariff']);
+    Route::post('admin-user/tariff/permission-edit/remove', [AdminUserTariffsController::class, 'removeTariff']);
 }); // this should be the absolute last line of this file

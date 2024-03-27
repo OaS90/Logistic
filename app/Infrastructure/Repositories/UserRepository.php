@@ -30,4 +30,9 @@ class UserRepository
             ->where('order_number', $orderId)
             ->first();
     }
+
+    public function getAll()
+    {
+        return User::with('warehouses')->get();
+    }
 }

@@ -3,16 +3,12 @@
         <div class="modal-mask">
             <div class="modal-wrapper">
                 <div class="modal-container">
-
-
                     <div class="modal-body">
                         <slot name="body">
                             default body
+                            <br>
+                            <button :class="btnClass" @click="$emit('close')">{{ btnText }}</button>
                         </slot>
-                        <br>
-                        <button class="btn btn-secondary" @click="$emit('close')">
-                            OK
-                        </button>
                     </div>
                 </div>
             </div>
@@ -22,9 +18,24 @@
 
 <script>
 export default {
+    props: ['buttonName', 'buttonClass'],
+    data() {
+        return {
+            btnText: 'OK',
+            btnClass: 'btn btn-secondary'
+        }
+    },
     name: "Modal",
     mounted () {
         $("body").addClass("modal-open")
+
+        if (this.buttonName) {
+            this.btnText = this.buttonName
+        }
+
+        if (this.buttonClass) {
+            this.btnClass = this.buttonClass
+        }
     },
 
     beforeDestroy() {
@@ -37,6 +48,7 @@ export default {
     .btn {
         margin-top: 10px;
         width: 30%;
+        padding: 5px 0;
     }
     .modal-container {
         border-radius: 11px;

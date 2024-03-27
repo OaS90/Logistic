@@ -19,8 +19,18 @@ import ProfileForm from "./components/ProfileForm";
 import QuotesTable from "./components/Admin/QuotesTable";
 import QuoteEmailsTable from "./components/Admin/QuoteEmailsTable";
 import LoginForm from "./components/LoginForm";
-import TransportCompanySettings from "./components/Admin/TransportCompanySettings";
-import TcSettings from "./components/Admin/TcSettings";
+import SupportApps from "./components/Admin/SupportApps";
+import SupportAppImport from "./components/Admin/SupportAppImport";
+import PulseLoader from 'vue-spinner/src/DotLoader';
+import TariffRegionSettings from "./components/Admin/TariffRegionEdit";
+import TariffRegions from "./components/Admin/TariffRegions";
+import Multiselect from 'vue-multiselect';
+import TariffCreate from "./components/Admin/TariffCreate";
+import TariffsGetFromServiceButton from "./components/Admin/TariffsGetFromServiceButton";
+import TariffPermissionRequestButton from "./components/Admin/TariffPermissionRequestButton";
+import TariffList from "./components/Admin/TariffList";
+import UserTariffPermissions from "./components/Admin/UserTariffPermissions";
+import TariffNameAliasForm from "./components/Admin/TariffNameAliasForm";
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -62,8 +72,18 @@ if (document.getElementById('admin-app')) {
             QuotesTable,
             DatePicker,
             QuoteEmailsTable,
-            TransportCompanySettings,
-            TcSettings
+            SupportApps,
+            SupportAppImport,
+            PulseLoader,
+            TariffRegionSettings,
+            TariffRegions,
+            Multiselect,
+            TariffCreate,
+            TariffsGetFromServiceButton,
+            TariffPermissionRequestButton,
+            TariffList,
+            UserTariffPermissions,
+            TariffNameAliasForm
         }
     })
 }

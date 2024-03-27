@@ -32,7 +32,7 @@ class RegionCrudController extends CrudController
     {
         CRUD::setModel(\App\Models\Region::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/regions');
-        CRUD::setEntityNameStrings('region', 'regions');
+        CRUD::setEntityNameStrings('регион', 'регионы');
         if (backpack_user()->hasRole('guest')) {
             $this->crud->denyAccess(['update', 'delete', 'show', 'create']);
         }
@@ -44,7 +44,7 @@ class RegionCrudController extends CrudController
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
-    protected function setupListOperation()
+    protected function setupListOperation(): void
     {
         CRUD::column('id');
         CRUD::column('name')->label('Название региона');
@@ -53,8 +53,10 @@ class RegionCrudController extends CrudController
             'name'  => 'warehouse',
             'label' => 'Склад', // Table column heading
             'type'  => 'model_function',
-            'function_name' => 'getWarehouseName'
+            'function_name' => 'getWarehouseNameAttribute'
         ]);
+
+        CRUD::column('is_active_for_quotes')->label('Вкл/Выкл в квотах')->type('check');
 
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -83,10 +85,17 @@ class RegionCrudController extends CrudController
             'label' => 'Id региона Hru'
         ]);
 
+        $this->crud->addField([
+            'name' => 'is_active_for_quotes',
+            'label' => 'Вкл/Выкл в квотах',
+            'type' => 'checkbox'
+        ]);
+
         $this->crud->addField([  // Select
             'label'     => "Склад",
-            'type'      => 'select',
-            'name'      => 'warehouse_id', // the db column for the foreign key
+            'type'      => 'select_multiple',
+            'name'      => 'warehouse', // the db column for the foreign key
+            'entity'    => 'warehouse',
             // optional - manually specify the related model and attribute
             'model'     => "App\Models\QuoteWarehouse", // related model
             'attribute' => 'warehouse_name', // foreign key attribute that is shown to user

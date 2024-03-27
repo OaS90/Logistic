@@ -205,7 +205,7 @@ class PartnerOrderDTO
 
     private function parseDadataAddress(array $addressInfo, bool $isObiPartner): array
     {
-        if (isset($addressInfo[0]['data']) && count($addressInfo[0]['data']) > 0) {
+        if (isset($addressInfo[0]) && count($addressInfo[0]) > 0) {
             $cityInfo = [
                 'cityName' => $addressInfo[0]['data']['city'] ?? $addressInfo[0]['data']['settlement_with_type'],
                 'cityFias' => $addressInfo[0]['data']['city_fias_id'] ?? $addressInfo[0]['data']['settlement_fias_id']

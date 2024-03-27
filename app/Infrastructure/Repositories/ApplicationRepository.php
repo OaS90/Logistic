@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repositories;
 
 use App\Models\Application;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Builder;
 
 class ApplicationRepository
 {
@@ -20,6 +21,15 @@ class ApplicationRepository
     public function getListByUserId(int $userId)
     {
         return Application::where('user_id', $userId)->with('products')->get();
+    }
+
+    public function getListByUserIdForUpdateStatus(int $userId)
+    {
+        return Application::where('user_id', $userId)
+            ->where(function (Builder $query) {
+                $query->where('status', 'created')
+                    ->orWhereRaw('doc_ver > old_doc_ver');
+            })->get();
     }
 
     public function create(array $data)
@@ -50,5 +60,13 @@ class ApplicationRepository
         } else {
             Log::error('Не удалось найти заказ №' . $number);
         }
+    }
+
+    public function getAll(int $limit = 300)
+    {
+        return Application::with('user')
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->get();
     }
 }

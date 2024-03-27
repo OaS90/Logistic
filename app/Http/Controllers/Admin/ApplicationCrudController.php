@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\ApplicationRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use App\Infrastructure\Repositories\ProductRepository;
+use App\Infrastructure\Repositories\ApplicationRepository;
 
 /**
  * Class ApplicationCrudController
@@ -19,6 +21,16 @@ class ApplicationCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
+    private ProductRepository $productRepo;
+    private ApplicationRepository $appRepo;
+
+    public function __construct(ProductRepository $productRepo, ApplicationRepository $appRepo)
+    {
+        $this->productRepo = $productRepo;
+        $this->appRepo = $appRepo;
+        parent::__construct();
+    }
+
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
      *
@@ -29,11 +41,6 @@ class ApplicationCrudController extends CrudController
         CRUD::setModel(\App\Models\Application::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/applications');
         CRUD::setEntityNameStrings('applications', 'Заявки');
-        if (backpack_user()->hasRole('guest')) {
-            $this->crud->denyAccess(['update', 'delete', 'show', 'create']);
-        } else {
-            $this->crud->denyAccess(['update']);
-        }
     }
 
     /**
@@ -46,11 +53,19 @@ class ApplicationCrudController extends CrudController
     {
 //        CRUD::setFromDb(); // columns
 //        $this->crud->removeAllButtons();
+        if (backpack_user()->hasRole('guest')) {
+            $this->crud->denyAccess(['update', 'delete', 'show', 'create']);
+        } else {
+            $this->crud->denyAccess(['show']);
+        }
 
         $this->crud->addColumn([
             'label' => "Партнёр", // Table column heading
-            'type' => 'text',
+            'type' => 'closure',
             'name' => 'user_id',
+            'function' => function ($entry) {
+                return $entry->user->company;
+            },
             'priority' => 2,
         ]);
 
@@ -138,8 +153,272 @@ class ApplicationCrudController extends CrudController
     {
         CRUD::setValidation(ApplicationRequest::class);
 
-        CRUD::setFromDb(); // fields
+        CRUD::addField([
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name' => 'id',
+            'type' => 'number',
+            'label' => 'Id',
+            'attributes' => [
+                'class' => 'form-control',
+                'readonly' => 'readonly',
+            ],
+            'wrapper' => [
+                'class' => 'form-group col-md-3'
+            ]
+        ]);
 
+        CRUD::addField([
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name' => 'order_number',
+            'type' => 'text',
+            'label' => 'Номер заказа',
+            'attributes' => [
+                'class' => 'form-control',
+                'readonly' => 'readonly',
+            ],
+            'wrapper' => [
+                'class' => 'form-group col-md-3'
+            ]
+        ]);
+
+        CRUD::addField([
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name' => 'payment_type',
+            'type' => 'text',
+            'label' => 'Тип оплаты',
+            'attributes' => [
+                'class' => 'form-control',
+                'readonly' => 'readonly',
+            ],
+            'wrapper' => [
+                'class' => 'form-group col-md-3'
+            ]
+        ]);
+
+        CRUD::addField([
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name' => 'delivery_date',
+            'type' => 'text',
+            'label' => 'Дата доставки',
+            'attributes' => [
+                'class' => 'form-control',
+                'readonly' => 'readonly',
+            ],
+            'wrapper' => [
+                'class' => 'form-group col-md-3'
+            ]
+        ]);
+
+        CRUD::addField([
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name' => 'delivery_time',
+            'type' => 'text',
+            'label' => 'Время доставки',
+            'attributes' => [
+                'class' => 'form-control',
+                'readonly' => 'readonly',
+            ],
+            'wrapper' => [
+                'class' => 'form-group col-md-3'
+            ]
+        ]);
+
+        CRUD::addField([
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name' => 'delivery_time',
+            'type' => 'text',
+            'label' => 'Время доставки',
+            'attributes' => [
+                'class' => 'form-control',
+                'readonly' => 'readonly',
+            ],
+            'wrapper' => [
+                'class' => 'form-group col-md-3'
+            ]
+        ]);
+
+        CRUD::addField([   // CustomHTML
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name'  => 'status',
+            'type'  => 'text',
+            'value' => $this->crud->getCurrentEntry()->getStatus($this->crud->getCurrentEntry()->status),
+            'label' => 'Статус',
+            'attributes' => [
+                'class' => 'form-control',
+                'readonly' => 'readonly',
+            ],
+            'wrapper' => [
+                'class' => 'form-group col-md-3'
+            ]
+        ]);
+
+        CRUD::addField([   // CustomHTML
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name'  => 'delivery_address',
+            'type'  => 'text',
+            'value' => $this->crud->getCurrentEntry()->address->full_address,
+            'label' => 'Адрес',
+            'attributes' => [
+                'class' => 'form-control',
+                'readonly' => 'readonly',
+            ],
+        ]);
+
+        CRUD::addField([   // CustomHTML
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name'  => 'warehouse_address',
+            'type'  => 'text',
+            'value' => $this->crud->getCurrentEntry()->warehouse->address,
+            'label' => 'Склад',
+            'attributes' => [
+                'class' => 'form-control',
+                'readonly' => 'readonly',
+            ],
+        ]);
+
+        CRUD::addField([   // CustomHTML
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name'  => 'separator_1',
+            'type'  => 'custom_html',
+            'value' => '<hr>'
+        ]);
+
+        CRUD::addField([   // CustomHTML
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name'  => 'client_title',
+            'type'  => 'custom_html',
+            'value' => '<h4>Клиент</h4>'
+        ]);
+
+        CRUD::addField([
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name' => 'client_name',
+            'type' => 'text',
+            'label' => 'ФИО',
+            'attributes' => [
+                'class' => 'form-control',
+                'readonly' => 'readonly',
+            ],
+            'wrapper' => [
+                'class' => 'form-group col-md-4'
+            ]
+        ]);
+
+        CRUD::addField([
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name' => 'client_phone',
+            'type' => 'text',
+            'label' => 'Телефон',
+            'attributes' => [
+                'class' => 'form-control',
+                'readonly' => 'readonly',
+            ],
+            'wrapper' => [
+                'class' => 'form-group col-md-3'
+            ]
+        ]);
+
+        CRUD::addField([
+            'tab' => 'Заявка',
+            'fake' => true,
+            'name' => 'comment',
+            'type' => 'textarea',
+            'label' => 'Комментарий',
+            'attributes' => [
+                'class' => 'form-control',
+                'readonly' => 'readonly',
+            ],
+            'wrapper' => [
+                'class' => 'form-group col-md-6'
+            ]
+        ]);
+
+        foreach ($this->crud->getCurrentEntry()->products as $id => $product) {
+            $num = $id + 1;
+
+            CRUD::addField([   // CustomHTML
+                'tab' => 'Товары',
+                'name'  => 'title_' . $product->id,
+                'type'  => 'custom_html',
+                'value' => '<h2>Товар № ' . $num . '</h2>'
+            ]);
+
+            CRUD::addField([   // CustomHTML
+                'tab' => 'Товары',
+                'name'  => 'product_name_' . $product->id,
+                'type'  => 'text',
+                'value' => $product->name,
+                'label' => 'Наименование',
+                'attributes' => [
+                    'class' => 'form-control',
+                    'readonly' => 'readonly',
+                ],
+            ]);
+
+            CRUD::addField([
+                'tab' => 'Товары',
+                'name'  => 'sku_' . $product->id,
+                'type'  => 'text',
+                'value' => $product->sku,
+                'label' => 'Артикул',
+                'wrapper' => [
+                    'class' => 'form-group col-md-3'
+                ]
+            ]);
+
+            CRUD::addField([
+                'tab' => 'Товары',
+                'name'  => 'barcode_' . $product->id,
+                'type'  => 'number',
+                'value' => $product->barcode,
+                'label' => 'Баркод',
+                'wrapper' => [
+                    'class' => 'form-group col-md-3'
+                ]
+            ]);
+
+            CRUD::addField([
+                'tab' => 'Товары',
+                'name'  => 'tnved_' . $product->id,
+                'type'  => 'number',
+                'value' => $product->tnved,
+                'label' => 'ТНВЭД',
+                'wrapper' => [
+                    'class' => 'form-group col-md-3'
+                ]
+            ]);
+
+            CRUD::addField([
+                'tab' => 'Товары',
+                'name'  => 'cost_' . $product->id,
+                'type'  => 'number',
+                'value' => $product->cost,
+                'label' => 'Цена',
+                'wrapper' => [
+                    'class' => 'form-group col-md-3'
+                ]
+            ]);
+
+            CRUD::addField([   // CustomHTML
+                'tab' => 'Товары',
+                'name'  => 'separator',
+                'type'  => 'custom_html',
+                'value' => '<hr>'
+            ]);
+        }
         /**
          * Fields can be defined using the fluent syntax or array syntax:
          * - CRUD::field('price')->type('number');
@@ -155,6 +434,29 @@ class ApplicationCrudController extends CrudController
      */
     protected function setupUpdateOperation()
     {
+        $request = $this->crud->getRequest()->all();
+        $currentApp = $this->crud->getCurrentEntry();
+
+        foreach ($request as $field => $param) {
+            if (str_contains($field, 'sku_')) {
+                $exploded = explode('_', $field);
+                $productId = $exploded[1];
+                $tnved = $request['tnved_' . $productId];
+                $barcode = $request['barcode_' . $productId];
+                $cost = $request['cost_' . $productId];
+                $product = $this->productRepo->getById($productId);
+
+                if ($product->tnved != $tnved || $product->barcode != $barcode || $product->cost != $cost) {
+                    $this->appRepo->updateByFields($currentApp->order_number, ['doc_ver' => $currentApp->doc_ver + 1]);
+                    $this->productRepo->updateByFields($productId, [
+                        'tnved' => $tnved,
+                        'barcode' => $barcode,
+                        'cost' => $cost
+                    ]);
+                }
+            }
+        }
+
         $this->setupCreateOperation();
     }
 }

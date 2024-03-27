@@ -49,10 +49,9 @@ class ApplicationDTO
     public function dbRows(array $allRows): array
     {
         $data = [];
-
         $data['client_name'] = $allRows['client_name'];
         $data['order_number'] = $allRows['order_number'];
-        $data['payment_type'] = $allRows['payment_type'];
+        $data['payment_type'] = $allRows['payment_type'] ?? 'Онлайн оплата';
         $data['delivery_date'] = $allRows['delivery_date'];
         $data['delivery_cost'] = isset($allRows['delivery_cost']) ? (float) $allRows['delivery_cost'] : 0;
         $data['delivery_from'] = $allRows['delivery_from'];

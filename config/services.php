@@ -29,5 +29,13 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-
+    'dadata' => [
+        'token' => env('DADATA_TOKEN', ''),
+        'secret' => env('DADATA_SECRET', '')
+    ],
+    'delivery_holodilnik_service' => [
+        'uri' => env('DELIVERY_HOLODILNIK_SERVICE', 'http://gateway-stage.adeal.ru/v1.0/holodilnik-delivery/api/v1/'),
+        'login' => env('DELIVERY_HOLODILNIK_LOGIN', 'test@test.ru'),
+        'password' => env('DELIVERY_HOLODILNIK_LOGIN', '123'),
+    ]
 ];
