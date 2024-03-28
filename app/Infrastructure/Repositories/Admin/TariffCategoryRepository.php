@@ -27,30 +27,14 @@ class TariffCategoryRepository
     public function getPrices(TariffCategories $category,
                               int $tariffId,
                               int $regionId,
-                              int $zoneId,
-                              int $servicePriceId = null
+                              int $zoneId
     ): ?Model
     {
-        $query = $category->prices()
+        return $category->prices()
             ->where('tariff_id', $tariffId)
             ->where('region_id', $regionId)
-            ->where('zone_id', $zoneId);
-
-        if ($servicePriceId) {
-            $query->where('service_price_id', $servicePriceId);
-        }
-
-        return $query->first();
-    }
-
-    public function getByServicePriceId(TariffCategories $category, int $priceId)
-    {
-        return $category->prices()->where('service_price_id', $priceId)->first();
-    }
-
-    public function deleteByServicePriceId(TariffCategories $category, int $priceId): bool
-    {
-        return $category->prices()->where('service_price_id', $priceId)->delete();
+            ->where('zone_id', $zoneId)
+            ->first();
     }
 
     public function deletePriceByZoneIdAndRegionId(TariffCategories $category,
