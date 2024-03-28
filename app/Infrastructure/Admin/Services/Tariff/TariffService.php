@@ -326,7 +326,7 @@ class TariffService
                     $category = $this->categoryRepo
                         ->getByProductCategoryId($priceFromService['product_delivery_category_id']);
                     $price = $this->categoryRepo
-                            ->getPrices($category, $localTariff->id, $region->id, $zone->id, $priceFromService['id']);
+                            ->getPrices($category, $localTariff->id, $region->id, $zone->id);
 
                     if (!$price) {
                         $category->prices()->create([
