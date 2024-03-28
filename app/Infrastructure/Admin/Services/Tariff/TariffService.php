@@ -286,7 +286,7 @@ class TariffService
     /**
      * @throws Exception
      */
-    public function getFromDeliveryService(): void
+    public function getFromDeliveryService(): bool
     {
         $tariffsFromService = $this->deliveryServiceApi
             ->query('settings/calculation/courier-delivery-price-tariffs', [], 'GET');
@@ -340,6 +340,8 @@ class TariffService
                 }
             }
         }
+
+        return true;
     }
 
     /**
