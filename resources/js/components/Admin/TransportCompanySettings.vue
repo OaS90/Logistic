@@ -18,12 +18,12 @@
             <table id="warehouses" class="table-content bg-white table table-striped table-hover nowrap rounded shadow-xs border-xs mt-2 dataTable dtr-inline collapsed has-hidden-columns">
                 <tbody ref="table">
                     <tr style="text-align:center">
-                        <th class="choose-th" style="width: 90px">Выбрать</th>
+                        <th class="choose-th" style="width: 50px">Выбрать</th>
                         <th style="width: 100px">Регион</th>
                         <th style="width: 90px">Код Склада</th>
                         <th style="width: 100px">Склад</th>
-                        <th style="width: 100px">Задержка дней</th>
-                        <th style="width: 45px">Квота</th>
+                        <th style="width: 90px">Задержка дней</th>
+                        <th style="width: 90px">Квота</th>
                         <th>Настройка ТК</th>
                     </tr>
                     <tr v-for="(warehouse, id) in filteredRows" :key="`warehouse-${id}`" style="text-align:center">
@@ -31,8 +31,22 @@
                         <th>{{ warehouse.region}}</th>
                         <td>{{ warehouse.code }}</td>
                         <td>{{ warehouse.name }}</td>
-                        <td><input class="wrhs-input" type="text" v-model="warehouse.delay_days"></td>
-                        <td><input class="wrhs-input" type="text" v-model="warehouse.quote"></td>
+                        <td>
+                            <input type="number" min="0" max="9999" class="form-control wrhs-input"
+                                   v-model="warehouse.delay_days"
+                                   @keydown="checkInputNumbers($event, warehouse)"
+                                   @keyup="checkFewZeros($event, warehouse, 'delay_days')"
+                                   @focusout="checkIsEmpty($event, warehouse, 'delay_days')"
+                            >
+                        </td>
+                        <td>
+                            <input type="number" min="0" max="9999" class="form-control wrhs-input"
+                                   v-model="warehouse.quote"
+                                   @keydown="checkInputNumbers($event, warehouse.quote)"
+                                   @keyup="checkFewZeros($event, warehouse, 'quote')"
+                                   @focusout="checkIsEmpty($event, warehouse, 'quote')"
+                            >
+                        </td>
                         <td>
                             <button class="btn btn-secondary" style="margin-bottom: 5px"
                                     @click="changeShow(id)">
@@ -50,7 +64,11 @@
             <span style="padding-left: 5px">{{ currentPage }} из {{ totalPage }}</span>
         </p>
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body">{{ modalText }}</span>
+            <span slot="body">
+                {{ modalText }}
+                <br>
+                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+            </span>
             <span slot="footer"></span>
         </modal>
     </div>
@@ -85,11 +103,22 @@ export default {
         filteredRows() {
             return this.warehousesData.filter((warehouse, index) => {
                 const name = warehouse.name.toLowerCase();
+                let region = '';
+
+                if (!warehouse.region) {
+                    region = 'empty'; // для уфы, неё почему-то нет региона
+                } else {
+                    region = warehouse.region.toLowerCase();
+                }
+
                 const searchTerm = this.filter.toLowerCase();
                 let start = (this.currentPage - 1) * this.pageSize;
                 let end = this.currentPage * this.pageSize;
 
-                if (this.filter !== '') return name.includes(searchTerm)
+                if (this.filter !== '') {
+                    return name.includes(searchTerm) || region.includes(searchTerm)
+                }
+
                 if (index >= start && index < end) return true
             });
         },
@@ -140,6 +169,33 @@ export default {
 
             }
         },
+        checkInputNumbers(event) {
+            const keysAllowed = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Backspace'];
+            const keyPressed = event.key;
+
+            if (!keysAllowed.includes(keyPressed)) {
+                event.preventDefault()
+            }
+        },
+        checkIsEmpty(event, warehouse, type) {
+            if (warehouse[type] === 0) {
+                warehouse[type] = 0
+                return event.preventDefault()
+            }
+        },
+        checkFewZeros(event, warehouse, type) {
+            if (warehouse[type][0] === '0') {
+                warehouse[type] = 0
+                return event.preventDefault()
+            }
+
+            // делаю по-тупому
+            if (warehouse[type].length > 4) {
+                let lastValidPriceString = warehouse[type][0] + warehouse[type][1] + warehouse[type][2] + warehouse[type][3]
+                warehouse[type] = lastValidPriceString * 1
+                return event.preventDefault()
+            }
+        },
         excel() {
             axios.get('export', {responseType: 'blob'}).then((response) => {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -159,6 +215,6 @@ input[type=checkbox] {
     transform: scale(1.5);
 }
 .wrhs-input {
-    width: 50px;
+    width: 70px;
 }
 </style>

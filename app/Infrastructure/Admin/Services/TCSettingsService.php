@@ -23,6 +23,9 @@ class TCSettingsService
     }
 
 
+    /**
+     * @throws \Exception
+     */
     public function save(array $warehouseSettings): bool|array
     {
         $warehousesWithSettings = [];
@@ -36,6 +39,17 @@ class TCSettingsService
             $warehouseTCSettings = [];
 
             foreach($warehouse['settings'] as $setting) {
+                if ($setting['enabled']) {
+                    if (!in_array(true, $setting['days'])) {
+                        throw new \Exception('Не выбрано ни одного дня доставки для ТК ' . $setting['tc_name']
+                            . ' для склада ' . $warehouse['name']);
+                    }
+
+                    if (!$setting['last_time']) {
+                        throw new \Exception('Не установлено ограничение по времени для ТК ' . $setting['tc_name']
+                            . ' для склада ' . $warehouse['name']);
+                    }
+                }
 
                 $tcSettings = $this->settingsRepo->updateFieldsById($setting['id'], [
                     'days' => $setting['days'],

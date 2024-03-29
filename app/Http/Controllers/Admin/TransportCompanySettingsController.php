@@ -54,7 +54,7 @@ class TransportCompanySettingsController extends Controller
             $result = $service->save($request->get('settings'));
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
-            return response(['message' => 'Ошибка сохранения данных'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response(['message' => 'Ошибка сохранения данных.' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         if (isset($result['status']) && $result['status']) {
