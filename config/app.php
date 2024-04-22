@@ -21,6 +21,7 @@ return [
     'api_password' => env('API_HRU_PASSWORD', ''),
     'hru_delivery_url' => env('API_DELIVERY_HRU', ''),
     'obi_user_id' => env('OBI_USER_ID', 6),
+    'tk_hru_url' => env('TK_HRU_URL'),
     /*
     |--------------------------------------------------------------------------
     | Application Environment

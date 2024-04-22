@@ -19,7 +19,7 @@ class HruApiServiceProvider extends ServiceProvider
         $this->app->bind(HruApi::class, function () {
             return new HruApi(
                 new Client([
-                    'base_uri' => config('app.api_hru'),
+                    'base_uri' => config('app.tk_hru_url'),
                     RequestOptions::HEADERS =>  [
                         'Content-Type' => 'application/json', 'Accept' => 'application/json',
                         'Authorization' => config('app.api_hru_token')
