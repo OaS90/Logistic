@@ -7,13 +7,13 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ExcelExportService
 {
-    public function store(ExcelEntity $csvEntity)
+    public function store(ExcelEntity $csvEntity): void
     {
         Excel::store($csvEntity, $csvEntity->fileName(), 'ftp');
     }
 
-    public function download(ExcelEntity $csvEntity): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function download(ExcelEntity $csvEntity, string $name = 'quotes'): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
-       return Excel::download($csvEntity, 'quotes.xlsx');
+       return Excel::download($csvEntity, $name . '.xlsx');
     }
 }

@@ -57,7 +57,7 @@ class QuotesController extends Controller
         $isGuest = (bool) backpack_user()->hasRole('guest');
 
         if ($isGuest) {
-            return response(['message' => 'У вас недостаточно прав.']);
+            return response(['message' => 'У вас недостаточно прав.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $this->intervalRepo->update($request->all());

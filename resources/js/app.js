@@ -19,6 +19,8 @@ import ProfileForm from "./components/ProfileForm";
 import QuotesTable from "./components/Admin/QuotesTable";
 import QuoteEmailsTable from "./components/Admin/QuoteEmailsTable";
 import LoginForm from "./components/LoginForm";
+import TransportCompanySettings from "./components/Admin/TransportCompanySettings";
+import TcSettings from "./components/Admin/TcSettings";
 import SupportApps from "./components/Admin/SupportApps";
 import SupportAppImport from "./components/Admin/SupportAppImport";
 import PulseLoader from 'vue-spinner/src/DotLoader';
@@ -72,6 +74,8 @@ if (document.getElementById('admin-app')) {
             QuotesTable,
             DatePicker,
             QuoteEmailsTable,
+            TransportCompanySettings,
+            TcSettings,
             SupportApps,
             SupportAppImport,
             PulseLoader,

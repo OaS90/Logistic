@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\Auth\RegisterController;
 use App\Http\Controllers\Admin\QuotesController;
 use App\Http\Controllers\Admin\QuoteEmailsController;
+use App\Http\Controllers\Admin\TransportCompanySettingsController;
 use App\Http\Controllers\Admin\SupportController;
 use App\Http\Controllers\Admin\TariffController;
 use App\Http\Controllers\Admin\AdminUserTariffsController;
@@ -46,6 +47,11 @@ Route::group([
     Route::get('download-excel', [QuotesController::class, 'download']);
     Route::crud('regions', 'RegionCrudController');
     Route::crud('quote-warehouse', 'QuoteWarehouseCrudController');
+    Route::crud('transport-company', 'TransportCompanyCrudController');
+    Route::crud('transport-company-warehouse', 'TransportCompanyWarehouseCrudController');
+    Route::get('transport-company-settings', [TransportCompanySettingsController::class, 'show']);
+    Route::post('save-tc-settings', [TransportCompanySettingsController::class, 'save']);
+    Route::get('export', [TransportCompanySettingsController::class, 'export']);
     Route::prefix('support')->group(function() {
         Route::get('apps', [SupportController::class, 'showAppsStatuses']);
         Route::get('apps/get', [SupportController::class, 'getApps']);
