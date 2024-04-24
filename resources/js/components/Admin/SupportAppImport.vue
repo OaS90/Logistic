@@ -41,6 +41,8 @@
             </span>
             <span slot="body" v-else>
                 {{ modalText }}
+                <br>
+                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
             </span>
             <span slot="footer"></span>
         </modal>

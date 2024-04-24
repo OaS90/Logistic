@@ -224,7 +224,11 @@
         <!--        </p>-->
 
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body">{{ modalText }}</span>
+            <span slot="body">
+                {{ modalText }}
+                <br>
+                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+            </span>
             <span slot="footer"></span>
         </modal>
     </div>
