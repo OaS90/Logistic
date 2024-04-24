@@ -29,12 +29,21 @@ class HruApi
             $response = $this->client->request($method, $uri, $params);
             $responseContents = json_decode($response->getBody()->getContents(), true);
 
+            Log::info('Response: ' .
+                $response->getBody()->getContents() .
+                ', code:' . $response->getStatusCode() .
+                ' headers: ' . json_encode($response->getHeaders())
+            );
+
             if ($response->getStatusCode() == 200 &&
                 (isset($responseContents['success']) && $responseContents['success'])
             ) {
                 return ['status' => true];
             } else {
-                return ['status' => false, 'message' => $responseContents['error']];
+                return [
+                    'status' => false,
+                    'message' => $responseContents['error'] ?? 'Ошибка получения данных из монолита.'
+                ];
             }
         } catch (ClientException $e) {
             Log::error('Ошибка отправки данных в HRU. URI: ' . $uri . ' Error: ' .

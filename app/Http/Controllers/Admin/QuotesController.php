@@ -66,6 +66,7 @@ class QuotesController extends Controller
         $message = 'Данные сохранены.';
         $json = (new QuoteDTO())->makeDataForApiHru($this->repo->getAll());
 
+        // TODO вынести в hruApi и поправить endpoints
         try {
             $response = $client->post(config('app.api_hru'), [
                 'headers' => [
@@ -87,7 +88,11 @@ class QuotesController extends Controller
                 Mail::to($this->emailQuoteRepo->getAllActiveEmails())->send(new QuotesChange($quote));
             }
 
-            Log::info('Response(): ' . json_encode($responseContents) . ', code:' . $response->getStatusCode());
+            Log::info('Response: ' .
+                $response->getBody()->getContents() .
+                ', code:' . $response->getStatusCode() .
+                ' headers: ' . json_encode($response->getHeaders())
+            );
         } catch (BadResponseException $e) {
             Log::info($e->getMessage());
         }
