@@ -91,7 +91,8 @@ class QuotesController extends Controller
             Log::info('Response: ' .
                 $response->getBody()->getContents() .
                 ', code:' . $response->getStatusCode() .
-                ' headers: ' . json_encode($response->getHeaders())
+                ' headers: ' . json_encode($response->getHeaders()) .
+                ', request: ' . json_encode($json)
             );
         } catch (BadResponseException $e) {
             Log::info($e->getMessage());
