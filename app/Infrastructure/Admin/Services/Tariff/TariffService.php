@@ -23,6 +23,7 @@ class TariffService
     protected Api $deliveryServiceApi;
     protected ZoneRepository $zoneRepo;
     protected UserTariffPermissionRepository $permissionRepo;
+    protected string $token;
 
     public function __construct(TariffRepository $tariffRepo,
                                 RegionRepository $regionRepo,
@@ -40,6 +41,7 @@ class TariffService
         $this->deliveryServiceApi = $deliveryServiceApi;
         $this->zoneRepo = $zoneRepo;
         $this->permissionRepo = $permissionRepo;
+        $this->token = config('app.api_delivery_service_token');
     }
 
     /**
@@ -48,9 +50,8 @@ class TariffService
     public function create(array $data): void
     {
         $newTariff = $this->tariffRepo->create($data);
-        $token = $this->getServiceToken();
         $response = $this->deliveryServiceApi
-                ->query('settings/calculation/courier-delivery-price-tariffs', $data, 'POST', $token);
+                ->query('settings/calculation/courier-delivery-price-tariffs', $data, 'POST', $this->token);
         Log::info('response ' . json_encode($response));
 
         if ($response) {
@@ -142,7 +143,6 @@ class TariffService
     {
         $tariff = $this->tariffRepo->findById($tariffId);
         $region = $this->regionRepo->getById($regionId);
-        $token = $this->getServiceToken();
 
         foreach ($dto->categories as $category) {
             $categoryEntity = $this->categoryRepo->getById($category->categoryId);
@@ -185,7 +185,7 @@ class TariffService
                 }
 
                 $result = $this->deliveryServiceApi
-                    ->query('settings/calculation/group/courier-delivery-prices', $priceForUpdate, 'PUT', $token);
+                    ->query('settings/calculation/group/courier-delivery-prices', $priceForUpdate, 'PUT', $this->token);
 
                 if (!$result) {
                     throw new Exception('Не удалось обновить цены в сервисе');
@@ -199,7 +199,6 @@ class TariffService
      */
     public function deleteZone(int $tariffId, int $regionId, array $zoneData): void
     {
-        $token = $this->getServiceToken();
         $tariff = $this->tariffRepo->findById($tariffId);
 
         foreach ($zoneData['categories'] as $categoryInfo) {
@@ -210,7 +209,7 @@ class TariffService
                         'tariff_id' => $tariff->delivery_service_tariff_id,
                         'zone' => $zoneData['zone'],
                         'product_delivery_category_id' => $category->result_category_id,
-                    ], 'DELETE', $token);
+                    ], 'DELETE', $this->token);
 
             if (!$result) {
                 throw new Exception('Не удалось удалить цены в сервисе');
@@ -228,9 +227,9 @@ class TariffService
         $tariff = $this->tariffRepo->findById($tariffId);
         $this->permissionRepo->deleteByTariffId($tariffId);
         $this->tariffRepo->delete($tariff);
-        $token = $this->getServiceToken();
         $result = $this->deliveryServiceApi
-            ->query('settings/calculation/courier-delivery-price-tariffs/' . $tariff->delivery_service_tariff_id, [], 'DELETE', $token);
+            ->query('settings/calculation/courier-delivery-price-tariffs/' . $tariff->delivery_service_tariff_id, [],
+                'DELETE', $this->token);
 
         if (!$result) {
             throw new Exception('Не удалось удалить тариф в сервисе');
@@ -245,14 +244,13 @@ class TariffService
         $tariff = $this->tariffRepo->findById($tariffId);
         $clone = $tariff->replicate();
         $clone->alias = $tariff->alias . 'Clone_' . substr(md5(mt_rand()), 0, 7);;
-        $token = $this->getServiceToken();
         $clone->save();
 
         $response = $this->deliveryServiceApi
             ->query('settings/calculation/courier-delivery-price-tariffs', [
                 'name' => $clone->name,
                 'alias' => $clone->alias
-            ], 'POST', $token);
+            ], 'POST', $this->token);
 
         if ($response) {
             $this->tariffRepo->updateByFields($clone, ['delivery_service_tariff_id' => $response['created_id']]);
@@ -347,31 +345,13 @@ class TariffService
     /**
      * @throws Exception
      */
-    private function getServiceToken(): string
-    {
-        $authResponse = $this->deliveryServiceApi->query('auth/login', [
-            'email' => config('services.delivery_holodilnik_service.login'),
-            'password' => config('services.delivery_holodilnik_service.password')
-        ]);
-
-        if ($authResponse && isset($authResponse['access_token'])) {
-            return $authResponse['access_token'];
-        } else {
-            throw new Exception('Не удалось авторизоваться в сервисе Delivery');
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
     public function updateNameOrAlias(int $tariffId, array $data): void
     {
         $tariff = $this->tariffRepo->findById($tariffId);
         $this->tariffRepo->updateByFields($tariff, $data);
-        $token = $this->getServiceToken();
         $this->deliveryServiceApi
             ->query('settings/calculation/courier-delivery-price-tariffs/' . $tariff->delivery_service_tariff_id,
-                $data, 'PATCH', $token);
+                $data, 'PATCH', $this->token);
 
     }
 }
