@@ -162,6 +162,7 @@ class CsvImportService
      * @param $file
      * @return array
      * @throws CityFiasWrongFormatException
+     * @throws \Exception
      */
     public function getDataArraysWithDbRows($entity, $file): array
     {
@@ -218,6 +219,8 @@ class CsvImportService
                 $apps[$i]['app'] = (new ApplicationDTO())->dbRows($appWithDbColumns);
                 $apps[$i]['address'] = (new DeliveryAddressDTO())->dbRows($appWithDbColumns);
                 $apps[$i]['products'][] = (new ProductDTO())->dbRows($appWithDbColumns);
+            } else {
+                throw new \Exception('Отсутствует товар в заявке номер ' . $fileData[0]);
             }
         }
 

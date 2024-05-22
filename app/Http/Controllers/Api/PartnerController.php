@@ -1,16 +1,19 @@
 <?php
-
+/*
+ * Класс для получения заявок партнёров из 1с
+ * со статусом "новый" или с разными док. версиями, что означает, что заявку также надо забрать в 1с и обработать
+ */
 namespace App\Http\Controllers\Api;
 
 use App\Domain\PartnerOrderDTO;
 use App\Http\Controllers\Controller;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\UserRepository;
-use App\Models\ApplicationObi;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class PartnerController extends Controller
 {
@@ -79,7 +82,7 @@ class PartnerController extends Controller
         return response()
             ->json(
                 ['message' => 'Не найден партнёр с id ' . $partnerId],
-                200, ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
+                Response::HTTP_UNPROCESSABLE_ENTITY, ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
             );
     }
 }

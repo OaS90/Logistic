@@ -1,0 +1,581 @@
+openapi: 3.0.3
+info:
+  description: "Партнёрские заявки для 1с"
+  version: "1"
+  title: "Partners applications"
+servers:
+  - url: /api/v1
+paths:
+  /partners/order:
+    get:
+      summary: "Получение заказов"
+      operationId: "orders-get"
+      parameters:
+        - name: partnerId
+          in: query
+          description: Id партнёра в 1с
+          required: true
+          schema:
+            type: string
+            example: 000000022
+      responses:
+        '200':
+          description: "Успешное получение"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetOrdersResponse200'
+        '400':
+          description: "Ошибка выполнения"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response400'
+        '422':
+          description: "Ошибки валидации"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response422'
+  /set-status:
+    post:
+      summary: "Обновление статуса заявки"
+      operationId: "set-status"
+      requestBody:
+        $ref: '#/components/requestBodies/SetStatus'
+      responses:
+        '200':
+          description: "Успешное получение"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response200'
+        '400':
+          description: "Ошибка выполнения"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response400'
+        '422':
+          description: "Ошибки валидации"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response422'
+  /order/create:
+    post:
+      summary: "Создание заявки"
+      operationId: "order-create"
+      requestBody:
+        $ref: '#/components/requestBodies/OrderCreate'
+      responses:
+        '200':
+          description: "Успешное получение"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderCreateResponse200'
+        '400':
+          description: "Ошибка выполнения"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response400'
+        '422':
+          description: "Ошибки валидации"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response422'
+  /order/{id}/stickers:
+    get:
+      summary: "Получение стикеров"
+      operationId: "get-stickers"
+      parameters:
+        - name: id
+          in: path
+          description: Номер заказа в системе партнёра
+          required: true
+          schema:
+            type: string
+            example: 7080539915
+      responses:
+        '200':
+          description: "Успешное получение PDF файла(ов)"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: "Ошибка выполнения"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response400'
+        '422':
+          description: "Ошибки валидации"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response422'
+  /order/get-status:
+    get:
+      summary: "Получение стикеров"
+      operationId: "get-stickers"
+      parameters:
+        - name: orderId
+          in: query
+          description: Номер заказа в системе партнёра
+          required: true
+          schema:
+            type: string
+            example: 7080539915
+        - name: partnerId
+          in: query
+          description: Id партнёра в 1с
+          required: true
+          schema:
+            type: string
+            example: 000000022
+      responses:
+        '200':
+          description: "Успешное получение"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStatus200'
+  /order/status-history:
+    post:
+      summary: "Получение истории по заказу"
+      operationId: "order-history"
+      requestBody:
+        $ref: '#/components/requestBodies/OrderHistory'
+      responses:
+        '200':
+          description: "Успешное получение"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderHistoryResponse200'
+        '400':
+          description: "Ошибка выполнения"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response400'
+        '422':
+          description: "Ошибки валидации"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response422'
+components:
+  requestBodies:
+    SetStatus:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SetStatusRequestBody'
+    OrderCreate:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OrderCreateRequestBody'
+    OrderHistory:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OrderHistoryRequestBody'
+  schemas:
+    SetStatusRequestBody:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            example: 123123
+            description: номер заявки в системе партнёра
+          docVer:
+            type: integer
+            example: 1
+            description: кол-во отправок в 1с
+          statuses:
+            type: array
+            items:
+              type: object
+              properties:
+                dateTime:
+                  type: string
+                  example: 2022-04-18 15:40:19
+                  description: время установки статуса
+                status:
+                  type: string
+                  example: new
+    OrderCreateRequestBody:
+      type: array
+      items:
+        type: object
+        properties:
+          partnerId:
+            type: string
+            example: 000000001
+            description: Id партнёра в 1с
+          id:
+            type: string
+            example: 14345
+            description: Номер заявки в система партнёра
+          storeID:
+            type: string
+            example: 14001
+            description: номер слада для 1с
+          paymentMethod:
+            type: string
+            example: Предоплата
+            description: тип оплаты
+          deliveryDate:
+            type: string
+            example: 06.08.2023
+            description: предполагаемая дата доставки
+          deliveryTimeFrom:
+            type: string
+            example: 10:00
+            description: время доставки "с"
+          deliveryTimeTo:
+            type: string
+            example: 18:00
+            description: время доставки "по"
+          buyer:
+            type: object
+            properties:
+              fio:
+                type: string
+                example: Иванов Иван
+              phone:
+                type: string
+                example: 84952320700
+          address:
+            type: object
+            properties:
+              regionName:
+                type: string
+                example: Московская обл
+              cityName:
+                type: string
+                example: Дмитров
+              cityId:
+                type: string
+                example: 0d8a246f-6446-403e-91c6-3aec9cdbfc32
+              street:
+                type: string
+                example: ""
+              streetId:
+                type: string
+                example: ""
+              building:
+                type: string
+                example: 10
+                description: номер дома
+              floor:
+                type: string
+                example: 1
+              flat:
+                type: string
+                example: 22
+          products:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Электрическая плита
+                sku:
+                  type: string
+                  example: 4660013908883
+                count:
+                  type: integer
+                  example: 1
+                cost:
+                  type: integer
+                  example: 14500
+                VATRate:
+                  type: integer
+                  example: 20
+                  description: ставка НДC
+                leftToPay:
+                  type: integer
+                  example: 0
+                  description: остаток по оплате
+                weight:
+                  type: number
+                  example: 35.8
+                  description: вес в кг
+                brand:
+                  type: string
+                  example: Beko
+                  nullable: true
+                tnved:
+                  type: integer
+                  example: 8418211000
+                  nullable: true
+                  description: ТНВЭД
+                country:
+                  type: string
+                  example: TR
+                  description: код страны производителя
+                barcode:
+                  type: string
+                  example: 4630032551582
+                  description: баркод товара
+                volume:
+                  type: number
+                  example: 4407
+                  description: объём в м2
+                width:
+                  type: number
+                  example: 150
+                  description: длинна в см
+                height:
+                  type: number
+                  example: 210
+                  description: высота в см
+                depth:
+                  type: number
+                  example: 70
+                  description: глубина в см
+    OrderHistoryRequestBody:
+      type: object
+      properties:
+        ids:
+          type: array
+          example: [12334, 42534]
+          description: Массив номеров заказов
+    Response500:
+      type: object
+      properties:
+        message:
+          type: string
+          title: "Logic error"
+          example: "Region without warranty service, id: 1"
+        success:
+          type: boolean
+          title: "Статус"
+          example: false
+    GetOrdersResponse200:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            example: applicationNumber_1
+            description: Номер заявки в системе партнёра
+          docVer:
+            type: integer
+            example: 1
+            description: кол-во загрузок в 1с
+          paymentMethod:
+            type: string
+            example: Предоплата
+            description: тип оплаты
+          comment:
+            type: string
+            example: ""
+            description: комментарий к заявке
+          deliveryDate:
+            type: string
+            example: 06.08.2023
+            description: предполагаемая дата доставки
+          deliveryTimeFrom:
+            type: string
+            example: 10:00
+            description: время доставки "с"
+          deliveryTimeTo:
+            type: string
+            example: 18:00
+            description: время доставки "по"
+          storeID:
+            type: string
+            example: 14001
+            description: номер склада для 1с
+          buyer:
+            type: object
+            properties:
+              fio:
+                type: string
+                example: Иванов Иван
+              phone:
+                type: string
+                example: +7 958 795-41-27
+          address:
+            type: object
+            properties:
+              regionName:
+                type: string
+                example: Московская обл
+              cityName:
+                type: string
+                example: Дмитров
+              cityId:
+                type: string
+                example: 0d8a246f-6446-403e-91c6-3aec9cdbfc32
+              street:
+                type: string
+                example: ""
+              streetId:
+                type: string
+                example: ""
+              building:
+                type: string
+                example: 10
+                description: номер дома
+              floor:
+                type: string
+                example: 1
+              flat:
+                type: string
+                example: 22
+          products:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Электрическая плита
+                vendorCode:
+                  type: string
+                  example: 1069868
+                count:
+                  type: integer
+                  example: 1
+                cost:
+                  type: integer
+                  example: 14500
+                costAfterDiscount:
+                  type: integer
+                  example: 14500
+                VATRate:
+                  type: integer
+                  example: 20
+                  description: ставка НДC
+                leftToPay:
+                  type: integer
+                  example: 0
+                  description: остаток по оплате
+                weight:
+                  type: number
+                  example: 35.8
+                  description: вес в кг
+                setId:
+                  type: string
+                  example: 1069868_1
+                  description: номер места в заявке
+                brand:
+                  type: string
+                  example: Beko
+                  nullable: true
+                tnved:
+                  type: integer
+                  example: 8418211000
+                  nullable: true
+                  description: ТНВЭД
+                country:
+                  type: string
+                  example: TR
+                  description: код страны производителя
+                barcode:
+                  type: string
+                  example: 4630032551582
+                  description: баркод товара
+                volume:
+                  type: number
+                  example: 4407
+                  description: объём в м2
+                width:
+                  type: number
+                  example: 150
+                  description: длинна в см
+                height:
+                  type: number
+                  example: 210
+                  description: высота в см
+                depth:
+                  type: number
+                  example: 70
+                  description: глубина в см
+                shipmentCode:
+                  type: string
+                  example: TL-14574-1
+                  description: код доставки ПрефиксПартнёра-НомерЗаявки-НомерМеста
+    OrderStatus200:
+      type: object
+      properties:
+        message:
+          type: string
+          example: success
+        orderNumber:
+          type: string
+          example: 344532
+        orderStatus:
+          type: string
+          example: new
+    OrderHistoryResponse200:
+      type: array
+      items:
+        type: object
+        properties:
+          orderId:
+            type: string
+            example: 23425
+          statuses:
+            type: array
+            items:
+              type: object
+              properties:
+                description:
+                  type: string
+                  example: Создано
+                status:
+                  type: string
+                  example: created
+                datetime:
+                  type: string
+                  example: 2023-11-09 10:22:05
+    OrderCreateResponse200:
+      type: object
+      properties:
+        code:
+          type: string
+          example: 14574-3258
+          description: НомерЗаявкиПартнёра-АйдиВБортеУдачи
+        success:
+          type: string
+          example: true
+        message:
+          type: string
+          example: ""
+    Response400:
+      type: object
+      properties:
+        message:
+          type: string
+          title: "Сообщение об ошибке"
+          example: "Region without warranty service, id: 1"
+        success:
+          type: boolean
+          title: "Статус"
+          example: false
+    Response422:
+      type: object
+      properties:
+        message:
+          type: string
+          title: "Сообщение об ошибке"
+          example: "Не найден партнёр с id 000000022"
+        success:
+          type: boolean
+          title: Статус
+          example: false

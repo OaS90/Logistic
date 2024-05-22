@@ -20,6 +20,7 @@
         "laravel/ui": "^3.4",
         "maatwebsite/excel": "^3.1",
         "picqer/php-barcode-generator": "^2.2",
+        "predis/predis": "2.0",
         "vladimir-yuldashev/laravel-queue-rabbitmq": "^11.3"
     },
     "require-dev": {

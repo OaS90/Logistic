@@ -19,6 +19,7 @@ use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Repositories\WarehouseRepository;
 use App\Application\ApplicationService;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 
 class ApplicationController
@@ -70,7 +71,10 @@ class ApplicationController
        if (!$data || !is_array($data)) {
            $exception = new JsonParseException('Ошибка формата json');
 
-           return response()->json(['message' => $exception->getMessage(), 'success' => false], 500);
+           return response()->json([
+               'message' => $exception->getMessage(),
+               'success' => false
+           ], Response::HTTP_INTERNAL_SERVER_ERROR);
        }
 
        foreach ($data as $item) {
@@ -130,7 +134,7 @@ class ApplicationController
             if (!$user)
                 return response()
                     ->json(
-                        ['message' => 'Не найден пользователь с идентификаторм ' . $app['partnerId']], 500,
+                        ['message' => 'Не найден пользователь с идентификаторм ' . $app['partnerId']], Response::HTTP_INTERNAL_SERVER_ERROR,
                         ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
                     );
 
@@ -140,7 +144,7 @@ class ApplicationController
             if (!$warehouse)
                 return response()
                     ->json(
-                        ['message' => 'Не найден склад'], 500,
+                        ['message' => 'Не найден склад'], Response::HTTP_INTERNAL_SERVER_ERROR,
                         ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
                     );
 
@@ -169,7 +173,10 @@ class ApplicationController
             }
         }
 
-        return response(['code' => $newApp->order_number . '-' . $newApp->id, 'success' => true, 'message' => ''], 200);
+        return response(['code' => $newApp->order_number . '-' . $newApp->id,
+            'success' => true,
+            'message' => ''
+        ], Response::HTTP_OK);
     }
 
     public function getSticker($partnerOrderId)
@@ -179,7 +186,7 @@ class ApplicationController
         if (!$app)
             return response()
                 ->json(
-                    ['message' => 'Не найдена заявка с номером заказа ' . $partnerOrderId], 500,
+                    ['message' => 'Не найдена заявка с номером заказа ' . $partnerOrderId], Response::HTTP_INTERNAL_SERVER_ERROR,
                     ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
                 );
 
@@ -198,7 +205,7 @@ class ApplicationController
         } catch (\Throwable $e) {
             return response()
                 ->json(
-                    ['message' => 'Не удалось найти заказ с номер ' . $request->get('orderId')], 500,
+                    ['message' => 'Не удалось найти заказ с номер ' . $request->get('orderId')], Response::HTTP_INTERNAL_SERVER_ERROR,
                     ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
                 );
         }
@@ -219,7 +226,7 @@ class ApplicationController
             if (count($statuses) == 0)
                 $statuses = ['message' => 'История статусов для заказа(ов) пуста'];
         } catch (\Throwable $e) {
-            return response()->json(['message' => 'Ошибка получения истории'], 500);
+            return response()->json(['message' => 'Ошибка получения истории'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return response()->json($statuses);

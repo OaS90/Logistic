@@ -21,7 +21,12 @@ use App\Http\Controllers\UserController;
 // });
 
 Auth::routes();
-
+Route::get('api-documentation', function () {
+    return view('common-api-description');
+})->name('api-description');
+Route::get('documentation', function () {
+    return view('documentation');
+});
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('application-list', [ApplicationController::class, 'getList'])->name('application-list');
