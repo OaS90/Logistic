@@ -73,7 +73,7 @@ class TCSettingsService
             ];
         }
 
-        return $this->hruApi->query('vtb/delivery_proxy.php?q=Holodilnik/SetQuoteTkSettings',
+        return $this->hruApi->query('delivery/Holodilnik/SetQuoteTkSettings',
             $warehousesWithSettings
         );
     }
