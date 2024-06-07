@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Application\ApplicationUICreateRequest;
 use App\Infrastructure\Admin\Exceptions\ProductWithoutSkuException;
-use App\Infrastructure\Imports\ApplicationImportCsv;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Repositories\ProductRepository;
+use App\Infrastructure\Services\Application\ApplicationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Infrastructure\Repositories\ApplicationRepository;
@@ -16,7 +17,7 @@ use App\Infrastructure\DadataAdapter;
 use Illuminate\View\View;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 use App\Application\CsvImportService;
-use App\Application\ApplicationService;
+use App\Application\ApplicationServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Response as FResponse;
 
@@ -29,7 +30,7 @@ class ApplicationController extends Controller
     protected DeliveryAddressRepository $addressRepository;
     protected ProductRepository $productRepository;
     protected CsvImportService $importService;
-    protected ApplicationService $appService;
+    protected ApplicationServiceInterface $appService;
     protected ApplicationObiRepository $applicationObiRepo;
     private int $obiUser;
 
@@ -40,7 +41,7 @@ class ApplicationController extends Controller
                                 DeliveryAddressRepository $addressRepository,
                                 CsvImportService $importService,
                                 ProductRepository $productRepository,
-                                ApplicationService $appService,
+                                ApplicationServiceInterface $appService,
                                 ApplicationObiRepository $applicationObiRepo
     )
     {
@@ -99,14 +100,26 @@ class ApplicationController extends Controller
 
     public function show(): View
     {
-        return view('application-create', ['userId' => Auth::id(), 'warehouses' => Auth::user()->warehouses]);
+        $user = Auth::user();
+
+        return view('application-create', [
+            'userId' => $user->id,
+            'warehouses' => $user->warehouses
+        ]);
     }
 
     /**
      * @throws ProductWithoutSkuException
      */
-    public function create(Request $request): Response
+    public function create(ApplicationUICreateRequest $request, ApplicationServiceInterface $service): Response
     {
+        try {
+            $service->createFromUI($request->getDTO());
+        } catch (\Throwable $e) {
+            dd($e->getMessage());
+        }
+
+        dd('frfre');
         $data = $request->get('fields');
         $address = $request->get('address');
         $addressExtra = $request->get('addressExtraInfo');
@@ -156,8 +169,8 @@ class ApplicationController extends Controller
 
     public function getAddress(Request $request)
     {
-        return $this->dadataAdapter->getCleanAddress($request->get('input'));
-//        return $this->dadataAdapter->getAddress($request->get('input'));
+//        return $this->dadataAdapter->getCleanAddress($request->get('input'));
+        return $this->dadataAdapter->getAddress($request->get('input'));
     }
 
     public function delete($id): void

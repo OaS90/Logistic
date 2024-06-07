@@ -17,22 +17,25 @@ use App\Http\Controllers\Api\Exceptions\StatusUpdateException;
 use App\Infrastructure\Repositories\ProductRepository;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Repositories\WarehouseRepository;
-use App\Application\ApplicationService;
+use App\Application\ApplicationServiceInterface;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 
+/**
+ * Контроллер для обработки api запросов из 1с
+ */
 class ApplicationController
 {
-    protected $repo;
-    protected $addressRepo;
-    protected $productRepo;
-    protected $warehouseRepo;
-    protected $userRepo;
-    protected $appService;
-    protected $appRepo;
-    protected $appStatusHistoryRepo;
-    protected $deliveryAddressService;
+    protected ApplicationRepository $repo;
+    protected DeliveryAddressRepository $addressRepo;
+    protected ProductRepository $productRepo;
+    protected WarehouseRepository $warehouseRepo;
+    protected UserRepository $userRepo;
+    protected ApplicationServiceInterface $appService;
+    protected ApplicationRepository $appRepo;
+    protected AppStatusHistoryRepository $appStatusHistoryRepo;
+    protected DeliveryAddressService $deliveryAddressService;
     protected ApplicationObiRepository $applicationObiRepo;
     private int $obiUser;
 
@@ -41,7 +44,7 @@ class ApplicationController
                                 ProductRepository $productRepo,
                                 WarehouseRepository $warehouseRepo,
                                 UserRepository $userRepo,
-                                ApplicationService $appService,
+                                ApplicationServiceInterface $appService,
                                 ApplicationRepository $appRepo,
                                 AppStatusHistoryRepository $appStatusHistoryRepo,
                                 DeliveryAddressService $deliveryAddressService,
@@ -61,7 +64,7 @@ class ApplicationController
         $this->obiUser = config('app.obi_user_id');
     }
 
-    public function setStatus(Request $request): \Illuminate\Http\JsonResponse
+    public function setStatus(Request $request): Response
     {
         $errors = [];
         $statuses = [];
@@ -116,15 +119,16 @@ class ApplicationController
                $errors[] = $exception->getError($e, $item['id']);
                $app = $this->repo->getByOrderNumber($item['id']);
 
-               if ($app)
+               if ($app) {
                    $app->update(['doc_ver' => $app->doc_ver + 1]);
+               }
            }
        }
 
        return response()->json(array_merge($statuses, $errors));
     }
 
-    public function create(Request $request)
+    public function create(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
 
@@ -205,9 +209,8 @@ class ApplicationController
         } catch (\Throwable $e) {
             return response()
                 ->json(
-                    ['message' => 'Не удалось найти заказ с номер ' . $request->get('orderId')], Response::HTTP_INTERNAL_SERVER_ERROR,
-                    ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
-                );
+                    ['message' => 'Не удалось найти заказ с номер ' . $request->get('orderId')], Response::HTTP_UNPROCESSABLE_ENTITY,
+                    ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE);
         }
 
         return response()->json([
@@ -217,18 +220,19 @@ class ApplicationController
         ]);
     }
 
-    public function statusHistory(Request $request): \Illuminate\Http\JsonResponse
+    public function statusHistory(Request $request): Response
     {
         try {
             $data = json_decode($request->getContent(), true);
             $statuses = $this->appStatusHistoryRepo->getByFewOrders($data['ids']);
 
-            if (count($statuses) == 0)
+            if (count($statuses) == 0) {
                 $statuses = ['message' => 'История статусов для заказа(ов) пуста'];
+            }
         } catch (\Throwable $e) {
-            return response()->json(['message' => 'Ошибка получения истории'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response(['message' => 'Ошибка получения истории'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return response()->json($statuses);
+        return response($statuses);
     }
 }

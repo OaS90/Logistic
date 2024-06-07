@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Application\ApplicationService;
+use App\Application\ApplicationServiceInterface;
 use App\Application\CsvImportService;
 use App\Http\Controllers\Controller;
 use App\Infrastructure\Repositories\UserRepository;
@@ -14,12 +14,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SupportController extends Controller
 {
-    private ApplicationService $applicationService;
+    private ApplicationServiceInterface $applicationService;
     private CsvImportService $importService;
     private UserRepository $partnerRepository;
     private int $obiUser;
 
-    public function __construct(ApplicationService $applicationService,
+    public function __construct(ApplicationServiceInterface $applicationService,
                                 CsvImportService $importService,
                                 UserRepository $partnerRepository
     )
@@ -75,6 +75,6 @@ class SupportController extends Controller
 
     public function getPartnerWarehouses(int $partnerId): Response
     {
-        return response(['id' => $partnerId], 200);
+        return response(['id' => $partnerId], Response::HTTP_OK);
     }
 }

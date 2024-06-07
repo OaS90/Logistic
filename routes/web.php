@@ -21,6 +21,26 @@ use App\Http\Controllers\UserController;
 // });
 
 Auth::routes();
+Route::get('test', function () {
+    dd(0.7 * 1000);
+    $arr = [
+        // Москва
+        '00181' => [
+            'division_id' => 1,
+            'region_id' => 1
+        ],
+        '00379' => [
+            'division_id' => 2,
+            'region_id' => 1
+        ],
+        '00385' => [
+            'division_id' => 2,
+            'region_id' => 1
+        ]
+    ];
+
+    $fp = fopen(storage_path(''), 'w');
+});
 Route::get('api-documentation', function () {
     return view('common-api-description');
 })->name('api-description');

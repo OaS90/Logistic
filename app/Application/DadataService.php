@@ -4,7 +4,7 @@ namespace App\Application;
 
 use App\Infrastructure\DadataAdapter;
 
-class DadataService
+class DadataService implements GeoServiceInterface
 {
     public function getAddress($address, $count = null)
     {

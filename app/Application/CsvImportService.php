@@ -2,6 +2,7 @@
 
 namespace App\Application;
 
+use App\Infrastructure\Services\Application\ApplicationService;
 use App\Domain\ApplicationDTO;
 use App\Domain\ApplicationObiDTO;
 use App\Domain\DeliveryAddressDTO;

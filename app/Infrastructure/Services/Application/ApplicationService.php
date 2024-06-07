@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Application;
+namespace App\Infrastructure\Services\Application;
 
+use App\Application\ApplicationServiceInterface;
+use App\Domain\DTO\Requests\ApplicationUICreateRequestDTO;
+use App\Domain\Enum\ApplicationStatus;
 use App\Domain\ProductDTO;
 use App\Infrastructure\Admin\Exceptions\ProductWithoutSkuException;
 use App\Infrastructure\Api;
@@ -13,10 +16,12 @@ use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\ProductRepository;
 use App\Models\DeliveryAddress;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\DomPDF\PDF as PdfFile;
 use Illuminate\Database\Eloquent\Collection;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
+use Symfony\Component\HttpFoundation\Response;
 
-class ApplicationService
+class ApplicationService implements ApplicationServiceInterface
 {
     private ApplicationRepository $appRepo;
     private ProductRepository $productRepo;
@@ -38,15 +43,13 @@ class ApplicationService
     /**
      * @throws ProductWithoutSkuException
      */
-    public function checkAppChanges($app, array $data)
+    public function checkAppChanges($app, array $data): void
     {
-        if (!in_array($app->status, ['new', 'refusal'])) {
+        if (!in_array($app->status, [ApplicationStatus::NEW, ApplicationStatus::REFUSAL])) {
             $data['app']['doc_ver'] = $app->doc_ver + 1;
             $app->update($data['app']);
             $this->checkAppProducts($app, $data['products']);
         }
-
-        return null;
     }
 
     /**
@@ -70,19 +73,23 @@ class ApplicationService
         }
     }
 
-    public function makeStickers($app)
+    public function makeStickers($app): Response|PdfFile
     {
         $barcodes = [];
 
         foreach ($app->products as $product) {
-            if ($product->barcode)
+            if ($product->barcode) {
                 $barcodes[] = $this->codeGenerator->getBarcode($product->barcode, $this->codeGenerator::TYPE_EAN_13);
-            else
-                return response(['message' => 'У товара ' . $product->name . ' отсутствует баркод'], 400);
+            } else {
+                return response(['message' => 'У товара ' . $product->name . ' отсутствует баркод'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
         }
 
-        return PDF::loadView('sticker', ['codes' => $barcodes, 'application' => $app, 'products' => $app->products])
-            ->setPaper([30, -30, 280.77, 320.16]);
+        return PDF::loadView('sticker', [
+            'codes' => $barcodes,
+            'application' => $app,
+            'products' => $app->products
+        ])->setPaper([30, -30, 280.77, 320.16]);
     }
 
     public function getDeliveryDateFromHru($appNumber, DeliveryAddress $addressEntity): bool
@@ -123,5 +130,10 @@ class ApplicationService
             default:
                 return new ApplicationImportCsv();
         }
+    }
+
+    public function createFromUI(ApplicationUICreateRequestDTO $dto)
+    {
+        dd($dto);
     }
 }
