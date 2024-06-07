@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repositories\Admin;
 
 use App\Domain\Admin\WarehouseTcDTO;
 use App\Models\TransportCompanyWarehouse;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class TransportCompanyWarehouseRepository
@@ -32,6 +33,11 @@ class TransportCompanyWarehouseRepository
         return TransportCompanyWarehouse::with(['region', 'tcSettings'])
             ->get()
             ->all();
+    }
+
+    public function getAll(): Collection
+    {
+        return TransportCompanyWarehouse::all();
     }
 
     public function create(WarehouseTcDTO $dto)

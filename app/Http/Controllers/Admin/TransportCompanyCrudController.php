@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\TransportCompanyRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use App\Infrastructure\Repositories\Admin\TransportCompanyWarehouseRepository;
+use App\Infrastructure\Repositories\Admin\TransportCompanySettingsRepository;
+use App\Domain\Admin\TCSettingDTO;
 
 /**
  * Class TransportCompanyCrudController
@@ -13,12 +16,23 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
  */
 class TransportCompanyCrudController extends CrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    protected TransportCompanyWarehouseRepository $tcWarehouseRepo;
+    protected TransportCompanySettingsRepository $tcSettingsRepo;
 
+    public function __construct(TransportCompanyWarehouseRepository $tcWarehouseRepo,
+                                TransportCompanySettingsRepository $tcSettingsRepo
+    )
+    {
+        $this->tcWarehouseRepo = $tcWarehouseRepo;
+        $this->tcSettingsRepo = $tcSettingsRepo;
+        parent::__construct();
+    }
+
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation { store as traitStore; }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
      * 
@@ -73,8 +87,27 @@ class TransportCompanyCrudController extends CrudController
      * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */
-    protected function setupUpdateOperation()
+    protected function setupUpdateOperation(): void
     {
         $this->setupCreateOperation();
+    }
+
+    /**
+     * При сохранении новой тк, создаём настройки и привязываем к складам
+     * @return \Illuminate\Http\RedirectResponse
+     *
+     */
+    public function store(): \Illuminate\Http\RedirectResponse
+    {
+        $response = $this->traitStore();
+        $tcId = $this->crud->getCurrentEntryId();
+        $warehouses = $this->tcWarehouseRepo->getAll();
+
+        foreach ($warehouses as $warehouse) {
+            $dto = new TCSettingDTO($tcId, $warehouse->id);
+            $this->tcSettingsRepo->create($dto);
+        }
+
+        return $response;
     }
 }
