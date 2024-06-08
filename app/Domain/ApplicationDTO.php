@@ -2,10 +2,30 @@
 
 namespace App\Domain;
 
+use App\Application\ApplicationDTOInterface;
+use App\Domain\DTO\Requests\ApplicationUICreateAddressDTO;
 use Illuminate\Support\Carbon;
 
-class ApplicationDTO
+class ApplicationDTO implements ApplicationDTOInterface
 {
+    /**
+     * @param ProductDTO[] $products
+     */
+    public function __construct(public readonly ApplicationUICreateAddressDTO $addressDTO,
+                                public readonly array $products,
+                                public readonly string $orderNumber,
+                                public readonly string $paymentType,
+                                public readonly string $deliveryTime,
+                                public readonly string $deliveryDate,
+                                public readonly int $warehouseId,
+                                public readonly string $clientFullName,
+                                public readonly string $clientPhone,
+                                public readonly string $comment,
+                                public readonly ?string $deliveryCost = null
+    )
+    {
+    }
+
     public function dbRowsFromCsv(): array
     {
         return [

@@ -2,20 +2,27 @@
 
 namespace App\Infrastructure\Repositories;
 
+use App\Application\ApplicationDTOInterface;
 use App\Models\ApplicationObi;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 
 class ApplicationObiRepository
 {
-    public function create(array $data)
+    public function create(ApplicationDTOInterface $dto, int $userId)
     {
-        $existsApp = ApplicationObi::where('order_number', $data['order_number'])
-            ->where('user_id', $data['user_id'])
+        $existsApp = ApplicationObi::where('order_number', $dto->orderNumber)
+            ->where('user_id', $userId)
             ->first();
 
         if (!$existsApp) {
-            return ApplicationObi::create($data);
+            return ApplicationObi::create([
+                'user_id' => $userId,
+                'delivery_date' => $dto->deliveryDate,
+                'delivery_time' => $dto->deliveryTime,
+                'order_number' => $dto->orderNumber,
+                ''
+            ]);
         } else {
             return $existsApp;
         }

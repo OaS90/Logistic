@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Application;
 
+use App\Domain\ApplicationDTO;
 use App\Domain\DTO\Requests\ApplicationUICreateAddressDTO;
 use App\Domain\DTO\Requests\ApplicationUICreateProductDTO;
 use App\Domain\DTO\Requests\ApplicationUICreateRequestDTO;
+use App\Domain\ProductDTO;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ApplicationUICreateRequest extends FormRequest
@@ -37,7 +39,7 @@ class ApplicationUICreateRequest extends FormRequest
             'fields.warehouse_id' => 'required|integer|min:1',
             'fields.client_name' => 'required|string|min:1',
             'fields.client_phone' => ['required', 'regex:/\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}/'],
-            'fields.comment' => 'required|string|min:1',
+            'fields.comment' => 'string|min:1',
             'products' => 'required|array|min:1',
             'products.name' => 'required|string|min:1',
             'products.sku' => 'required|string|min:1',
@@ -62,7 +64,7 @@ class ApplicationUICreateRequest extends FormRequest
             'addresso.city_fias_id' => 'string|min:1|nullable',
             'address.street_with_type' => 'string|min:1|nullable',
             'address.street_fias_id' => 'string|min:1|nullable',
-            'address.house' => 'integer|min:1|nullable',
+            'address.house' => 'string|min:1|nullable',
             'address.block_type_full' => 'string|min:1|nullable',
             'address.block' => 'string|min:1|nullable',
         ];
@@ -99,33 +101,44 @@ class ApplicationUICreateRequest extends FormRequest
         $validatedData = $this->validated();
 
         return new ApplicationUICreateRequestDTO(
-            new ApplicationUICreateProductDTO(
-                name: $validatedData['products']['name'],
-                sku: $validatedData['products']['sku'],
-                brand: $validatedData['products']['brand'],
-                vat: $validatedData['products']['vat'],
-                count: $validatedData['products']['count'],
-                cost: $validatedData['products']['cost'],
-                width: $validatedData['products']['width'],
-                height: $validatedData['products']['height'],
-                depth: $validatedData['products']['depth'],
-                weight: $validatedData['products']['weight'],
-            ),
-            new ApplicationUICreateAddressDTO(
-                city: $validatedData['address']['city'],
-                regionWithType: $validatedData['address']['region_with_type'],
-                cityFias: $validatedData['address']['city_fias_id'],
-                streetWithType: $validatedData['address']['street_with_type'],
-                streetFias: $validatedData['address']['street_fias_id'],
-                houseNumber: $validatedData['address']['house'],
-                houseBlockFull: $validatedData['address']['block_type_full'],
-                houseBlock: $validatedData['address']['block'],
-                flat: $validatedData['addressExtraInfo']['flat'],
-                floor: $validatedData['addressExtraInfo']['floor'],
-                entrance: $validatedData['addressExtraInfo']['entrance'],
-                postCode: $validatedData['addressExtraInfo']['postcode'],
-                elevator: $validatedData['addressExtraInfo']['elevator']
-            ),
+            new ApplicationDTO(
+                new ApplicationUICreateAddressDTO(
+                    city: $validatedData['address']['city'],
+                    regionWithType: $validatedData['address']['region_with_type'],
+                    cityFias: $validatedData['address']['city_fias_id'],
+                    streetWithType: $validatedData['address']['street_with_type'],
+                    streetFias: $validatedData['address']['street_fias_id'],
+                    houseNumber: $validatedData['address']['house'],
+                    houseBlockFull: $validatedData['address']['block_type_full'],
+                    houseBlock: $validatedData['address']['block'],
+                    flat: $validatedData['addressExtraInfo']['flat'],
+                    floor: $validatedData['addressExtraInfo']['floor'],
+                    entrance: $validatedData['addressExtraInfo']['entrance'],
+                    postCode: $validatedData['addressExtraInfo']['postcode'],
+                    elevator: $validatedData['addressExtraInfo']['elevator']
+                ),
+                [new ProductDTO(
+                    name: $validatedData['products']['name'],
+                    brand: $validatedData['products']['brand'],
+                    sku: $validatedData['products']['sku'],
+                    count: $validatedData['products']['count'],
+                    cost: $validatedData['products']['cost'],
+                    vat: $validatedData['products']['vat'],
+                    width: $validatedData['products']['width'],
+                    height: $validatedData['products']['height'],
+                    depth: $validatedData['products']['depth'],
+                    volume: $validatedData['products']['volume'],
+                    weight: $validatedData['products']['weight']
+                )],
+                orderNumber: $validatedData['fields']['order_number'],
+                paymentType: $validatedData['fields']['payment_type'],
+                deliveryTime: $validatedData['fields']['delivery_from'] . '-' . $validatedData['fields']['delivery_till'],
+                deliveryDate: $validatedData['fields']['delivery_date'],
+                warehouseId: $validatedData['fields']['warehouse_id'],
+                clientFullName: $validatedData['fields']['client_name'],
+                clientPhone: $validatedData['fields']['client_phone'],
+                comment: $validatedData['fields']['comment']
+            )
         );
     }
 }

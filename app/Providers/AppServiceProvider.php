@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Application\ApplicationServiceInterface;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\ApplicationRepository;
+use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Repositories\ProductRepository;
 use App\Infrastructure\Services\Application\ApplicationService;
 use App\Infrastructure\Services\Delivery\Api\Api;
@@ -27,9 +28,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ApplicationServiceInterface::class, function () {
             return new ApplicationService(
                 appRepo: new ApplicationRepository(),
-                applicationObiRepo: new ApplicationObiRepository(),
+                appObiRepo: new ApplicationObiRepository(),
                 productRepo: new ProductRepository(),
-                codeGenerator: new BarcodeGeneratorDynamicHTML()
+                codeGenerator: new BarcodeGeneratorDynamicHTML(),
+                deliveryAddressRepo: new DeliveryAddressRepository
             );
         });
 

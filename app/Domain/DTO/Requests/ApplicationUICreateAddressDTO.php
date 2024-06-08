@@ -9,7 +9,7 @@ class ApplicationUICreateAddressDTO
                                 public readonly ?string $cityFias,
                                 public readonly ?string $streetWithType,
                                 public readonly ?string $streetFias,
-                                public readonly ?int $houseNumber,
+                                public readonly ?string $houseNumber,
                                 public readonly ?string $houseBlockFull,
                                 public readonly ?string $houseBlock,
                                 public readonly ?string $flat,

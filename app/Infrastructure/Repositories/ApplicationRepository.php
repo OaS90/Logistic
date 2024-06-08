@@ -2,6 +2,8 @@
 
 namespace App\Infrastructure\Repositories;
 
+use App\Domain\ApplicationDTO;
+use App\Domain\Enum\ApplicationStatus;
 use App\Models\Application;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,17 +34,22 @@ class ApplicationRepository
             })->get();
     }
 
-    public function create(array $data)
+    public function create(ApplicationDTO $dto, int $userId, int $addressId): Application
     {
-        $existsApplication = $this->getByOrderNumber($data['order_number']);
-
-        if (!$existsApplication) {
-            return Application::create($data);
-        } else {
-            $existsApplication->update($data);
-
-            return $existsApplication;
-        }
+        return Application::create([
+            'user_id' => $userId,
+            'order_number' => $dto->orderNumber,
+            'payment_type' => $dto->paymentType,
+            'delivery_date' => $dto->deliveryDate,
+            'delivery_cost' => $dto->deliveryCost,
+            'delivery_time' => $dto->deliveryTime,
+            'delivery_address' => $addressId,
+            'warehouse_id' => $dto->warehouseId,
+            'comment' => $dto->comment,
+            'client_name' => $dto->clientFullName,
+            'client_phone' => parse_phone($dto->clientPhone), // переписать в класс парсер
+            'status' => ApplicationStatus::CREATED,
+        ]);
     }
 
     public function updateStatus(string $orderId, string $status): void
@@ -51,15 +58,9 @@ class ApplicationRepository
         $app->update(['status' => $status]);
     }
 
-    public function updateByFields($number, $fields): void
+    public function updateByFields(Application $app, $fields): void
     {
-        $app = $this->getByOrderNumber($number);
-
-        if ($app) {
-            $app->update($fields);
-        } else {
-            Log::error('Не удалось найти заказ №' . $number);
-        }
+        $app->update($fields);
     }
 
     public function getAll(int $limit = 300)

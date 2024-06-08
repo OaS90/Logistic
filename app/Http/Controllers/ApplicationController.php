@@ -14,6 +14,7 @@ use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Application\ExcelExportService;
 use App\Infrastructure\Exports\ApplicationExport;
 use App\Infrastructure\DadataAdapter;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 use App\Application\CsvImportService;
@@ -108,58 +109,58 @@ class ApplicationController extends Controller
         ]);
     }
 
-    /**
-     * @throws ProductWithoutSkuException
-     */
     public function create(ApplicationUICreateRequest $request, ApplicationServiceInterface $service): Response
     {
         try {
             $service->createFromUI($request->getDTO());
         } catch (\Throwable $e) {
-            dd($e->getMessage());
+            Log::error('Ошибка создания заявки через форму в лк: ' . $e->getMessage());
+
+            return response(['success' => false], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        dd('frfre');
-        $data = $request->get('fields');
-        $address = $request->get('address');
-        $addressExtra = $request->get('addressExtraInfo');
-        // todo переделать, когда появится возможность добавлять несколько товаров в заявку, при ручном создании
-        $products = $request->get('products');
-        $addressData = array_merge($address, $addressExtra);
-        $data['user_id'] = Auth::id();
-        // todo refactoring
-        $data['delivery_time'] = $data['delivery_from'] . '-' . $data['delivery_till'];
-        unset($data['delivery_from']);
-        unset($data['delivery_till']);
-        unset($data['_token']);
-        $data['client_phone'] = parse_phone($data['client_phone']);
-        $newAddress = $this->addressRepository->create($addressData);
-        $data['delivery_address'] = $newAddress->id;
-
-        if ($this->obiUser == Auth::id()) {
-            $existApp = $this->applicationObiRepo->getById($data['order_number']);
-        } else {
-            $existApp = $this->repo->getByOrderNumber($data['order_number']);
-        }
-
-        if (!$existApp) {
-            if ($this->obiUser == Auth::id()) {
-                $existApp = $this->applicationObiRepo->create($data);
-            } else {
-                $existApp = $this->repo->create($data);
-            }
-
-            $products['app_id'] = $existApp->id;
-            $products[] = $this->productRepository->create($products);
-        } else {
-           $this->appService->checkAppChanges($existApp, $data);
-        }
-
-        $this->appService->getDeliveryDateFromHru($existApp->order_number, $newAddress);
-//        if ($newApplication)
-//            $this->makeCsvAndStore($newApplication);
-
-        return response($request->all(), Response::HTTP_OK);
+        return response(['success' => true], Response::HTTP_OK);
+//        dd('frfre');
+//        $data = $request->get('fields');
+//        $address = $request->get('address');
+//        $addressExtra = $request->get('addressExtraInfo');
+//        // todo переделать, когда появится возможность добавлять несколько товаров в заявку, при ручном создании
+//        $products = $request->get('products');
+//        $addressData = array_merge($address, $addressExtra);
+//        $data['user_id'] = Auth::id();
+//        // todo refactoring
+//        $data['delivery_time'] = $data['delivery_from'] . '-' . $data['delivery_till'];
+//        unset($data['delivery_from']);
+//        unset($data['delivery_till']);
+//        unset($data['_token']);
+//        $data['client_phone'] = parse_phone($data['client_phone']);
+//        $newAddress = $this->addressRepository->create($addressData);
+//        $data['delivery_address'] = $newAddress->id;
+//
+//        if ($this->obiUser == Auth::id()) {
+//            $existApp = $this->applicationObiRepo->getById($data['order_number']);
+//        } else {
+//            $existApp = $this->repo->getByOrderNumber($data['order_number']);
+//        }
+//
+//        if (!$existApp) {
+//            if ($this->obiUser == Auth::id()) {
+//                $existApp = $this->applicationObiRepo->create($data);
+//            } else {
+//                $existApp = $this->repo->create($data);
+//            }
+//
+//            $products['app_id'] = $existApp->id;
+//            $products[] = $this->productRepository->create($products);
+//        } else {
+//           $this->appService->checkAppChanges($existApp, $data);
+//        }
+//
+//        $this->appService->getDeliveryDateFromHru($existApp->order_number, $newAddress);
+////        if ($newApplication)
+////            $this->makeCsvAndStore($newApplication);
+//
+//        return response($request->all(), Response::HTTP_OK);
     }
 
     public function makeCsvAndStore($newApp)

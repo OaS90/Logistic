@@ -5,6 +5,11 @@ namespace App\Domain\Enum;
 enum ApplicationStatus
 {
     /**
+     * Создан
+     */
+    public const CREATED = 'created';
+
+    /**
      * Новый
      */
     public const NEW = 'new';

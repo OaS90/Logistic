@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Repositories;
 
+use App\Domain\ProductDTO;
 use App\Models\Product;
 
 class ProductRepository
@@ -17,14 +18,49 @@ class ProductRepository
         $product->update($fields);
     }
 
-    public function create(array $data)
+    public function create(ProductDTO $dto, int $appId)
     {
-        return Product::create($data);
+        return Product::create([
+            'app_id' => $appId,
+            'name' => $dto->name,
+            'brand' => $dto->brand,
+            'sku' => $dto->sku,
+            'count' => $dto->count,
+            'cost' => $dto->cost,
+            'discount_cost' => $dto->discountCost,
+            'vat' => $dto->vat,
+            'width' => $dto->width,
+            'height' => $dto->height,
+            'depth' => $dto->depth,
+            'volume' => $dto->volume,
+            'weight' => $dto->weight,
+            'tnved' => $dto->tnved,
+            'country_code' => $dto->countryCode,
+            'barcode' => $dto->barcode,
+            'left_to_pay' => $dto->leftToPay
+        ]);
     }
 
-    public function update(array $data, $model)
+    public function update(ProductDTO $dto, $model)
     {
-        return $model->update($data);
+        return $model->update([
+            'name' => $dto->name,
+            'brand' => $dto->brand,
+            'sku' => $dto->sku,
+            'count' => $dto->count,
+            'cost' => $dto->cost,
+            'discount_cost' => $dto->discountCost,
+            'vat' => $dto->vat,
+            'width' => $dto->width,
+            'height' => $dto->height,
+            'depth' => $dto->depth,
+            'volume' => $dto->volume,
+            'weight' => $dto->weight,
+            'tnved' => $dto->tnved,
+            'country_code' => $dto->countryCode,
+            'barcode' => $dto->barcode,
+            'left_to_pay' => $dto->leftToPay
+        ]);
     }
 
     //public function getByAppIdSkuBrand(string $brand, string $sku, int $appId)

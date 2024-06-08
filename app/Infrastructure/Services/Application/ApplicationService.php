@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Services\Application;
 
 use App\Application\ApplicationServiceInterface;
+use App\Domain\ApplicationDTO;
 use App\Domain\DTO\Requests\ApplicationUICreateRequestDTO;
 use App\Domain\Enum\ApplicationStatus;
 use App\Domain\ProductDTO;
@@ -14,62 +15,57 @@ use App\Infrastructure\Imports\ApplicationObiImport;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\ProductRepository;
+use App\Models\Application;
 use App\Models\DeliveryAddress;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Barryvdh\DomPDF\PDF as PdfFile;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 use Symfony\Component\HttpFoundation\Response;
+use App\Infrastructure\Repositories\DeliveryAddressRepository;
 
 class ApplicationService implements ApplicationServiceInterface
 {
     private ApplicationRepository $appRepo;
+    private ApplicationObiRepository $appObiRepo;
     private ProductRepository $productRepo;
     private BarcodeGeneratorDynamicHTML $codeGenerator;
-    private ApplicationObiRepository $applicationObiRepo;
+    private DeliveryAddressRepository $deliveryAddressRepo;
+    private int $obiUser;
 
     public function __construct(ApplicationRepository $appRepo,
-                                ApplicationObiRepository $applicationObiRepo,
+                                ApplicationObiRepository $appObiRepo,
                                 ProductRepository $productRepo,
-                                BarcodeGeneratorDynamicHTML $codeGenerator
+                                BarcodeGeneratorDynamicHTML $codeGenerator,
+                                DeliveryAddressRepository $deliveryAddressRepo
     )
     {
         $this->appRepo = $appRepo;
         $this->productRepo = $productRepo;
         $this->codeGenerator = $codeGenerator;
-        $this->applicationObiRepo = $applicationObiRepo;
+        $this->deliveryAddressRepo = $deliveryAddressRepo;
+        $this->appObiRepo = $appObiRepo;
+        $this->obiUser = config('app.obi_user_id');
     }
 
-    /**
-     * @throws ProductWithoutSkuException
-     */
-    public function checkAppChanges($app, array $data): void
+    public function checkAppChangesAndUpdate(Application $app, ApplicationDTO $dto): void
     {
         if (!in_array($app->status, [ApplicationStatus::NEW, ApplicationStatus::REFUSAL])) {
-            $data['app']['doc_ver'] = $app->doc_ver + 1;
-            $app->update($data['app']);
-            $this->checkAppProducts($app, $data['products']);
-        }
-    }
+            //$data['app']['doc_ver'] = $app->doc_ver + 1;
+            $this->appRepo->updateByFields($app, [
+                'doc_ver' => $app->doc_ver + 1,
+                'payment_type' => $dto->paymentType,
+                'delivery_date' => $dto->deliveryDate,
+                'delivery_cost' => $dto->deliveryCost,
+                'delivery_time' => $dto->deliveryTime,
+                'warehouse_id' => $dto->warehouseId,
+                'comment' => $dto->comment,
+                'client_name' => $dto->clientFullName,
+                'client_phone' => parse_phone($dto->clientPhone), // переписать в класс парсер
+            ]);
 
-    /**
-     * @throws ProductWithoutSkuException
-     */
-    private function checkAppProducts($app, array $data): void
-    {
-        foreach ($data as $csvProduct) {
-            if (!$csvProduct['sku'] || !isset($csvProduct['sku'])) {
-                throw new ProductWithoutSkuException('У товара ' . $csvProduct['name'] .
-                    ' отсутствует артикул в заявке номер ' . $app->order_number);
-            }
-
-            $appProduct = $this->productRepo->getByAppIdSkuBrand($csvProduct['sku'], $app->id);
-
-            if (!$appProduct) {
-                $this->productRepo->create((new ProductDTO())->toArray($app->id, $csvProduct));
-            } else {
-                $this->productRepo->update((new ProductDTO())->toArray($app->id, $csvProduct), $appProduct);
-            }
+            $this->checkAppProducts($app, $dto->products);
         }
     }
 
@@ -92,14 +88,15 @@ class ApplicationService implements ApplicationServiceInterface
         ])->setPaper([30, -30, 280.77, 320.16]);
     }
 
-    public function getDeliveryDateFromHru($appNumber, DeliveryAddress $addressEntity): bool
+    // TODO переписать в провайдер.
+    public function getDeliveryDateFromHru(Application $app, DeliveryAddress $addressEntity): bool
     {
         $api = new Api(config('app.hru_delivery_url'));
         $deliveryResponse = $api
             ->query('', ['q' => 'DeliveryDateBortUdachi', 'address' => $addressEntity->region_and_city]);
 
         if ($deliveryResponse && isset($deliveryResponse['date'])) {
-            $this->appRepo->updateByFields($appNumber, ['hru_delivery_date' => $deliveryResponse['date']]);
+            $this->appRepo->updateByFields($app, ['hru_delivery_date' => $deliveryResponse['date']]);
         }
 
         return false;
@@ -108,11 +105,12 @@ class ApplicationService implements ApplicationServiceInterface
     public function getAllApplications(): Collection|array
     {
         $common = $this->appRepo->getAll();
-        $obi = $this->applicationObiRepo->getAll();
+        $obi = $this->appObiRepo->getAll();
 
         return $common->merge($obi);
     }
 
+    // TODO вынести в сервис csv
     /**
      * @param string $extension
      * @param bool $isObiUser
@@ -132,8 +130,41 @@ class ApplicationService implements ApplicationServiceInterface
         }
     }
 
-    public function createFromUI(ApplicationUICreateRequestDTO $dto)
+    /**
+     * Через Ui в личном кабинете создаётся только обычный заказ (не ОБИ)
+     * @param ApplicationUICreateRequestDTO $dto
+     * @return void
+     */
+    public function createFromUI(ApplicationUICreateRequestDTO $dto): void
     {
-        dd($dto);
+        $userId = Auth::id();
+        $newDeliveryAddress = $this->deliveryAddressRepo->create($dto->applicationDTO->addressDTO);
+        $existApp = $this->appRepo->getByOrderNumber($dto->applicationDTO->orderNumber);
+
+        if (!$existApp) {
+            $newApp = $this->appRepo->create($dto->applicationDTO, $userId, $newDeliveryAddress->id);
+            $this->productRepo->create($dto->applicationDTO->products[0], $newApp->id);
+            $existApp = $newApp;
+        } else {
+            $this->checkAppChangesAndUpdate($existApp, $dto->applicationDTO);
+        }
+
+        $this->getDeliveryDateFromHru($existApp, $newDeliveryAddress);
+    }
+
+    /**
+     * @param ProductDTO[] $products
+     */
+    private function checkAppProducts(Application $app, array $products): void
+    {
+        foreach ($products as $product) {
+            $appProduct = $this->productRepo->getByAppIdSkuBrand($product->sku, $app->id);
+
+            if (!$appProduct) {
+                $this->productRepo->create($product, $app->id);
+            } else {
+                $this->productRepo->update($product, $appProduct);
+            }
+        }
     }
 }
