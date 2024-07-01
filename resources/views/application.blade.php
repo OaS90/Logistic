@@ -84,49 +84,15 @@
                         <div class="profile-data__value">{{ $application->order_number }}</div>
                     </div>
                     <div class="profile-data profile-data--all">
-                        <div class="profile-data__ttl">Наименование товара</div>
-                        <div class="profile-data__value">{{ $application->products[0]->name }}</div>
-                    </div>
-                    <div class="profile-data profile-data--all">
-                        <div class="profile-data__ttl">Бренд</div>
-                        <div class="profile-data__value">{{ $application->products[0]->brand }}</div>
-                    </div>
-                    <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Форма оплаты</div>
                         <div class="profile-data__value">{{ $application->payment_type }}</div>
                     </div>
-                    <div class="profile-data profile-data--all">
-                        <div class="profile-data__ttl">Ставка НДС</div>
-                        <div class="profile-data__value">{{ $application->products[0]->vat }}</div>
-                    </div>
-                    <div class="profile-data profile-data--all">
-                        <div class="profile-data__ttl">Стоимость</div>
-                        <div class="profile-data__value profile-data__value-cost">{{ $application->products[0]->cost}} ₽</div>
-                    </div>
-                    <div class="profile-data__hdr">Параметры отправляемого груза</div>
-                    <div class="profile-data profile-data--all">
-                        <div class="profile-data__ttl">Ширина</div>
-                        <div class="profile-data__value">{{ $application->products[0]->width }}см</div>
-                    </div>
-                    <div class="profile-data profile-data--all">
-                        <div class="profile-data__ttl">Высота</div>
-                        <div class="profile-data__value">{{ $application->products[0]->height }} см</div>
-                    </div>
-                    <div class="profile-data profile-data--all">
-                        <div class="profile-data__ttl">Глубина</div>
-                        <div class="profile-data__value">{{ $application->products[0]->depth }} см</div>
-                    </div>
-                    <div class="profile-data profile-data--all">
-                        <div class="profile-data__ttl">Количество</div>
-                        <div class="profile-data__value">{{ $application->products[0]->count }}</div>
-                    </div>
-                    <div class="profile-data profile-data--all">
-                        <div class="profile-data__ttl">Объем</div>
-                        <div class="profile-data__value">{{ $application->products[0]->volume }} м2</div>
-                    </div>
-                    <div class="profile-data profile-data--all">
-                        <div class="profile-data__ttl">Расчетный вес</div>
-                        <div class="profile-data__value">{{ $application->products[0]->weight }} кг</div>
+                    <div class="profile-data profile-data--address">
+                        <div class="profile-data__ttl">Дата доставки</div>
+                        <div class="profile-data__value">
+                            {{ $application->delivery_date . ' '
+                            . $application->delivery_time}}
+                        </div>
                     </div>
                     <div class="profile-data profile-data--address">
                         <div class="profile-data__ttl">Адрес склада отгрузки</div>
@@ -135,11 +101,11 @@
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Квартира</div>
-                        <div class="profile-data__value">{{ $application->address->flat }}</div>
+                        <div class="profile-data__value">{{ $application->address->flat ?? '-'}}</div>
                     </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Этаж</div>
-                        <div class="profile-data__value">{{ $application->address->floor }}</div>
+                        <div class="profile-data__value">{{ $application->address->floor ?? '-' }}</div>
                     </div>
 
                     @if($application->address->entrance)
@@ -158,13 +124,44 @@
 
                     @if($application->comment)
                         <div class="profile-data profile-data--all">
-                            <div class="profile-data__ttl">Коментарии</div>
+                            <div class="profile-data__ttl">Комментарий</div>
                             <div class="profile-data__value">
                                 {{ $application->comment }}
                             </div>
                         </div>
                     @endif
-
+                    <div class="report-section__container">
+                    <table class="report-table">
+                        <tr>
+                            <th>Наименование товара</th>
+                            <th>Артикул</th>
+                            <th>Бренд</th>
+                            <th>Баркод</th>
+                            <th>Ставка НДС</th>
+                            <th>Стоимость</th>
+                            <th>Параметры отправляемого груза</th>
+                            <th>Количество</th>
+                        </tr>
+                        @foreach($application->products as $product)
+                            <tr>
+                                <td>{{ $product->name }}</td>
+                                <td>{{ $product->sku }}</td>
+                                <td>{{ $product->brand }}</td>
+                                <td>{{ $product->barcode ?? '-' }}</td>
+                                <td>{{ $product->vat }} %</td>
+                                <td>{{ $product->cost }}₽</td>
+                                <td>
+                                    Ширина: {{ $product->width }} см
+                                    Высота: {{ $product->height }} см
+                                    Глубина: {{ $product->depth }} см
+                                    Объем: {{ $product->volume }} м2
+                                    Расчетный вес: {{ $product->weight }}
+                                </td>
+                                <td>{{ $product->count }}</td>
+                            </tr>
+                        @endforeach
+                    </table>
+                    </div>
                     <div class="profile-data__hdr">Информация о покупателе</div>
                     <div class="profile-data">
                         <div class="profile-data__ttl">ФИО покупателя</div>
@@ -181,5 +178,6 @@
                 </div>
             </section>
         </div>
+        <div class="overlay js-overlay-modal"></div>
     </div>
 @endsection
