@@ -219,8 +219,6 @@ class CsvImportService
                 $apps[$i]['app'] = (new ApplicationDTO())->dbRows($appWithDbColumns);
                 $apps[$i]['address'] = (new DeliveryAddressDTO())->dbRows($appWithDbColumns);
                 $apps[$i]['products'][] = (new ProductDTO())->dbRows($appWithDbColumns);
-            } else {
-                throw new \Exception('Отсутствует товар в заявке номер ' . $fileData[0]);
             }
         }
 
