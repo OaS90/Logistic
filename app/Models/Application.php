@@ -51,6 +51,22 @@ class Application extends Model
             $cityRegion .= ', ' . $street;
         }
 
+        if ($this->address->building) {
+            $cityRegion .= ', д. ' . $this->address->building;
+        }
+
+        if ($this->address->flat) {
+            $cityRegion .= ', кв.' . $this->address->flat;
+        }
+
+        if ($this->address->floor) {
+            $cityRegion .= ', этаж ' . $this->address->floor;
+        }
+
+        if ($this->address->entrance) {
+            $cityRegion .= ', подъезд №' . $this->address->entrance;
+        }
+
         return $cityRegion;
     }
 
