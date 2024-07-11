@@ -99,6 +99,11 @@
                         <div class="profile-data__value">{{ $application->warehouse->address }}
                         </div>
                     </div>
+                    <div class="profile-data profile-data--address">
+                        <div class="profile-data__ttl">Адрес доставки</div>
+                        <div class="profile-data__value">{{ $application->full_address }}
+                        </div>
+                    </div>
                     <div class="profile-data profile-data--all">
                         <div class="profile-data__ttl">Квартира</div>
                         <div class="profile-data__value">{{ $application->address->flat ?? '-'}}</div>
