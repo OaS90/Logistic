@@ -33,7 +33,7 @@ class Api
         }
 
         if (env('APP_ENV') != 'production') {
-            $parameters[RequestOptions::HEADERS]['Authorization'] .= ', Basic ' . base64_encode('holodilnik:Fin7Dater-Gola');
+            $parameters[RequestOptions::HEADERS]['Authorization'] .= ', Basic ' . base64_encode('holodilnik:xoN1thowahPai1iyah4a');
         }
 
         try {
@@ -41,9 +41,6 @@ class Api
             $content = $request->getBody()->getContents();
             $result = json_decode($content, true);
 
-            // не разобрался, почему именно на PUT и DELETE не приходит json в ответе, но
-            // цены создаются/обновляются/удаляются в сервисе
-            // костыль
             if ($request->getStatusCode() === 204) {
                 return [
                     'status' => true,
@@ -55,11 +52,11 @@ class Api
                 return [];
             }
         } catch (ClientException $e) {
-            Log::info('Request:' . json_encode($parameters));
-            Log::error('Sending to delivery service error:' . $e->getResponse()->getBody()->getContents());
+            Log::info('Request: ' . json_encode($parameters));
+            Log::error('Sending to delivery service error: ' . $e->getResponse()->getBody()->getContents());
         } catch (GuzzleException $e) {
-            Log::info('Request:' . json_encode($data));
-            Log::error('Sending to delivery service error:' . $e->getMessage());
+            Log::info('Request: ' . json_encode($data));
+            Log::error('Sending to delivery service error: ' . $e->getMessage());
         }
 
         return $result;

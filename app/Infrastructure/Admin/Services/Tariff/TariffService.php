@@ -200,20 +200,23 @@ class TariffService
     public function deleteZone(int $tariffId, int $regionId, array $zoneData): void
     {
         $tariff = $this->tariffRepo->findById($tariffId);
+        $region = $this->regionRepo->getById($regionId);
 
-        foreach ($zoneData['categories'] as $categoryInfo) {
-            $category = $this->categoryRepo->getById($categoryInfo['id']);
+        foreach ($zoneData['categories'] as $categoryId) {
+            $category = $this->categoryRepo->getById($categoryId);
             $result = $this->deliveryServiceApi
                     ->query('settings/calculation/group/courier-delivery-prices', [
-                        'region_id' => $regionId,
+                        'region_id' => $region->region_id,
                         'tariff_id' => $tariff->delivery_service_tariff_id,
                         'zone' => $zoneData['zone'],
                         'product_delivery_category_id' => $category->result_category_id,
                     ], 'DELETE', $this->token);
 
-            if (!$result) {
-                throw new Exception('Не удалось удалить цены в сервисе');
-            }
+//            убрал исключение т.к. сервис не возвращает ошибку удаления
+//            поэтому считаем, что удаление всегда успешно
+//            if (!$result) {
+//                throw new Exception('Не удалось удалить цены в сервисе');
+//            }
 
             $this->categoryRepo->deletePriceByZoneIdAndRegionId($category, $tariffId, $regionId, $zoneData['zoneId']);
         }

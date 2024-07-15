@@ -87,8 +87,8 @@
                     <td>{{ category.name }}</td>
                     <td><input type="checkbox" :checked="category.isUse" v-model="category.isUse" disabled></td>
                     <td v-for="(details, index) in category.prices">
-                        <span class="extra-label"><b>ID цены в сервисе {{ details.service_price_id }}</b></span>
-                        <br>
+<!--                        <span class="extra-label"><b>ID цены в сервисе {{ details.service_price_id }}</b></span>-->
+<!--                        <br>-->
                         <span class="extra-label">Стоимость первой единицы</span>
                         <span class="form-control col-md-12">{{ details.price }}</span>
                         <span class="extra-label">Стоимость второй единицы</span>
@@ -232,10 +232,7 @@ export default {
             let categories = []
             this.deleteModal = !this.deleteModal
             this.dataForSave.forEach((category) => {
-                categories.push({
-                    id: category.id,
-                    service_price_id: category.prices[this.zoneForDelete.zone].service_price_id
-                })
+                categories.push(category.id)
                 delete category.prices[this.zoneForDelete.zone]
             })
 
