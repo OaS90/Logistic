@@ -7,11 +7,13 @@ use App\Domain\ApplicationDTO;
 use App\Domain\DeliveryAddressDTO;
 use App\Domain\ProductDTO;
 use App\Http\Controllers\Api\Exceptions\JsonParseException;
+use App\Infrastructure\Admin\Exceptions\ProductWithoutSkuException;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\AppStatusHistoryRepository;
 use App\Infrastructure\Repositories\UserRepository;
 use Barryvdh\DomPDF\PDF;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\Exceptions\StatusUpdateException;
 use App\Infrastructure\Repositories\ProductRepository;
@@ -124,6 +126,9 @@ class ApplicationController
        return response()->json(array_merge($statuses, $errors));
     }
 
+    /**
+     * @throws ProductWithoutSkuException
+     */
     public function create(Request $request)
     {
         $data = json_decode($request->getContent(), true);
@@ -168,8 +173,13 @@ class ApplicationController
                 'dateTime' => $newApp->created_at
             ]);
 
+            // todo написать общий метод для файлов и апишных запросов на проверку изменения заявки и товаров в ней
+            $appProductsSku = $newApp->products()->pluck('sku')->all();
+
             foreach ($app['products'] as $product) {
-                $this->productRepo->create((new ProductDTO())->apiRows($product, $newApp->id));
+                if (!in_array($product['sku'], $appProductsSku)) {
+                    $this->productRepo->create((new ProductDTO())->apiRows($product, $newApp->id));
+                }
             }
         }
 
