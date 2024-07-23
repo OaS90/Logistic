@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class AddInDayLimitationColumnInQuotesTable extends Migration
 {
@@ -14,7 +15,7 @@ class AddInDayLimitationColumnInQuotesTable extends Migration
     public function up()
     {
         Schema::table('quotes', function (Blueprint $table) {
-            $table->time('time_last')->change();
+            DB::statement('ALTER TABLE quotes ALTER COLUMN time_last TYPE TIME WITHOUT TIME ZONE USING time_last::time');
             $table->time('in_day_limitation')
                 ->comment('ограничение для интервала день в день')
                 ->after('delivery_days_from_moscow')
@@ -30,7 +31,7 @@ class AddInDayLimitationColumnInQuotesTable extends Migration
     public function down()
     {
         Schema::table('quotes', function (Blueprint $table) {
-            $table->char('time_last', 5)->change();
+            DB::statement('ALTER TABLE quotes ALTER COLUMN time_last TYPE CHAR USING time_last::char');
             $table->dropColumn('in_day_limitation');
         });
     }
