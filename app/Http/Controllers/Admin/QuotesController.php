@@ -88,9 +88,9 @@ class QuotesController extends Controller
             else
                 $message .= ' Ошибка отправки квот на сайт!';
 
-//            foreach ($updatedQuotes as $quote) {
-//                Mail::to($this->emailQuoteRepo->getAllActiveEmails())->send(new QuotesChange($quote));
-//            }
+            foreach ($updatedQuotes as $quote) {
+                Mail::to($this->emailQuoteRepo->getAllActiveEmails())->send(new QuotesChange($quote));
+            }
 
             Log::info('Response: ' .
                 $response->getBody()->getContents() .
