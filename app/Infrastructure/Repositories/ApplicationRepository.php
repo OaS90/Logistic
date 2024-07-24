@@ -35,6 +35,7 @@ class ApplicationRepository
     public function create(array $data)
     {
         $existsApplication = $this->getByOrderNumber($data['order_number']);
+        $data['client_phone'] = (int) $data['client_phone'];
 
         if (!$existsApplication) {
             return Application::create($data);
