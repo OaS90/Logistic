@@ -32,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
                 new Client([
                     'base_uri' => config('services.config_service.uri'),
                     RequestOptions::HEADERS => [
-                        'X-Config-Service' => config('services.config_service.token')
+                        'X-Config-Service-Token' => config('services.config_service.token')
                     ]
                 ])
             );

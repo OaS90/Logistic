@@ -17,7 +17,7 @@ class ConfigServiceApi
         if ($method == 'GET') {
             $params = [RequestOptions::QUERY => $data];
         } else {
-            $params = [RequestOptions::JSON => $data];
+            $params = [RequestOptions::JSON => ['data' => $data]];
         }
 
         try {
