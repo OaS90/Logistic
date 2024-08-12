@@ -2,6 +2,7 @@
 
 namespace App\Domain;
 
+use App\Models\Application;
 use App\Models\ApplicationObi;
 use App\Models\Product;
 use App\Application\DadataService;
@@ -9,7 +10,7 @@ use App\Application\DadataService;
 class PartnerOrderDTO
 {
     private $app;
-    protected $dadataService;
+    protected DadataService $dadataService;
 
     public function __construct($application)
     {
@@ -79,9 +80,10 @@ class PartnerOrderDTO
         return explode('-', $time);
     }
 
-    public function products($app): array
+    public function products(Application $app): array
     {
         $products = [];
+        $user = $app->user;
 
         foreach ($app->products as $index => $product) {
             /* @var Product $product */
@@ -104,7 +106,7 @@ class PartnerOrderDTO
                 'width' => (float) $product->width, // ширина в см
                 'height' => (float) $product->height, // высота в м2
                 'depth' => (float) $product->depth, // глубина в см
-                'shipmentCode' => 'TL-' . $app->order_number . '-' . $i
+                'shipmentCode' => $user->suffix . '-' . $app->order_number . '-' . $i
             ];
         }
 
