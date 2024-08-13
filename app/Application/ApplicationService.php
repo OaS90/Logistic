@@ -75,7 +75,7 @@ class ApplicationService
         $user = $app->user;
 
         for ($i = 1; $i <= count($app->products); $i++) {
-            $code = $app->order_number . '-' . $user->suffix . '-' . $i;
+            $code = $user->suffix . '-' . $app->order_number . '-' . $i;
             $barcode = $this->codeGenerator->getBarcode($code, $this->codeGenerator::TYPE_CODE_128);
             $barcodes[] = [
                 'code' => $code,
