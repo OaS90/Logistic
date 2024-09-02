@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Repositories;
 
-use App\Domain\ApplicationDTO;
+use App\Domain\DTO\ApplicationDTO;
 use App\Domain\Enum\ApplicationStatus;
 use App\Models\Application;
 use Illuminate\Support\Facades\Log;
@@ -34,7 +34,11 @@ class ApplicationRepository
             })->get();
     }
 
-    public function create(ApplicationDTO $dto, int $userId, int $addressId): Application
+    public function create(ApplicationDTO $dto,
+                           int $userId,
+                           int $addressId,
+                           int $warehouseId
+    ): Application
     {
         return Application::create([
             'user_id' => $userId,
@@ -44,7 +48,7 @@ class ApplicationRepository
             'delivery_cost' => $dto->deliveryCost,
             'delivery_time' => $dto->deliveryTime,
             'delivery_address' => $addressId,
-            'warehouse_id' => $dto->warehouseId,
+            'warehouse_id' => $warehouseId,
             'comment' => $dto->comment,
             'client_name' => $dto->clientFullName,
             'client_phone' => parse_phone($dto->clientPhone), // переписать в класс парсер

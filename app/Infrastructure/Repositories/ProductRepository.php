@@ -41,7 +41,7 @@ class ProductRepository
         ]);
     }
 
-    public function update(ProductDTO $dto, $model)
+    public function update(ProductDTO $dto, Product $model): bool
     {
         return $model->update([
             'name' => $dto->name,

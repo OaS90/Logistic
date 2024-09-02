@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Application\DeliveryAddressService;
-use App\Domain\ApplicationDTO;
-use App\Domain\DeliveryAddressDTO;
+use App\Domain\DTO\ApplicationDTO;
+use App\Domain\DTO\DeliveryAddressDTO;
 use App\Domain\ProductDTO;
 use App\Http\Controllers\Api\Exceptions\JsonParseException;
 use App\Infrastructure\Repositories\ApplicationObiRepository;

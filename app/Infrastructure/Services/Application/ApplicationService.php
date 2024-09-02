@@ -3,11 +3,10 @@
 namespace App\Infrastructure\Services\Application;
 
 use App\Application\ApplicationServiceInterface;
-use App\Domain\ApplicationDTO;
+use App\Domain\DTO\ApplicationDTO;
 use App\Domain\DTO\Requests\ApplicationUICreateRequestDTO;
 use App\Domain\Enum\ApplicationStatus;
 use App\Domain\ProductDTO;
-use App\Infrastructure\Admin\Exceptions\ProductWithoutSkuException;
 use App\Infrastructure\Api;
 use App\Infrastructure\Imports\ApplicationImportCsv;
 use App\Infrastructure\Imports\ApplicationImportXlsx;
@@ -49,7 +48,7 @@ class ApplicationService implements ApplicationServiceInterface
         $this->obiUser = config('app.obi_user_id');
     }
 
-    public function checkAppChangesAndUpdate(Application $app, ApplicationDTO $dto): void
+    public function checkAppChangesAndUpdate(Application $app, ApplicationDTO $dto, int $warehouseId): void
     {
         if (!in_array($app->status, [ApplicationStatus::NEW, ApplicationStatus::REFUSAL])) {
             //$data['app']['doc_ver'] = $app->doc_ver + 1;
@@ -59,7 +58,7 @@ class ApplicationService implements ApplicationServiceInterface
                 'delivery_date' => $dto->deliveryDate,
                 'delivery_cost' => $dto->deliveryCost,
                 'delivery_time' => $dto->deliveryTime,
-                'warehouse_id' => $dto->warehouseId,
+                'warehouse_id' => $warehouseId,
                 'comment' => $dto->comment,
                 'client_name' => $dto->clientFullName,
                 'client_phone' => parse_phone($dto->clientPhone), // переписать в класс парсер
@@ -132,21 +131,22 @@ class ApplicationService implements ApplicationServiceInterface
 
     /**
      * Через Ui в личном кабинете создаётся только обычный заказ (не ОБИ)
+     * и с одним товаром т.к. не доделали функционал для нескольких товаров
      * @param ApplicationUICreateRequestDTO $dto
      * @return void
      */
     public function createFromUI(ApplicationUICreateRequestDTO $dto): void
     {
-        $userId = Auth::id();
+        $user = Auth::user();
         $newDeliveryAddress = $this->deliveryAddressRepo->create($dto->applicationDTO->addressDTO);
         $existApp = $this->appRepo->getByOrderNumber($dto->applicationDTO->orderNumber);
 
         if (!$existApp) {
-            $newApp = $this->appRepo->create($dto->applicationDTO, $userId, $newDeliveryAddress->id);
+            $newApp = $this->appRepo->create($dto->applicationDTO, $user->id, $newDeliveryAddress->id, $dto->warehouseId);
             $this->productRepo->create($dto->applicationDTO->products[0], $newApp->id);
             $existApp = $newApp;
         } else {
-            $this->checkAppChangesAndUpdate($existApp, $dto->applicationDTO);
+            $this->checkAppChangesAndUpdate($existApp, $dto->applicationDTO, $dto->warehouseId);
         }
 
         $this->getDeliveryDateFromHru($existApp, $newDeliveryAddress);

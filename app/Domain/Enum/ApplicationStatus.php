@@ -2,46 +2,46 @@
 
 namespace App\Domain\Enum;
 
-enum ApplicationStatus
+class ApplicationStatus
 {
     /**
      * Создан
      */
-    public const CREATED = 'created';
+    const CREATED = 'created';
 
     /**
      * Новый
      */
-    public const NEW = 'new';
+    const  NEW = 'new';
 
     /**
      * В работе
      */
-    public const IN_PROGRESS = 'inProgress';
+    const IN_PROGRESS = 'inProgress';
 
     /**
      * Загружен
      */
-    public const LOADED = 'loaded';
+    const LOADED = 'loaded';
 
     /**
      * Отложен
      */
-    public const POSTPONED = 'postponed';
+    const POSTPONED = 'postponed';
 
     /**
      * Отказ
      */
-    public const REFUSAL = 'refusal';
+    const REFUSAL = 'refusal';
 
     /**
      * Выполнен
      */
-    public const COMPLETED = 'completed';
+    const COMPLETED = 'completed';
 
     /**
      * Брак
      */
-    public const DEFECT = 'defect';
+    const DEFECT = 'defect';
 
 }

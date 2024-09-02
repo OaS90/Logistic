@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Application;
+namespace App\Infrastructure\Services\Import;
 
+use App\Domain\DTO\ApplicationDTO;
+use App\Domain\Enum\DefaultDeliveryTime;
 use App\Infrastructure\Services\Application\ApplicationService;
-use App\Domain\ApplicationDTO;
 use App\Domain\ApplicationObiDTO;
-use App\Domain\DeliveryAddressDTO;
-use App\Domain\ProductDTO;
 use App\Infrastructure\Admin\Exceptions\CityFiasWrongFormatException;
-use App\Infrastructure\Admin\Exceptions\ProductWithoutSkuException;
 use App\Infrastructure\Exceptions\PartnerWarehouseNotFoundException;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\WarehouseRepository;
+use App\Infrastructure\Services\Application\Factories\ApplicationFactory;
+use App\Infrastructure\Services\Application\Factories\DeliveryAddressFactory;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Infrastructure\Imports\ImportEntity;
@@ -20,56 +20,45 @@ use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Repositories\ProductRepository;
 use App\Infrastructure\Repositories\ObiProductsRepository;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use App\Infrastructure\Services\Application\Factories\ProductFactory;
 
-/**
- *
- */
 class CsvImportService
 {
-    protected ApplicationRepository $appRepo;
-    protected ProductRepository $productRepo;
-    protected DeliveryAddressRepository $addressRepo;
-    protected ApplicationService $appService;
-    protected WarehouseRepository $warehouseRepo;
-    protected ApplicationObiRepository $applicationObiRepo;
-    protected ObiProductsRepository $obiProductsRepo;
-    private array $lastOrderData = [];
+    private string $lastOrderNumber;
 
-    public function __construct(ApplicationRepository $appRepo,
-                                DeliveryAddressRepository $addressRepository,
-                                ProductRepository $productRepository,
-                                ApplicationService $appService,
-                                WarehouseRepository $warehouseRepository,
-                                ApplicationObiRepository $applicationObiRepo,
-                                ObiProductsRepository $obiProductsRepository
+    public function __construct(private readonly ApplicationRepository $appRepo,
+                                private readonly DeliveryAddressRepository $addressRepo,
+                                private readonly ProductRepository $productRepo,
+                                private readonly ApplicationService $appService,
+                                private readonly WarehouseRepository $warehouseRepo,
+                                private readonly ApplicationObiRepository $applicationObiRepo,
+                                private readonly ObiProductsRepository $obiProductsRepo,
+                                private readonly ProductFactory $productFactory,
+                                private readonly DeliveryAddressFactory $addressFactory,
+                                private readonly ApplicationFactory $appFactory
     )
-    {
-        $this->appRepo = $appRepo;
-        $this->productRepo = $productRepository;
-        $this->addressRepo = $addressRepository;
-        $this->appService = $appService;
-        $this->warehouseRepo = $warehouseRepository;
-        $this->applicationObiRepo = $applicationObiRepo;
-        $this->obiProductsRepo = $obiProductsRepository;
-    }
+    {}
 
     /**
      * @throws PartnerWarehouseNotFoundException
-     * @throws CityFiasWrongFormatException|ProductWithoutSkuException
+     * @throws CityFiasWrongFormatException
      */
     public function import($file, ImportEntity $entity, int $userId, ?int $storeId = null): void
     {
         $dataFromCsv = $this->getDataArraysWithDbRows($entity, $file);
+        $warehouse = null;
 
-        foreach ($dataFromCsv as $data) {
-            $existApp = $this->appRepo->getByOrderNumber($data['app']['order_number']);
-            $data['app']['user_id'] = $userId;
-            $data['app']['delivery_time'] = $data['app']['delivery_from'] . '-' . $data['app']['delivery_till'];
+        // При загрузке из админки диспетчерами, есть id склада
+        if ($storeId) {
+            $warehouse = $this->warehouseRepo->findByStoreId($storeId);
+        }
 
-            if ($storeId) {
-                $warehouse = $this->warehouseRepo->findByStoreId($storeId);
-            } else {
-                $warehouse = $this->warehouseRepo->findByAddressAndUserId($userId, $data['app']['store_address']);
+        foreach ($dataFromCsv as $orderNumber => $appDTO) {
+            /* @var ApplicationDTO $appDTO */
+            $existApp = $this->appRepo->getByOrderNumber($orderNumber);
+
+            if (!$warehouse) {
+                $warehouse = $this->warehouseRepo->findByAddressAndUserId($userId, $appDTO->storeAddress);
             }
 
             if (!$warehouse) {
@@ -77,25 +66,17 @@ class CsvImportService
             }
 
             if (!$existApp) {
-                $address = $this->addressRepo->createFromCsv($data['address']);
-                $data['app']['delivery_address'] = $address->id;
-                $data['app']['warehouse_id'] = $warehouse->id;
-                $existApp = $this->appRepo->create($data['app']);
+                $address = $this->addressRepo->create($appDTO->addressDTO);
+                $existApp = $this->appRepo->create($appDTO, $userId, $address->id, $warehouse->id);
 
-                foreach ($data['products'] as $dataProduct) {
-                    // если не заполняют кол-во товаров, ставим 1
-                    if (!$dataProduct['count']) {
-                        $dataProduct['count'] = 1;
-                    }
-
-                    $this->productRepo->create((new ProductDTO())->toArray($existApp->id, $dataProduct));
+                foreach ($appDTO->products as $productDTO) {
+                    $this->productRepo->create($productDTO, $existApp->id);
                 }
             } else {
-                $data['app']['warehouse_id'] = $warehouse->id;
-                $this->appService->checkAppChangesAndUpdate($existApp, $data);
+                $this->appService->checkAppChangesAndUpdate($existApp, $appDTO, $warehouse->id);
             }
 
-            $this->appService->getDeliveryDateFromHru($existApp->order_number, $existApp->address);
+            $this->appService->getDeliveryDateFromHru($existApp, $existApp->address);
         }
     }
 
@@ -163,49 +144,37 @@ class CsvImportService
      * @param $file
      * @return array
      * @throws CityFiasWrongFormatException
-     * @throws \Exception
      */
     public function getDataArraysWithDbRows($entity, $file): array
     {
         $apps = [];
         $dataFromFile = Excel::toArray($entity, $file)[0];
 
-        // берём значения столбцов из файла и заменяем на значение столбцов и бд
-        $rows = (new ApplicationDTO())->dbRowsFromCsv();
+        // берём значения столбцов из файла и заменяем на значение столбцов из бд
+        $rows = $this->fileTitlesToDbColumnsPrepare();
 
-        // формируем массив данных [['app', 'address', 'products']]
+        // Формируем массив заявок
         // -1 т.к. первый элемент - заголовки из файла
         for ($i = 1; $i <= count($dataFromFile) - 1; $i++) {
-            // проверяем, что есть товар в этой столбце.
-            // даже если это второй товар для одного заказа,
+            // Проверяем, что есть товар в этом столбце.
+            // Даже если это второй товар для одного заказа,
             // то номера заказа не будет, но название товара будет по-любому
             // или если одинаковые номера заказов подряд
             // проверка кол-ва нужных ячеек. Должно быть 33
             $fileData = array_splice($dataFromFile[$i], 0, 33);
 
             if ($fileData[0]) {
-                $this->lastOrderData = [
-                    'index' => $i,
-                    'order_number' => $fileData[0],
-                    'date' => $fileData[13],
-                    'timeFrom' => $fileData[14],
-                    'timeTo' => $fileData[15]
-                ];
+                $this->lastOrderNumber = $fileData[0];
             }
 
             if ($fileData[16]) {
                 $appWithDbColumns = array_combine($rows, $fileData);
-
                 // если нет номера заказа, берём последний доступный и привязываем товар к нему
-                if (!$appWithDbColumns['order_number']) {
-                    $apps[$this->lastOrderData['index']]['products'][] = (new ProductDTO())->dbRows($appWithDbColumns);
-
-                    continue;
-                }
-
-                // если текущий номер заказа = предыдущему, засовываем товар в предыдущий заказ
-                if (isset($apps[$i - 1]) && $appWithDbColumns['order_number'] == $apps[$i - 1]['app']['order_number']) {
-                    $apps[$i - 1]['products'][] = (new ProductDTO())->dbRows($appWithDbColumns);
+                if (!$appWithDbColumns['orderNumber'] || isset($apps[$appWithDbColumns['orderNumber']])) {
+                    /* @var ApplicationDTO $app */
+                    $app = $apps[$this->lastOrderNumber];
+                    $product = $this->productFactory->makeProductDTO($appWithDbColumns);
+                    $app->addProduct($product);
 
                     continue;
                 }
@@ -213,15 +182,14 @@ class CsvImportService
                 $this->isDateExists($appWithDbColumns);
                 $this->isTimeExists($appWithDbColumns);
 
-                if ($appWithDbColumns['city_fias'] && strlen($appWithDbColumns['city_fias']) > 40) {
+                if ($appWithDbColumns['cityFias'] && strlen($appWithDbColumns['cityFias']) > 40) {
                     throw new CityFiasWrongFormatException('Неверный формат ФИАС города в заявке номер ' . $appWithDbColumns['order_number']);
                 }
 
-                $apps[$i]['app'] = (new ApplicationDTO())->dbRows($appWithDbColumns);
-                $apps[$i]['address'] = (new DeliveryAddressDTO())->dbRows($appWithDbColumns);
-                $apps[$i]['products'][] = (new ProductDTO())->dbRows($appWithDbColumns);
-            } else {
-                throw new \Exception('Отсутствует товар в заявке номер ' . $fileData[0]);
+                $address = $this->addressFactory->makeAddressDTO($appWithDbColumns);
+                $product = $this->productFactory->makeProductDTO($appWithDbColumns);
+                $app = $this->appFactory->makeApplicationDTO($appWithDbColumns, $address, [$product]);
+                $apps[$appWithDbColumns['orderNumber']] = $app;
             }
         }
 
@@ -235,10 +203,10 @@ class CsvImportService
      */
     private function isDateExists(array &$columns): void
     {
-        if (!$columns['delivery_date']) {
-            $columns['delivery_date'] = Carbon::parse($this->lastOrderData['date'])->format('Y-m-d');
+        if (!isset($columns['deliveryDate'])) {
+            $columns['deliveryDate'] = Carbon::now()->addDays(5)->format('Y-m-d');
         } else {
-            $columns['delivery_date'] = Carbon::parse($columns['delivery_date'])->format('Y-m-d');
+            $columns['deliveryDate'] = Carbon::parse($columns['deliveryDate'])->format('Y-m-d');
         }
     }
 
@@ -249,12 +217,52 @@ class CsvImportService
      */
     private function isTimeExists(array &$columns): void
     {
-        if (!$columns['delivery_from']) {
-            $columns['delivery_from'] = $this->lastOrderData['timeFrom'];
+        if (!$columns['deliveryFrom']) {
+            $columns['deliveryFrom'] = DefaultDeliveryTime::FROM;
         }
 
-        if (!$columns['delivery_till']) {
-            $columns['delivery_till'] = $this->lastOrderData['timeTo'];
+        if (!$columns['deliveryTill']) {
+            $columns['deliveryTill'] = DefaultDeliveryTime::TO;
         }
+    }
+
+    private function fileTitlesToDbColumnsPrepare(): array
+    {
+        return [
+            "Номер заказа" => 'orderNumber',
+            "Адрес склада" => 'storeAddress',
+            "Регион" => 'regionName',
+            "Город" => 'cityName',
+            "ФИАС города" => 'cityFias',
+            "Улица" => 'street',
+            "ФИАС улицы" => 'streetFias',
+            "Дом" => 'building',
+            "Этаж" => 'floor',
+            "Квартира" => 'flat',
+            "ФИО" => 'clientName',
+            "Мобильный телефон" => 'clientPhone',
+            "Комментарий" => 'comment',
+            "Дата доставки" => 'deliveryDate',
+            "Время доствки с" => 'deliveryFrom',
+            "Время доставки до" => 'deliveryTill',
+            "Товар" => 'name',
+            "Артикул" => 'sku',
+            "Количество" => 'count',
+            "Тип оплаты" => 'paymentType',
+            "Стоимость ед. товара" => 'cost',
+//            "Цена со скидкой" => 'discount_cost',
+            "Стоимость доставки" => 'deliveryCost',
+            "НДС" => 'vat',
+            "Сумма к получению" => 'leftToPay',
+            "Вес" => 'weight',
+            "Бренд" => 'brand',
+            "ТНВЭД" => 'tnved',
+            "Страна производитель" => 'countryCode',
+            "Баркод" => 'barcode',
+            "Объём" => 'volume',
+            "Длина" => 'width',
+            "Высота" => 'height',
+            "Глубина" => 'depth',
+        ];
     }
 }

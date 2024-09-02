@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Application;
 
-use App\Domain\ApplicationDTO;
+use App\Domain\DTO\ApplicationDTO;
+use App\Domain\DTO\DeliveryAddressDTO;
 use App\Domain\DTO\Requests\ApplicationUICreateAddressDTO;
-use App\Domain\DTO\Requests\ApplicationUICreateProductDTO;
 use App\Domain\DTO\Requests\ApplicationUICreateRequestDTO;
 use App\Domain\ProductDTO;
 use Illuminate\Foundation\Http\FormRequest;
@@ -50,7 +50,7 @@ class ApplicationUICreateRequest extends FormRequest
             'products.width' => 'required|numeric|min:1',
             'products.height' => 'required|numeric|min:1',
             'products.depth' => 'required|numeric|min:1',
-            'products.weight' => 'required|numeric|min:1',
+            'products.weight' => 'required|numeric|min:0',
             'products.count' => 'required|integer|min:1',
             'addressExtraInfo' => 'required|array|min:1',
             'addressExtraInfo.flat' => 'string|min:1',
@@ -61,38 +61,12 @@ class ApplicationUICreateRequest extends FormRequest
             'address' => 'required|array|min:1',
             'address.city' => 'required|string|min:1|nullable',
             'address.region_with_type' => 'required|string|min:1|nullable',
-            'addresso.city_fias_id' => 'string|min:1|nullable',
+            'address.city_fias_id' => 'string|min:1|nullable',
             'address.street_with_type' => 'string|min:1|nullable',
             'address.street_fias_id' => 'string|min:1|nullable',
             'address.house' => 'string|min:1|nullable',
             'address.block_type_full' => 'string|min:1|nullable',
             'address.block' => 'string|min:1|nullable',
-        ];
-
-
-    }
-
-    /**
-     * Get the validation attributes that apply to the request.
-     *
-     * @return array
-     */
-    public function attributes(): array
-    {
-        return [
-            //
-        ];
-    }
-
-    /**
-     * Get the validation messages that apply to the request.
-     *
-     * @return array
-     */
-    public function messages(): array
-    {
-        return [
-            //
         ];
     }
 
@@ -102,20 +76,20 @@ class ApplicationUICreateRequest extends FormRequest
 
         return new ApplicationUICreateRequestDTO(
             new ApplicationDTO(
-                new ApplicationUICreateAddressDTO(
-                    city: $validatedData['address']['city'],
-                    regionWithType: $validatedData['address']['region_with_type'],
-                    cityFias: $validatedData['address']['city_fias_id'],
-                    streetWithType: $validatedData['address']['street_with_type'],
-                    streetFias: $validatedData['address']['street_fias_id'],
-                    houseNumber: $validatedData['address']['house'],
-                    houseBlockFull: $validatedData['address']['block_type_full'],
-                    houseBlock: $validatedData['address']['block'],
-                    flat: $validatedData['addressExtraInfo']['flat'],
+                new DeliveryAddressDTO(
+                    regionName: $validatedData['address']['region_with_type'],
+                    cityName: $validatedData['address']['city'],
+                    street: $validatedData['address']['street_with_type'],
+                    building: $validatedData['address']['house'],
                     floor: $validatedData['addressExtraInfo']['floor'],
+                    flat: $validatedData['addressExtraInfo']['flat'],
+                    cityFias: $validatedData['address']['city_fias_id'],
+                    streetFias: $validatedData['address']['street_fias_id'],
+                    elevator: $validatedData['addressExtraInfo']['elevator'],
                     entrance: $validatedData['addressExtraInfo']['entrance'],
                     postCode: $validatedData['addressExtraInfo']['postcode'],
-                    elevator: $validatedData['addressExtraInfo']['elevator']
+                    houseBlockFull: $validatedData['address']['block_type_full'],
+                    houseBlock: $validatedData['address']['block']
                 ),
                 [new ProductDTO(
                     name: $validatedData['products']['name'],
@@ -134,11 +108,12 @@ class ApplicationUICreateRequest extends FormRequest
                 paymentType: $validatedData['fields']['payment_type'],
                 deliveryTime: $validatedData['fields']['delivery_from'] . '-' . $validatedData['fields']['delivery_till'],
                 deliveryDate: $validatedData['fields']['delivery_date'],
-                warehouseId: $validatedData['fields']['warehouse_id'],
                 clientFullName: $validatedData['fields']['client_name'],
                 clientPhone: $validatedData['fields']['client_phone'],
-                comment: $validatedData['fields']['comment']
-            )
+                comment: $validatedData['fields']['comment'] ?? null,
+                deliveryCost: null
+            ),
+            $validatedData['fields']['warehouse_id']
         );
     }
 }

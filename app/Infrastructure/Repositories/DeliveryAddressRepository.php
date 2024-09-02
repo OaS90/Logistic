@@ -2,14 +2,14 @@
 
 namespace App\Infrastructure\Repositories;
 
-use App\Domain\DTO\Requests\ApplicationUICreateAddressDTO;
+use App\Domain\DTO\DeliveryAddressDTO;
 use App\Models\DeliveryAddress;
 
 class DeliveryAddressRepository
 {
-    public function create(ApplicationUICreateAddressDTO $dto)
+    public function create(DeliveryAddressDTO $dto): ?DeliveryAddress
     {
-        $building = $dto->houseNumber;
+        $building = $dto->building ?? null;
 
         if ($dto->houseBlockFull) {
             $building .= ' ' . $dto->houseBlockFull;
@@ -20,10 +20,10 @@ class DeliveryAddressRepository
         }
 
         return DeliveryAddress::create([
-            'city_name' => $dto->city,
-            'region_name' => $dto->regionWithType,
+            'city_name' => $dto->cityName ?? null,
+            'region_name' => $dto->regionName ?? null,
             'city_fias' => $dto->cityFias,
-            'street' => $dto->streetWithType,
+            'street' => $dto->street ?? null,
             'street_fias' => $dto->streetFias,
             'building' => $building,
             'floor' => $dto->floor,
@@ -32,10 +32,5 @@ class DeliveryAddressRepository
             'postcode' => $dto->postCode,
             'use_elevator' => $dto->elevator
         ]);
-    }
-
-    public function createFromCsv(array $data)
-    {
-        return DeliveryAddress::create($data);
     }
 }

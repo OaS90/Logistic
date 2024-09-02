@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Enum\ApplicationStatus;
 use App\Http\Requests\Application\ApplicationUICreateRequest;
 use App\Infrastructure\Admin\Exceptions\ProductWithoutSkuException;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
@@ -17,7 +18,7 @@ use App\Infrastructure\DadataAdapter;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
-use App\Application\CsvImportService;
+use App\Infrastructure\Services\Import\CsvImportService;
 use App\Application\ApplicationServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Response as FResponse;
@@ -71,20 +72,20 @@ class ApplicationController extends Controller
         }
 
         $statuses = [
-            'created' => count($list->where('status', 'created')),
-            'new' => count($list->where('status', 'new')),
-            'inProgress' => count($list->where('status', 'inProgress')),
-            'loaded' => count($list->where('status', 'loaded')),
-            'postponed' => count($list->where('status', 'postponed')),
-            'refusal' => count($list->where('status', 'refusal')),
-            'completed' => count($list->where('status', 'completed')),
-            'defect' => count($list->where('status', 'defect')),
+            'created' => count($list->where('status', ApplicationStatus::CREATED)),
+            'new' => count($list->where('status', ApplicationStatus::NEW)),
+            'inProgress' => count($list->where('status', ApplicationStatus::IN_PROGRESS)),
+            'loaded' => count($list->where('status', ApplicationStatus::LOADED)),
+            'postponed' => count($list->where('status', ApplicationStatus::POSTPONED)),
+            'refusal' => count($list->where('status', ApplicationStatus::REFUSAL)),
+            'completed' => count($list->where('status', ApplicationStatus::COMPLETED)),
+            'defect' => count($list->where('status', ApplicationStatus::DEFECT)),
         ];
 
         return view($view, ['list' => $list, 'statuses' => $statuses]);
     }
 
-    public function current($id): View
+    public function current(int $id): View
     {
         $userId = Auth::id();
 
@@ -163,23 +164,17 @@ class ApplicationController extends Controller
 //        return response($request->all(), Response::HTTP_OK);
     }
 
-    public function makeCsvAndStore($newApp)
-    {
-        $this->exportService->store(new ApplicationExport($newApp));
-    }
-
     public function getAddress(Request $request)
     {
-//        return $this->dadataAdapter->getCleanAddress($request->get('input'));
         return $this->dadataAdapter->getAddress($request->get('input'));
     }
 
-    public function delete($id): void
+    public function delete(int $id): void
     {
         $this->repo->getById($id)->destroy();
     }
 
-    public function makeSticker($applicationId): \Illuminate\Http\Response
+    public function makeSticker(int $applicationId): \Illuminate\Http\Response
     {
         $application = $this->repo->getById($applicationId);
         $pdf = $this->appService->makeStickers($application);
@@ -190,7 +185,7 @@ class ApplicationController extends Controller
     public function import(Request $request): Response
     {
         $userId = Auth::id();
-        $storeId = $request->get('store_id') ? (int)  $request->get('store_id') : null;
+        $storeId = $request->get('store_id') ? (int) $request->get('store_id') : null;
         $fileExtension = $request->file('document')->getClientOriginalExtension();
 
         try {
@@ -202,7 +197,9 @@ class ApplicationController extends Controller
                     ->import($request->file('document'), $this->appService->extensionHandler($fileExtension, false), $userId, $storeId);
             }
         } catch (\Throwable $e) {
-            return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            Log::error('Import error: ' . $e->getMessage());
+
+            return response()->json(['message' => 'Ошибка загрузки!'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return response()->json(['message' => 'Файл успешно загружен!'], Response::HTTP_OK);

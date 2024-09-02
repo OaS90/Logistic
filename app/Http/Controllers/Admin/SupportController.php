@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Application\ApplicationServiceInterface;
-use App\Application\CsvImportService;
+use App\Infrastructure\Services\Import\CsvImportService;
 use App\Http\Controllers\Controller;
 use App\Infrastructure\Repositories\UserRepository;
 use Illuminate\Database\Eloquent\Collection;
