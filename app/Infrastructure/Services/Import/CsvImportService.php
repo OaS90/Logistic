@@ -5,7 +5,6 @@ namespace App\Infrastructure\Services\Import;
 use App\Domain\DTO\ApplicationDTO;
 use App\Domain\Enum\DefaultDeliveryTime;
 use App\Infrastructure\Services\Application\ApplicationService;
-use App\Domain\ApplicationObiDTO;
 use App\Infrastructure\Admin\Exceptions\CityFiasWrongFormatException;
 use App\Infrastructure\Exceptions\PartnerWarehouseNotFoundException;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
@@ -83,7 +82,7 @@ class CsvImportService
     public function importObi($file, ImportEntity $entity, $userId): void
     {
         $dataFromFile = Excel::toArray($entity, $file)[0];
-        $rows = (new ApplicationObiDTO())->dbRowsFromXlsx();
+        $rows = $this->fileObiTitlesToDbColumnsPrepare();
 
         for ($i = 4; $i <= count($dataFromFile) - 1; $i++) {
             // убираем номер строки из файла (№ п/п)
@@ -91,20 +90,26 @@ class CsvImportService
             $dataFromFile[$i][1] = Carbon::parse(Date::excelToDateTimeObject($dataFromFile[$i][1]))->format('Y-m-d');
             $appWithDbColumns = array_combine($rows, $dataFromFile[$i]);
 
-            if ($appWithDbColumns['order_number']) {
-                $appWithDbColumns['user_id'] = $userId;
-                $orderList = explode(';', $appWithDbColumns['order_list']);
+            if ($appWithDbColumns['orderNumber']) {
+                $orderList = explode(';', $appWithDbColumns['orderList']);
                 $products = [];
 
-                foreach ($orderList as $product) {
-                    $productInfo = strlen(trim($product));
+                // в новых файлах не было разделения через ';'
+                // поэтому, если разделения нет, пишем целиком
+                if (is_array($orderList)) {
+                    foreach ($orderList as $product) {
+                        $productInfo = strlen(trim($product));
 
-                    if ($productInfo != 0) {
-                        $products[] = trim($product);
+                        if ($productInfo != 0) {
+                            $products[] = $this->productFactory->makeProductObiDTO(trim($product));
+                        }
                     }
+                } else {
+                    $products[] = $this->productFactory->makeProductObiDTO($orderList);
                 }
-                $productsCost = substr(preg_replace('/[^0-9]/', '', $appWithDbColumns['products_cost']), 0, -2);
-                $appWithDbColumns['products_cost'] = floatval($productsCost);
+
+                $productsCost = substr(preg_replace('/[^0-9]/', '', $appWithDbColumns['productsCost']), 0, -2);
+                $appWithDbColumns['productsCost'] = floatval($productsCost);
                 $explodedPhones = explode(',', $appWithDbColumns['phone']);
                 $phones = [];
 
@@ -117,15 +122,16 @@ class CsvImportService
                 } else {
                     $phones = str_replace(',', '', parse_phone($appWithDbColumns['phone']));
                 }
-                $appWithDbColumns['phone'] = $phones;
-                unset($appWithDbColumns['order_list']);
 
-                $existApp = $this->applicationObiRepo->getByOrderNumber($appWithDbColumns['order_number']);
+                $appWithDbColumns['phones'] = $phones;
+                $appWithDbColumns['orderList'] = $products;
+                $appDTO = $this->appFactory->makeObiApplicationDTO($appWithDbColumns);
+                $existApp = $this->applicationObiRepo->getByOrderNumber($appDTO->orderNumber);
 
                 if (!$existApp) {
-                    $existApp = $this->applicationObiRepo->create($appWithDbColumns);
+                    $existApp = $this->applicationObiRepo->create($appDTO, $userId);
 
-                    foreach ($products as $product) {
+                    foreach ($appDTO->orderList as $product) {
                         $this->obiProductsRepo->create($product, $existApp->id);
                     }
                 } else {
@@ -263,6 +269,37 @@ class CsvImportService
             "Длина" => 'width',
             "Высота" => 'height',
             "Глубина" => 'depth',
+        ];
+    }
+
+    private function fileObiTitlesToDbColumnsPrepare(): array
+    {
+        return [
+            "Дата доставки" => 'deliveryDate',
+            "Время доставки" => 'deliveryTime',
+            "№ заявки на доставку" => 'orderNumber',
+            "№ поручения ОБИ" => 'orderType',
+            "Клиент" => 'clientName',
+            "Телефон" => 'phone',
+            "Адрес доставки" => 'deliveryAddress',
+            "Вид доставки" => 'deliveryType',
+            "Зона доставки" => 'deliveryZone',
+            "Превышение зоны доставки, км" => 'overDeliveryZoneKm',
+            "Вес заказа, кг" => 'orderWeight',
+            "Вид подъёма" => 'liftType',
+            "Этаж подъёма на лифте" => 'liftFloor',
+            "Вес подъёма на лифте, кг" => 'liftWeightKg',
+            "Этаж подъёма вручную" => 'handLiftFloor',
+            "Вес подъёма вручную, кг" => 'handLiftWeightKg',
+            "Расстояние переноса, м" => 'transferDistance',
+            "Вес переноса, кг" => 'transferWeight',
+            "Стоимость доставляемого товара, руб." => 'productsCost',
+            "Стоимость услуг транспортировки, руб." => 'costOfTransportation',
+            "Стоимость услуг подъёма, руб." => 'liftCost',
+            "Стоимость услуг переноса, руб." => 'transferCost',
+            "Общая стоимость услуг доставки, руб." => 'totalDeliveryCost',
+            "Комментарий к заявке" => 'comment',
+            "Состав заказа" => 'orderList'
         ];
     }
 }

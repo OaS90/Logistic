@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Services\Application\Factories;
 
+use App\Domain\DTO\ProductObiDTO;
 use App\Domain\ProductDTO;
 
 class ProductFactory
@@ -26,5 +27,10 @@ class ProductFactory
             barcode: $data['barcode'] ?? null,
             leftToPay: $data['left_to_pay'] ?? 0
         );
+    }
+
+    public function makeProductObiDTO(string $productInfo): ProductObiDTO
+    {
+        return new ProductObiDTO($productInfo);
     }
 }
