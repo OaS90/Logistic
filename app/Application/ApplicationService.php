@@ -11,7 +11,9 @@ use App\Infrastructure\Imports\ApplicationObiImport;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\ProductRepository;
+use App\Models\Application;
 use App\Models\DeliveryAddress;
+use App\Shared\Eloquent\ConvertsToUtfTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Collection;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
@@ -19,6 +21,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ApplicationService
 {
+    use ConvertsToUtfTrait;
+
     private ApplicationRepository $appRepo;
     private ProductRepository $productRepo;
     private BarcodeGeneratorDynamicHTML $codeGenerator;
@@ -69,22 +73,24 @@ class ApplicationService
         }
     }
 
-    public function makeStickers($app): \Illuminate\Http\Response|\Barryvdh\DomPDF\PDF|Response
+    public function makeStickers(Application $app): \Illuminate\Http\Response|\Barryvdh\DomPDF\PDF|Response
     {
         $barcodes = [];
         $user = $app->user;
+        $products = $app->products()->get()->all();
 
-        for ($i = 1; $i <= count($app->products); $i++) {
+        for ($i = 1; $i <= count($products); $i++) {
             $code = $user->suffix . '-' . $app->order_number . '-' . $i;
             $barcode = $this->codeGenerator->getBarcode($code, $this->codeGenerator::TYPE_CODE_128);
             $barcodes[] = [
                 'code' => $code,
-                'barcode' => $barcode
+                'barcode' => $barcode,
+                'productName' =>$products[$i - 1]['name']
             ];
         }
 
         return PDF::loadView('new-sticker', ['barcodes' => $barcodes, 'application' => $app])
-            ->setPaper([0, 0, 350, 160]);
+            ->setPaper([0, 0, 550, 220]);
     }
 
     public function getDeliveryDateFromHru($appNumber, DeliveryAddress $addressEntity): bool
