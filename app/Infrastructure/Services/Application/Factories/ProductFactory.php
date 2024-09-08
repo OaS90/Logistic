@@ -3,7 +3,7 @@
 namespace App\Infrastructure\Services\Application\Factories;
 
 use App\Domain\DTO\ProductObiDTO;
-use App\Domain\ProductDTO;
+use App\Domain\DTO\ProductDTO;
 
 class ProductFactory
 {

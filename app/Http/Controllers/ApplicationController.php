@@ -4,58 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Domain\Enum\ApplicationStatus;
 use App\Http\Requests\Application\ApplicationUICreateRequest;
-use App\Infrastructure\Admin\Exceptions\ProductWithoutSkuException;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
-use App\Infrastructure\Repositories\DeliveryAddressRepository;
-use App\Infrastructure\Repositories\ProductRepository;
-use App\Infrastructure\Services\Application\ApplicationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Infrastructure\Repositories\ApplicationRepository;
-use App\Application\ExcelExportService;
-use App\Infrastructure\Exports\ApplicationExport;
 use App\Infrastructure\DadataAdapter;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
-use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 use App\Infrastructure\Services\Import\CsvImportService;
 use App\Application\ApplicationServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Response as FResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ApplicationController extends Controller
 {
-    protected ApplicationRepository $repo;
-    protected ExcelExportService $exportService;
-    protected DadataAdapter $dadataAdapter;
-    protected BarcodeGeneratorDynamicHTML $codeGenerator;
-    protected DeliveryAddressRepository $addressRepository;
-    protected ProductRepository $productRepository;
-    protected CsvImportService $importService;
-    protected ApplicationServiceInterface $appService;
-    protected ApplicationObiRepository $applicationObiRepo;
     private int $obiUser;
 
-    public function __construct(ApplicationRepository $applicationRepository,
-                                ExcelExportService $exportService,
-                                DadataAdapter $dadataAdapter,
-                                BarcodeGeneratorDynamicHTML $codeGenerator,
-                                DeliveryAddressRepository $addressRepository,
-                                CsvImportService $importService,
-                                ProductRepository $productRepository,
-                                ApplicationServiceInterface $appService,
-                                ApplicationObiRepository $applicationObiRepo
+    public function __construct(private readonly ApplicationRepository $repo,
+                                private readonly DadataAdapter $dadataAdapter,
+                                private readonly CsvImportService $importService,
+                                private readonly ApplicationServiceInterface $appService,
+                                private readonly ApplicationObiRepository $applicationObiRepo,
     )
     {
-        $this->repo = $applicationRepository;
-        $this->exportService = $exportService;
-        $this->dadataAdapter = $dadataAdapter;
-        $this->codeGenerator = $codeGenerator;
-        $this->addressRepository = $addressRepository;
-        $this->productRepository = $productRepository;
-        $this->importService = $importService;
-        $this->appService = $appService;
-        $this->applicationObiRepo = $applicationObiRepo;
         $this->obiUser = config('app.obi_user_id');
     }
 
@@ -121,47 +93,6 @@ class ApplicationController extends Controller
         }
 
         return response(['success' => true], Response::HTTP_OK);
-//        dd('frfre');
-//        $data = $request->get('fields');
-//        $address = $request->get('address');
-//        $addressExtra = $request->get('addressExtraInfo');
-//        // todo переделать, когда появится возможность добавлять несколько товаров в заявку, при ручном создании
-//        $products = $request->get('products');
-//        $addressData = array_merge($address, $addressExtra);
-//        $data['user_id'] = Auth::id();
-//        // todo refactoring
-//        $data['delivery_time'] = $data['delivery_from'] . '-' . $data['delivery_till'];
-//        unset($data['delivery_from']);
-//        unset($data['delivery_till']);
-//        unset($data['_token']);
-//        $data['client_phone'] = parse_phone($data['client_phone']);
-//        $newAddress = $this->addressRepository->create($addressData);
-//        $data['delivery_address'] = $newAddress->id;
-//
-//        if ($this->obiUser == Auth::id()) {
-//            $existApp = $this->applicationObiRepo->getById($data['order_number']);
-//        } else {
-//            $existApp = $this->repo->getByOrderNumber($data['order_number']);
-//        }
-//
-//        if (!$existApp) {
-//            if ($this->obiUser == Auth::id()) {
-//                $existApp = $this->applicationObiRepo->create($data);
-//            } else {
-//                $existApp = $this->repo->create($data);
-//            }
-//
-//            $products['app_id'] = $existApp->id;
-//            $products[] = $this->productRepository->create($products);
-//        } else {
-//           $this->appService->checkAppChanges($existApp, $data);
-//        }
-//
-//        $this->appService->getDeliveryDateFromHru($existApp->order_number, $newAddress);
-////        if ($newApplication)
-////            $this->makeCsvAndStore($newApplication);
-//
-//        return response($request->all(), Response::HTTP_OK);
     }
 
     public function getAddress(Request $request)
@@ -191,10 +122,18 @@ class ApplicationController extends Controller
         try {
             if ($userId == $this->obiUser) {
                 $this->importService
-                    ->importObi($request->file('document'), $this->appService->extensionHandler($fileExtension, true), $userId);
+                    ->importObi(
+                        $request->file('document'),
+                        $this->importService->extensionHandler($fileExtension, true),
+                        $userId
+                    );
             } else {
                 $this->importService
-                    ->import($request->file('document'), $this->appService->extensionHandler($fileExtension, false), $userId, $storeId);
+                    ->import($request->file('document'),
+                        $this->importService->extensionHandler($fileExtension, false),
+                        $userId,
+                        $storeId
+                    );
             }
         } catch (\Throwable $e) {
             Log::error('Import error: ' . $e->getMessage());
@@ -205,7 +144,7 @@ class ApplicationController extends Controller
         return response()->json(['message' => 'Файл успешно загружен!'], Response::HTTP_OK);
     }
 
-    public function downloadFileExample(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function downloadFileExample(): BinaryFileResponse
     {
         if (Auth::id() == $this->obiUser) {
             return FResponse::download(storage_path('app/public/example-obi.xlsx'));

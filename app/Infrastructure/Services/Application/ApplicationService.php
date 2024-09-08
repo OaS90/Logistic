@@ -3,69 +3,52 @@
 namespace App\Infrastructure\Services\Application;
 
 use App\Application\ApplicationServiceInterface;
-use App\Domain\DTO\ApplicationDTO;
+use App\Application\DeliveryAddressService;
+use App\Domain\DTO\ProductDTO;
+use App\Domain\DTO\Requests\ApplicationApiCreateDTO;
 use App\Domain\DTO\Requests\ApplicationUICreateRequestDTO;
-use App\Domain\Enum\ApplicationStatus;
-use App\Domain\ProductDTO;
+use App\Domain\DTO\Requests\StatusFrom1cRequestDTO;
+use App\Http\Controllers\Api\Exceptions\UserNotFoundException;
+use App\Http\Controllers\Api\Exceptions\WarehouseNotFoundException;
 use App\Infrastructure\Api;
-use App\Infrastructure\Imports\ApplicationImportCsv;
-use App\Infrastructure\Imports\ApplicationImportXlsx;
-use App\Infrastructure\Imports\ApplicationObiImport;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\ApplicationRepository;
+use App\Infrastructure\Repositories\AppStatusHistoryRepository;
 use App\Infrastructure\Repositories\ProductRepository;
+use App\Infrastructure\Repositories\UserRepository;
+use App\Infrastructure\Repositories\WarehouseRepository;
 use App\Models\Application;
 use App\Models\DeliveryAddress;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Barryvdh\DomPDF\PDF as PdfFile;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 use Symfony\Component\HttpFoundation\Response;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
+use App\Infrastructure\Services\Application\ApplicationCheckService;
+
 
 class ApplicationService implements ApplicationServiceInterface
 {
-    private ApplicationRepository $appRepo;
-    private ApplicationObiRepository $appObiRepo;
-    private ProductRepository $productRepo;
-    private BarcodeGeneratorDynamicHTML $codeGenerator;
-    private DeliveryAddressRepository $deliveryAddressRepo;
     private int $obiUser;
 
-    public function __construct(ApplicationRepository $appRepo,
-                                ApplicationObiRepository $appObiRepo,
-                                ProductRepository $productRepo,
-                                BarcodeGeneratorDynamicHTML $codeGenerator,
-                                DeliveryAddressRepository $deliveryAddressRepo
+    public function __construct(private readonly ApplicationRepository $appRepo,
+                                private readonly ApplicationObiRepository $appObiRepo,
+                                private readonly ProductRepository $productRepo,
+                                private readonly BarcodeGeneratorDynamicHTML $codeGenerator,
+                                private readonly DeliveryAddressRepository $deliveryAddressRepo,
+                                private readonly ApplicationCheckService $appCheckService,
+                                private readonly DeliveryAddressRepository $addressRepo,
+                                private readonly WarehouseRepository $warehouseRepo,
+                                private readonly DeliveryAddressService $deliveryAddressService,
+                                private readonly AppStatusHistoryRepository $appStatusHistoryRepo,
+                                private readonly UserRepository $userRepo,
+                                private readonly ApplicationObiRepository $applicationObiRepo,
     )
     {
-        $this->appRepo = $appRepo;
-        $this->productRepo = $productRepo;
-        $this->codeGenerator = $codeGenerator;
-        $this->deliveryAddressRepo = $deliveryAddressRepo;
-        $this->appObiRepo = $appObiRepo;
         $this->obiUser = config('app.obi_user_id');
-    }
-
-    public function checkAppChangesAndUpdate(Application $app, ApplicationDTO $dto, int $warehouseId): void
-    {
-        if (!in_array($app->status, [ApplicationStatus::NEW, ApplicationStatus::REFUSAL])) {
-            //$data['app']['doc_ver'] = $app->doc_ver + 1;
-            $this->appRepo->updateByFields($app, [
-                'doc_ver' => $app->doc_ver + 1,
-                'payment_type' => $dto->paymentType,
-                'delivery_date' => $dto->deliveryDate,
-                'delivery_cost' => $dto->deliveryCost,
-                'delivery_time' => $dto->deliveryTime,
-                'warehouse_id' => $warehouseId,
-                'comment' => $dto->comment,
-                'client_name' => $dto->clientFullName,
-                'client_phone' => parse_phone($dto->clientPhone), // переписать в класс парсер
-            ]);
-
-            $this->checkAppProducts($app, $dto->products);
-        }
     }
 
     public function makeStickers($app): Response|PdfFile
@@ -109,26 +92,6 @@ class ApplicationService implements ApplicationServiceInterface
         return $common->merge($obi);
     }
 
-    // TODO вынести в сервис csv
-    /**
-     * @param string $extension
-     * @param bool $isObiUser
-     * @return ApplicationImportCsv|ApplicationImportXlsx|ApplicationObiImport
-     */
-    public function extensionHandler(string $extension, bool $isObiUser): ApplicationImportXlsx|ApplicationImportCsv|ApplicationObiImport
-    {
-        switch ($extension) {
-            case ('xlsx'):
-                if ($isObiUser) {
-                    return new ApplicationObiImport();
-                } else {
-                    return new ApplicationImportXlsx();
-                }
-            default:
-                return new ApplicationImportCsv();
-        }
-    }
-
     /**
      * Через Ui в личном кабинете создаётся только обычный заказ (не ОБИ)
      * и с одним товаром т.к. не доделали функционал для нескольких товаров
@@ -146,25 +109,130 @@ class ApplicationService implements ApplicationServiceInterface
             $this->productRepo->create($dto->applicationDTO->products[0], $newApp->id);
             $existApp = $newApp;
         } else {
-            $this->checkAppChangesAndUpdate($existApp, $dto->applicationDTO, $dto->warehouseId);
+            $this->appCheckService->checkAppChangesAndUpdate($existApp, $dto->applicationDTO, $dto->warehouseId);
         }
 
         $this->getDeliveryDateFromHru($existApp, $newDeliveryAddress);
     }
 
     /**
-     * @param ProductDTO[] $products
+     * @param ApplicationApiCreateDTO[] $DTOs
+     * @throws UserNotFoundException
+     * @throws WarehouseNotFoundException
      */
-    private function checkAppProducts(Application $app, array $products): void
+    public function createByApi(array $DTOs): array
     {
-        foreach ($products as $product) {
-            $appProduct = $this->productRepo->getByAppIdSkuBrand($product->sku, $app->id);
+        $createdApps = [];
 
-            if (!$appProduct) {
-                $this->productRepo->create($product, $app->id);
-            } else {
-                $this->productRepo->update($product, $appProduct);
+        foreach ($DTOs as $appCreateDTO) {
+            $user = $this->userRepo->getBy1cId($appCreateDTO->partnerId);
+            $appDTO = $appCreateDTO->app;
+
+            if (!$user) {
+                throw new UserNotFoundException($appCreateDTO->partnerId);
+            }
+
+            $warehouse = $this->warehouseRepo->findByStoreId($appCreateDTO->storeId);
+
+            if (!$warehouse) {
+                throw new WarehouseNotFoundException();
+            }
+
+            if (!isset($appDTO->addressDTO->regionName) || !isset($appDTO->addressDTO->streetFias)) {
+                $dadataAddress = $this->deliveryAddressService
+                    ->checkFiasForCityAndStreet(
+                        $appDTO->addressDTO->regionName . ' '
+                        . $appDTO->addressDTO->cityName . ' '
+                        . $appDTO->addressDTO->street
+                        , 1
+                    );
+                $appDTO->addressDTO->cityFias = $dadataAddress ? $dadataAddress[0]['data']['city_fias_id'] : '';
+                $appDTO->addressDTO->streetFias = $dadataAddress ? $dadataAddress[0]['data']['street_fias_id'] : '';
+            }
+
+            $address = $this->addressRepo->create($appDTO->addressDTO);
+            $newApp = $this->appRepo->create($appDTO, $user->id, $address->id, $warehouse->id);
+
+            // записываем историю статусов заказа
+            $this->appStatusHistoryRepo->create([
+                'number' => $newApp->order_number,
+                'status' => 'created',
+                'dateTime' => $newApp->created_at
+            ]);
+
+            foreach ($appDTO->products as $product) {
+                $this->productRepo->create($product, $newApp->id);
+            }
+
+            $createdApps[] = $newApp->order_number . '-' . $newApp->id;
+        }
+
+        return $createdApps;
+    }
+
+    /**
+     * @param StatusFrom1cRequestDTO[] $statusDTOs
+     */
+    public function updateStatuses(array $statusDTOs): array
+    {
+        $errors = [];
+        $statuses = [];
+
+        foreach ($statusDTOs as $statusDTO) {
+            try {
+                $app = $this->appRepo->getByOrderNumber($statusDTO->orderNumber);
+
+                if (!$app) {
+                    $app = $this->applicationObiRepo->getByOrderNumber($statusDTO->orderNumber);
+
+                    if ($app) {
+                        $this->applicationObiRepo->updateByFields($statusDTO->orderNumber, ['status' => $statusDTO->lastStatus]);
+                    } else {
+                        Log::error('Не найден заказ Obi с номером ' . $statusDTO->orderNumber);
+                    }
+                } else {
+                    $this->appRepo->updateStatus($statusDTO->orderNumber, $statusDTO->lastStatus);
+                }
+
+                if (!$app) {
+                    $errors[] = [
+                        'id' => $statusDTO->orderNumber,
+                        'success' => false,
+                        'message' => 'Заявка не найдена.'
+                    ];
+
+                    continue;
+                }
+
+                // записываем историю обновления статусов заказа
+                $this->appStatusHistoryRepo->create([
+                    'number' => $statusDTO->orderNumber,
+                    'status' => $statusDTO->lastStatus,
+                    'dateTime' => $statusDTO->statusDateTime
+                ]);
+
+                $statuses[] = [
+                    'id' => $statusDTO->orderNumber,
+                    'success' => true,
+                    'message' => ""
+                ];
+            } catch (\Throwable $e) {
+                $errors[] = [
+                    'id' => $statusDTO->orderNumber,
+                    'success' => false,
+                    'message' => 'Произошла непредвиденная ошибка'
+                ];
+
+                // Если ошибка в логике, то просто обновляем версию
+                //
+                $app = $this->appRepo->getByOrderNumber($statusDTO->orderNumber);
+
+                if ($app) {
+                    $app->update(['doc_ver' => $app->doc_ver + 1]);
+                }
             }
         }
+
+        return array_merge($statuses, $errors);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ApplicationController;
@@ -19,28 +20,10 @@ use App\Http\Controllers\UserController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-
-Auth::routes();
 Route::get('test', function () {
-    dd(0.7 * 1000);
-    $arr = [
-        // Москва
-        '00181' => [
-            'division_id' => 1,
-            'region_id' => 1
-        ],
-        '00379' => [
-            'division_id' => 2,
-            'region_id' => 1
-        ],
-        '00385' => [
-            'division_id' => 2,
-            'region_id' => 1
-        ]
-    ];
-
-    $fp = fopen(storage_path(''), 'w');
+    throw new \App\Http\Controllers\Api\Exceptions\UserNotFoundException('000025');
 });
+Auth::routes();
 Route::get('api-documentation', function () {
     return view('common-api-description');
 })->name('api-description');

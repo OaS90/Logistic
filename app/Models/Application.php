@@ -84,4 +84,9 @@ class Application extends Model
     {
         return $this->products[0]->name;
     }
+
+    public function getStatusAttribute()
+    {
+        return $this->getAttribute('status');
+    }
 }

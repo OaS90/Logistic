@@ -5,6 +5,7 @@ namespace App\Infrastructure\Repositories;
 use App\Domain\DTO\ApplicationDTO;
 use App\Domain\Enum\ApplicationStatus;
 use App\Models\Application;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -40,12 +41,16 @@ class ApplicationRepository
                            int $warehouseId
     ): Application
     {
-        return Application::create([
+        return Application::updateOrCreate([
+                'user_id' => $userId,
+                'order_number' => $dto->orderNumber
+            ],
+            [
             'user_id' => $userId,
             'order_number' => $dto->orderNumber,
             'payment_type' => $dto->paymentType,
-            'delivery_date' => $dto->deliveryDate,
-            'delivery_cost' => $dto->deliveryCost,
+            'delivery_date' => Carbon::parse($dto->deliveryDate)->format('Y-m-d'),
+            'delivery_cost' => $dto->deliveryCost ?? 0,
             'delivery_time' => $dto->deliveryTime,
             'delivery_address' => $addressId,
             'warehouse_id' => $warehouseId,

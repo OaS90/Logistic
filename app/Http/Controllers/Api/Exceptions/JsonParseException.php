@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers\Api\Exceptions;
 
+use Exception;
+use Symfony\Component\HttpFoundation\Response;
 
-class JsonParseException extends \Exception
+class JsonParseException extends Exception
 {
-    public function __construct($message = "", $code = 0, Throwable $previous = null)
+    public function render(): Response
     {
-        parent::__construct($message, $code, $previous);
+        $status = Response::HTTP_INTERNAL_SERVER_ERROR;
+        $message = 'Ошибка формата json';
+
+        return response(['message' => $message, 'success' => false], $status);
     }
 }

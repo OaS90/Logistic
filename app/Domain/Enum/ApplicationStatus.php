@@ -44,4 +44,15 @@ class ApplicationStatus
      */
     const DEFECT = 'defect';
 
+    const ALL = [
+        self::CREATED,
+        self::NEW,
+        self::IN_PROGRESS,
+        self::LOADED,
+        self::POSTPONED,
+        self::REFUSAL,
+        self::COMPLETED,
+        self::DEFECT
+    ];
+
 }

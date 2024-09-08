@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Repositories;
 
-use App\Domain\ProductDTO;
+use App\Domain\DTO\ProductDTO;
 use App\Models\Product;
 
 class ProductRepository
@@ -20,7 +20,12 @@ class ProductRepository
 
     public function create(ProductDTO $dto, int $appId)
     {
-        return Product::create([
+        return Product::updateOrCreate([
+            'app_id' => $appId,
+            'sku' => $dto->sku,
+            'name' => $dto->name
+        ]
+        ,[
             'app_id' => $appId,
             'name' => $dto->name,
             'brand' => $dto->brand,

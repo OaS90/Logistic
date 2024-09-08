@@ -7,6 +7,7 @@ use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Repositories\ProductRepository;
+use App\Infrastructure\Services\Application\ApplicationCheckService;
 use App\Infrastructure\Services\Application\ApplicationService;
 use App\Infrastructure\Services\Delivery\Api\Api;
 use GuzzleHttp\Client;
@@ -31,7 +32,11 @@ class AppServiceProvider extends ServiceProvider
                 appObiRepo: new ApplicationObiRepository(),
                 productRepo: new ProductRepository(),
                 codeGenerator: new BarcodeGeneratorDynamicHTML(),
-                deliveryAddressRepo: new DeliveryAddressRepository
+                deliveryAddressRepo: new DeliveryAddressRepository(),
+                appCheckService: new ApplicationCheckService(
+                    new ApplicationRepository(),
+                    new ProductRepository()
+                )
             );
         });
 

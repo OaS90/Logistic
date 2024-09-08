@@ -4,9 +4,8 @@ namespace App\Http\Requests\Application;
 
 use App\Domain\DTO\ApplicationDTO;
 use App\Domain\DTO\DeliveryAddressDTO;
-use App\Domain\DTO\Requests\ApplicationUICreateAddressDTO;
 use App\Domain\DTO\Requests\ApplicationUICreateRequestDTO;
-use App\Domain\ProductDTO;
+use App\Domain\DTO\ProductDTO;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ApplicationUICreateRequest extends FormRequest

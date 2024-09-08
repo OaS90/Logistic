@@ -4,6 +4,9 @@ namespace App\Infrastructure\Services\Import;
 
 use App\Domain\DTO\ApplicationDTO;
 use App\Domain\Enum\DefaultDeliveryTime;
+use App\Infrastructure\Imports\ApplicationImportCsv;
+use App\Infrastructure\Imports\ApplicationImportXlsx;
+use App\Infrastructure\Imports\ApplicationObiImport;
 use App\Infrastructure\Services\Application\ApplicationService;
 use App\Infrastructure\Admin\Exceptions\CityFiasWrongFormatException;
 use App\Infrastructure\Exceptions\PartnerWarehouseNotFoundException;
@@ -20,6 +23,7 @@ use App\Infrastructure\Repositories\ProductRepository;
 use App\Infrastructure\Repositories\ObiProductsRepository;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use App\Infrastructure\Services\Application\Factories\ProductFactory;
+use App\Infrastructure\Services\Application\ApplicationCheckService;
 
 class CsvImportService
 {
@@ -34,7 +38,8 @@ class CsvImportService
                                 private readonly ObiProductsRepository $obiProductsRepo,
                                 private readonly ProductFactory $productFactory,
                                 private readonly DeliveryAddressFactory $addressFactory,
-                                private readonly ApplicationFactory $appFactory
+                                private readonly ApplicationFactory $appFactory,
+                                private readonly ApplicationCheckService $appCheckService
     )
     {}
 
@@ -72,7 +77,7 @@ class CsvImportService
                     $this->productRepo->create($productDTO, $existApp->id);
                 }
             } else {
-                $this->appService->checkAppChangesAndUpdate($existApp, $appDTO, $warehouse->id);
+                $this->appCheckService->checkAppChangesAndUpdate($existApp, $appDTO, $warehouse->id);
             }
 
             $this->appService->getDeliveryDateFromHru($existApp, $existApp->address);
@@ -200,6 +205,25 @@ class CsvImportService
         }
 
         return $apps;
+    }
+
+    /**
+     * @param string $extension
+     * @param bool $isObiUser
+     * @return ApplicationImportCsv|ApplicationImportXlsx|ApplicationObiImport
+     */
+    public function extensionHandler(string $extension, bool $isObiUser): ApplicationImportXlsx|ApplicationImportCsv|ApplicationObiImport
+    {
+        switch ($extension) {
+            case ('xlsx'):
+                if ($isObiUser) {
+                    return new ApplicationObiImport();
+                } else {
+                    return new ApplicationImportXlsx();
+                }
+            default:
+                return new ApplicationImportCsv();
+        }
     }
 
     /**

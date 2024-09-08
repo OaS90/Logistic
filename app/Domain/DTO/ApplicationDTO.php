@@ -4,7 +4,7 @@ namespace App\Domain\DTO;
 
 use App\Application\ApplicationDTOInterface;
 use App\Application\DeliveryAddressDTOInterface;
-use App\Domain\ProductDTO;
+use App\Domain\DTO\ProductDTO;
 use Illuminate\Support\Carbon;
 
 class ApplicationDTO implements ApplicationDTOInterface

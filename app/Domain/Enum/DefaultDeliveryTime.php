@@ -2,8 +2,8 @@
 
 namespace App\Domain\Enum;
 
-enum DefaultDeliveryTime: string
+class DefaultDeliveryTime
 {
-    case FROM = '10:00';
-    case TO = '18:00';
+    const FROM = '10:00';
+    const TO = '18:00';
 }

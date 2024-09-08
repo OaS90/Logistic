@@ -2,7 +2,6 @@
 
 namespace App\Infrastructure\Repositories;
 
-use App\Application\ApplicationDTOInterface;
 use App\Domain\DTO\ApplicationObiDTO;
 use App\Models\ApplicationObi;
 use Illuminate\Database\Eloquent\Builder;
