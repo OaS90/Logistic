@@ -135,7 +135,7 @@ class PartnerOrderDTO
             }
         }
 
-        if (count($exceptExtraPaymentsProducts)) {
+        if (count($exceptExtraPaymentsProducts) > 1) {
             $eachProductCost = round($appCost / count($exceptExtraPaymentsProducts), 2);
             $eachProductWeight = round($appWeight / count($exceptExtraPaymentsProducts), 2);
         } else {
@@ -147,18 +147,18 @@ class PartnerOrderDTO
             /* @var Product $product */
             $i = $index + 1;
             $productsForFComment[] = $product->name;
-            $explodedName = explode('- ', $product->name);
-
-            if (is_array($explodedName)) {
-                $name = $explodedName[0];
-                $count = floatval(str_replace(',', '.', trim($explodedName[1])));
-            } else {
-                $name = $product->name;
-                $count = 1;
-            }
-
-            $explodedProductIdName = explode('_', $name);
-            $productId = $explodedProductIdName[0];
+//            $explodedName = explode('- ', $product->name);
+//
+//            if (is_array($explodedName)) {
+//                $name = $explodedName[0];
+//                $count = floatval(str_replace(',', '.', trim($explodedName[1])));
+//            } else {
+//                $name = $product->name;
+//                $count = 1;
+//            }
+//
+//            $explodedProductIdName = explode('_', $name);
+//            $productId = $explodedProductIdName[0];
 
 //            if ($count > 1) {
 //                $eachProductCost = round($eachProductCost / $count);
@@ -173,7 +173,7 @@ class PartnerOrderDTO
                 'VATRate' => 0, // Ставка НДС
                 'leftToPay' => 0, // Сумма к получению
                 'weight' => $eachProductWeight, // Расчетный вес (кг)
-                'setId' => $productId . '_' . $i,
+                'setId' => '',
                 'brand' => '', // Бренд
                 'tnved' => '', // Код ТНВЭД
                 'country' => '', // код страны происхождения по ОКСМ
