@@ -144,7 +144,9 @@ class CsvImportService
                 $existApp = $this->applicationObiRepo->getByOrderNumber($appWithDbColumns['order_number']);
                 $appWithDbColumns['order_weight'] = parse_to_float($appWithDbColumns['order_weight']);
                 $appWithDbColumns['lift_weight_kg'] = parse_to_float($appWithDbColumns['lift_weight_kg']);
-                $appWithDbColumns['transfer_weight'] = parse_to_float($appWithDbColumns['order_weight']);
+                $appWithDbColumns['hand_lift_weight_kg'] = parse_to_float($appWithDbColumns['hand_lift_weight_kg']);
+                $appWithDbColumns['transfer_weight'] = parse_to_float($appWithDbColumns['transfer_weight']);
+                $appWithDbColumns['transfer_distance'] = parse_to_float($appWithDbColumns['transfer_distance']);
                 $appWithDbColumns['cost_of_transportation'] = parse_to_float($appWithDbColumns['cost_of_transportation']);
                 $appWithDbColumns['transfer_cost'] = parse_to_float($appWithDbColumns['transfer_cost']);
                 $appWithDbColumns['total_delivery_cost'] = parse_to_float($appWithDbColumns['total_delivery_cost']);
