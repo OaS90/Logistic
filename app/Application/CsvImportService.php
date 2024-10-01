@@ -106,7 +106,8 @@ class CsvImportService
         for ($i = 4; $i <= count($dataFromFile) - 1; $i++) {
             // убираем номер строки из файла (№ п/п)
             unset($dataFromFile[$i][0]);
-            $dataFromFile[$i][1] = Carbon::parse($dataFromFile[$i][1])->format('Y-m-d');
+            $date = is_int($dataFromFile[$i][1]) ? Date::excelToDateTimeObject($dataFromFile[$i][1]) : $dataFromFile[$i][1];
+            $dataFromFile[$i][1] = Carbon::parse($date)->format('Y-m-d');
             $appWithDbColumns = array_combine($rows, array_slice($dataFromFile[$i], 0, 25));
 
             if ($appWithDbColumns['order_number']) {
@@ -151,6 +152,7 @@ class CsvImportService
                 $appWithDbColumns['transfer_cost'] = parse_to_float($appWithDbColumns['transfer_cost']);
                 $appWithDbColumns['total_delivery_cost'] = parse_to_float($appWithDbColumns['total_delivery_cost']);
                 $appWithDbColumns['lift_cost'] = parse_to_float($appWithDbColumns['lift_cost']);
+                $appWithDbColumns['products_cost'] = parse_to_float($appWithDbColumns['products_cost']);
 
                 if (!$existApp) {
                     $existApp = $this->applicationObiRepo->create($appWithDbColumns);
