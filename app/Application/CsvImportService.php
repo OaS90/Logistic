@@ -142,12 +142,13 @@ class CsvImportService
                 unset($appWithDbColumns['order_list']);
 
                 $existApp = $this->applicationObiRepo->getByOrderNumber($appWithDbColumns['order_number']);
-                $appWithDbColumns['order_weight'] = (float) str_replace(',', '.', $appWithDbColumns['order_weight']);
-                $appWithDbColumns['transfer_weight'] = (float) str_replace(',', '.', $appWithDbColumns['order_weight']);
-                $appWithDbColumns['cost_of_transportation'] = (float) str_replace(' ', '', $appWithDbColumns['cost_of_transportation']);
-                $appWithDbColumns['transfer_cost'] = (float) str_replace(' ', '', $appWithDbColumns['transfer_cost']);
-                $appWithDbColumns['total_delivery_cost'] = (float) str_replace(' ', '', $appWithDbColumns['total_delivery_cost']);
-                $appWithDbColumns['lift_cost'] = (float) str_replace(' ', '', $appWithDbColumns['lift_cost']);
+                $appWithDbColumns['order_weight'] = parse_to_float($appWithDbColumns['order_weight']);
+                $appWithDbColumns['lift_weight_kg'] = parse_to_float($appWithDbColumns['lift_weight_kg']);
+                $appWithDbColumns['transfer_weight'] = parse_to_float($appWithDbColumns['order_weight']);
+                $appWithDbColumns['cost_of_transportation'] = parse_to_float($appWithDbColumns['cost_of_transportation']);
+                $appWithDbColumns['transfer_cost'] = parse_to_float($appWithDbColumns['transfer_cost']);
+                $appWithDbColumns['total_delivery_cost'] = parse_to_float($appWithDbColumns['total_delivery_cost']);
+                $appWithDbColumns['lift_cost'] = parse_to_float($appWithDbColumns['lift_cost']);
 
                 if (!$existApp) {
                     $existApp = $this->applicationObiRepo->create($appWithDbColumns);
