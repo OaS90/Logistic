@@ -106,7 +106,7 @@ class PartnerOrderDTO
                 'width' => (float) $product->width, // ширина в см
                 'height' => (float) $product->height, // высота в м2
                 'depth' => (float) $product->depth, // глубина в см
-                'shipmentCode' => $user->suffix . '-' . $app->order_number . '-' . $i
+                'shipmentCode' => $product->shipment_code ?: $user->suffix . '-' . $app->order_number . '-' . $i
             ];
         }
 

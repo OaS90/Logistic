@@ -60,6 +60,10 @@ class ProductDTO
         $data['height'] = !$data['height'] ? rand(1, 5) : $data['height'];
         $data['depth'] = !$data['depth'] ? rand(1, 5) : $data['depth'];
 
+        // Добавил для Кредо-М т.к. они хотят на своей стороне генерировать
+        // возможно остальные тоже так захотят.
+        $data['shipment_code'] = $data['shipmentcode'] ?? null;
+
         unset($data['costAfterDiscounts']);
         unset($data['VATRate']);
         unset($data['leftToPay']);
