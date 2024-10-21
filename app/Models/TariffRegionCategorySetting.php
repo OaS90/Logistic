@@ -11,5 +11,7 @@ class TariffRegionCategorySetting extends Model
 
     protected $table = 'tariff_region_category_settings';
     public $timestamps = false;
+    protected $primaryKey = null;
+    public $incrementing = false;
     protected $fillable = ['tariff_id', 'region_id', 'category_id', 'is_use'];
 }

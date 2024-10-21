@@ -131,8 +131,9 @@ class TariffController extends Controller
         $regions = $request->all();
 
         try {
-            $service->addRegions($tariffId, $regions);
+            $service->addFewRegions($tariffId, $regions);
         } catch (\Throwable $e) {
+            Log::error('Add few regions error: ' . $e->getMessage());
             return response(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -144,6 +145,7 @@ class TariffController extends Controller
         try {
             $service->addAllRegions($tariffId);
         } catch (\Throwable $e) {
+            Log::error('Add all regions error: ' . $e->getMessage());
             return response(['message' => 'Ошибка добавления регионов'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
