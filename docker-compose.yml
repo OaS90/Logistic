@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+    logistic:
+      build:
+        context: .
+        dockerfile: docker/Dockerfile
+      image: logistic-app
+      container_name: logistic-app
+      extra_hosts:
+        - 'host.docker.internal:host-gateway'
+      depends_on:
+        - postgres
+      ports:
+        - '8025:80'
+      volumes:
+        - .:/var/www
+      networks:
+        - logistic
+
+    postgres:
+      image: postgres:latest
+      container_name: logistic_db
+      ports:
+        - '5430:5432'
+      environment:
+        POSTGRES_DB: logistic
+        POSTGRES_USER: user
+        POSTGRES_PASSWORD: password
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      networks:
+        - logistic
+
+    mariadb:
+      image: mariadb:latest
+      container_name: mariadb_db
+      ports:
+        - '33066:3306'
+      environment:
+        MYSQL_DATABASE: logistic_test
+        MYSQL_USER: user
+        MYSQL_PASSWORD: password
+        MYSQL_ROOT_PASSWORD: root
+      volumes:
+        - mariadb_data:/var/lib/mysql
+      networks:
+        - logistic
+
+volumes:
+  postgres_data:
+  mariadb_data:
+
+networks:
+  logistic:

@@ -13,8 +13,10 @@ class AddInDayLimitationColumnInQuotesTable extends Migration
      */
     public function up()
     {
+        DB::statement('ALTER TABLE quotes ALTER COLUMN
+                  time_last TYPE time(0) USING (trim(time_last))::time(0)');
+
         Schema::table('quotes', function (Blueprint $table) {
-            $table->time('time_last')->change();
             $table->time('in_day_limitation')
                 ->comment('ограничение для интервала день в день')
                 ->after('delivery_days_from_moscow')

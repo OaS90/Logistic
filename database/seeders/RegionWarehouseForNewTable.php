@@ -18,6 +18,19 @@ class RegionWarehouseForNewTable extends Seeder
     public function run(): void
     {
         $dataFromFile = Excel::toArray(new ApplicationImportCsv(), storage_path('app/public/regions_from_lk.csv'))[0];
+        $warehouses = Excel::toArray(new ApplicationImportCsv(), storage_path('app/public/quote_warehouse.csv'))[0];
+        unset($warehouses[0]);
+
+        foreach ($warehouses as $warehouse) {
+            $warehouseEntity = QuoteWarehouse::find($warehouse[0]);
+
+            if (!$warehouseEntity) {
+                QuoteWarehouse::create([
+                    'warehouse_name' => $warehouse[1],
+                ]);
+            }
+        }
+
         unset($dataFromFile[0]);
         foreach ($dataFromFile as $regionWarehouse) {
             $region = Region::where('region_id', $regionWarehouse[2])->first();
@@ -26,7 +39,7 @@ class RegionWarehouseForNewTable extends Seeder
             try {
                 $region->warehouse()->attach($quoteWarehouse);
             } catch (\Throwable $e) {
-                dd($e->getMessage());
+                echo $e->getMessage();
             }
         }
     }
