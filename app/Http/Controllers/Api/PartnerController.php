@@ -6,9 +6,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Domain\PartnerOrderDTO;
+use App\Http\Controllers\Api\Exceptions\PartnerApplicationsNotFoundException;
+use App\Http\Controllers\Api\Exceptions\PartnerNotFoundException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Partner\PartnerGetOrdersRequest;
+use App\Http\Resources\GetOrdersFor1cResource;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\UserRepository;
+use App\Infrastructure\Services\Application\ApplicationService;
+use App\Infrastructure\Services\Application\Factories\ApplicationFactory;
+use App\Infrastructure\Services\Application\Factories\ProductFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Infrastructure\Repositories\ApplicationRepository;
@@ -17,72 +24,27 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PartnerController extends Controller
 {
-    private ApplicationRepository $repo;
-    private ApplicationObiRepository $obiRepository;
-    private UserRepository $userRepo;
     private int $obiUser;
 
-    public function __construct(ApplicationRepository $repository, UserRepository $userRepo, ApplicationObiRepository $obiRepository)
+    public function __construct(private readonly ApplicationService $appService
+    )
     {
-        $this->repo = $repository;
-        $this->userRepo = $userRepo;
         $this->obiUser = config('app.obi_user_id');
-        $this->obiRepository = $obiRepository;
     }
 
-    public function getOrders(Request $request): JsonResponse
+    public function getOrders(PartnerGetOrdersRequest $request): Response|GetOrdersFor1cResource
     {
-        $partnerId = $request->get('partnerId');
-        $user = $this->userRepo->getBy1cId($partnerId);
-
-        if ($user) {
-            $isObiPartner = $this->obiUser == $user->id;
-
-            if ($isObiPartner) {
-                $applications = $this->obiRepository->getListByUserIdForUpdateStatus($user->id);
-            } else {
-                $applications = $this->repo->getListByUserIdForUpdateStatus($user->id);
-            }
-
-            if ($applications->count() == 0)
-                return response()
-                    ->json(
-                        ['message' => 'Не найдено заявок для клиента с id=' . $partnerId],
-                        200, ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
-                    );
-
-            $apps = [];
-
-            foreach ($applications as $app) {
-                if ($app->status == 'created' || $app->doc_ver > $app->old_doc_ver) {
-
-                    try {
-                        $appDTO = (new PartnerOrderDTO($app))->make();
-                    } catch (\Throwable $e) {
-                        Log::info('Error creating dto for app ' . $app->order_number . 'error:' . $e->getMessage());
-                        continue;
-                    }
-
-                    $apps[] = $appDTO;
-                    Log::info('Sent to 1c ' . json_encode($appDTO));
-
-                    if ($isObiPartner) {
-                        $this->obiRepository->updateByFields($app->order_number, ['old_doc_ver' => $app->doc_ver]);
-                    } else {
-                        $this->repo->updateByFields($app->order_number, ['old_doc_ver' => $app->doc_ver]);
-                    }
-                }
-            }
-
-            return response()->json($apps, 200,
-                ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
-            );
+        try {
+            $result = $this->appService->getOrdersBy1c($request->get('partnerId'));
+        } catch (PartnerNotFoundException $e) {
+            return $e->render();
+        } catch (PartnerApplicationsNotFoundException $e) {
+            return $e->render();
+        } catch (\Throwable $e) {
+            Log::error('Get partner order error ' . $e->getMessage());
+            return response(['success' => false, 'message' => 'Ошибка получения заказов']);
         }
 
-        return response()
-            ->json(
-                ['message' => 'Не найден партнёр с id ' . $partnerId],
-                Response::HTTP_UNPROCESSABLE_ENTITY, ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
-            );
+        return new GetOrdersFor1cResource($result);
     }
 }

@@ -78,7 +78,7 @@
                         @foreach($list as $application)
                             <tr>
                                 <td><a href="{{ route('application-show', ['id' => $application->id]) }}">{{ $application->order_number }}</a></td>
-                                <td>{{ $application->products->first()->name }}</td>
+                                <td>{{ $application->products->first()?->name }}</td>
                                 <td>{{ $application->delivery_date }}</td>
                                 <td>
                                     <div class="hidden-td">

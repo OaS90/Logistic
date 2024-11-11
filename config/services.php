@@ -30,6 +30,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
     'dadata' => [
+        'suggest_url' => env('DADATA_SUGGEST_URL', ''),
+        'clean_url' => env('DADATA_CLEAN_URL'),
         'token' => env('DADATA_TOKEN', ''),
         'secret' => env('DADATA_SECRET', '')
     ],

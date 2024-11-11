@@ -79,8 +79,7 @@ class CsvImportService
             } else {
                 $this->appCheckService->checkAppChangesAndUpdate($existApp, $appDTO, $warehouse->id);
             }
-
-            $this->appService->getDeliveryDateFromHru($existApp, $existApp->address);
+//            $this->appService->getDeliveryDateFromHru($existApp, $existApp->address);
         }
     }
 
@@ -89,12 +88,13 @@ class CsvImportService
         $dataFromFile = Excel::toArray($entity, $file)[0];
         $rows = $this->fileObiTitlesToDbColumnsPrepare();
 
-        for ($i = 4; $i <= count($dataFromFile) - 1; $i++) {
+        foreach ($dataFromFile as $row) {
             // убираем номер строки из файла (№ п/п)
-            unset($dataFromFile[$i][0]);
-            $dataFromFile[$i][1] = Carbon::parse(Date::excelToDateTimeObject($dataFromFile[$i][1]))->format('Y-m-d');
-            $appWithDbColumns = array_combine($rows, $dataFromFile[$i]);
-
+            unset($row[0]);
+            $columnsData = array_slice($row, 0, 25);
+            $date = is_int($columnsData[0]) ? Date::excelToDateTimeObject($columnsData[0]) : $columnsData[0];
+            $columnsData[0] = Carbon::parse($date)->format('Y-m-d');
+            $appWithDbColumns = array_combine($rows, $columnsData);
             if ($appWithDbColumns['orderNumber']) {
                 $orderList = explode(';', $appWithDbColumns['orderList']);
                 $products = [];
@@ -130,10 +130,22 @@ class CsvImportService
 
                 $appWithDbColumns['phones'] = $phones;
                 $appWithDbColumns['orderList'] = $products;
-                $appDTO = $this->appFactory->makeObiApplicationDTO($appWithDbColumns);
-                $existApp = $this->applicationObiRepo->getByOrderNumber($appDTO->orderNumber);
+                $existApp = $this->applicationObiRepo->getByOrderNumber($appWithDbColumns['orderNumber']);
+
+                // TODO сделать обработка в ImportEntity
+                $appWithDbColumns['orderWeight'] = parse_to_float($appWithDbColumns['orderWeight']);
+                $appWithDbColumns['liftWeightKg'] = parse_to_float($appWithDbColumns['liftWeightKg']);
+                $appWithDbColumns['handLiftWeightKg'] = parse_to_float($appWithDbColumns['handLiftWeightKg']);
+                $appWithDbColumns['transferWeight'] = parse_to_float($appWithDbColumns['transferWeight']);
+                $appWithDbColumns['transferDistance'] = parse_to_float($appWithDbColumns['transferDistance']);
+                $appWithDbColumns['costOfTransportation'] = parse_to_float($appWithDbColumns['costOfTransportation']);
+                $appWithDbColumns['transferCost'] = parse_to_float($appWithDbColumns['transferCost']);
+                $appWithDbColumns['totalDeliveryCost'] = parse_to_float($appWithDbColumns['totalDeliveryCost']);
+                $appWithDbColumns['liftCost'] = parse_to_float($appWithDbColumns['liftCost']);
+                $appWithDbColumns['productsCost'] = parse_to_float($appWithDbColumns['productsCost']);
 
                 if (!$existApp) {
+                    $appDTO = $this->appFactory->makeObiApplicationDTO($appWithDbColumns);
                     $existApp = $this->applicationObiRepo->create($appDTO, $userId);
 
                     foreach ($appDTO->orderList as $product) {
@@ -150,7 +162,7 @@ class CsvImportService
     }
 
     /**
-     * Формирует массив значений из csv файла и создаёт заявки
+     * Формирует массив значений из csv или xlsx файла и создаёт заявки
      * @param $entity
      * @param $file
      * @return array
@@ -180,6 +192,7 @@ class CsvImportService
 
             if ($fileData[16]) {
                 $appWithDbColumns = array_combine($rows, $fileData);
+
                 // если нет номера заказа, берём последний доступный и привязываем товар к нему
                 if (!$appWithDbColumns['orderNumber'] || isset($apps[$appWithDbColumns['orderNumber']])) {
                     /* @var ApplicationDTO $app */

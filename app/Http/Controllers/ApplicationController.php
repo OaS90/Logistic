@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Enum\ApplicationStatus;
+use App\Http\Controllers\Api\Exceptions\WarehouseNotFoundException;
 use App\Http\Requests\Application\ApplicationUICreateRequest;
+use App\Infrastructure\Exceptions\PartnerWarehouseNotFoundException;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -136,12 +138,18 @@ class ApplicationController extends Controller
                     );
             }
         } catch (\Throwable $e) {
+            $msg = 'Ошибка загрузки!';
             Log::error('Import error: ' . $e->getMessage());
 
-            return response()->json(['message' => 'Ошибка загрузки!'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            if ($e instanceof PartnerWarehouseNotFoundException) {
+                $msg .= $e->getMessage();
+            }
+
+            // TODO отдавать ошибку в vue
+            return response(['message' => $msg], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return response()->json(['message' => 'Файл успешно загружен!'], Response::HTTP_OK);
+        return response(['message' => 'Файл успешно загружен!'], Response::HTTP_OK);
     }
 
     public function downloadFileExample(): BinaryFileResponse

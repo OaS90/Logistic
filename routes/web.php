@@ -20,9 +20,6 @@ use App\Http\Controllers\UserController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-Route::get('test', function () {
-    throw new \App\Http\Controllers\Api\Exceptions\UserNotFoundException('000025');
-});
 Auth::routes();
 Route::get('api-documentation', function () {
     return view('common-api-description');

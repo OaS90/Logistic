@@ -29,10 +29,10 @@ class ApplicationRepository
     public function getListByUserIdForUpdateStatus(int $userId)
     {
         return Application::where('user_id', $userId)
-            ->where(function (Builder $query) {
-                $query->where('status', 'created')
-                    ->orWhereRaw('doc_ver > old_doc_ver');
-            })->get();
+            ->with('products')
+            ->where('status', 'created')
+            ->orWhereRaw('doc_ver > old_doc_ver')
+            ->get();
     }
 
     public function create(ApplicationDTO $dto,

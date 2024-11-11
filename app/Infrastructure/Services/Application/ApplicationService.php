@@ -4,10 +4,11 @@ namespace App\Infrastructure\Services\Application;
 
 use App\Application\ApplicationServiceInterface;
 use App\Application\DeliveryAddressService;
-use App\Domain\DTO\ProductDTO;
 use App\Domain\DTO\Requests\ApplicationApiCreateDTO;
 use App\Domain\DTO\Requests\ApplicationUICreateRequestDTO;
 use App\Domain\DTO\Requests\StatusFrom1cRequestDTO;
+use App\Http\Controllers\Api\Exceptions\PartnerApplicationsNotFoundException;
+use App\Http\Controllers\Api\Exceptions\PartnerNotFoundException;
 use App\Http\Controllers\Api\Exceptions\UserNotFoundException;
 use App\Http\Controllers\Api\Exceptions\WarehouseNotFoundException;
 use App\Infrastructure\Api;
@@ -17,7 +18,10 @@ use App\Infrastructure\Repositories\AppStatusHistoryRepository;
 use App\Infrastructure\Repositories\ProductRepository;
 use App\Infrastructure\Repositories\UserRepository;
 use App\Infrastructure\Repositories\WarehouseRepository;
+use App\Infrastructure\Services\Application\Factories\ApplicationFactory;
+use App\Infrastructure\Services\Application\Factories\ProductFactory;
 use App\Models\Application;
+use App\Models\ApplicationObi;
 use App\Models\DeliveryAddress;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Barryvdh\DomPDF\PDF as PdfFile;
@@ -27,8 +31,7 @@ use Illuminate\Support\Facades\Log;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 use Symfony\Component\HttpFoundation\Response;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
-use App\Infrastructure\Services\Application\ApplicationCheckService;
-
+use App\Infrastructure\Services\Dadata\DadataService;
 
 class ApplicationService implements ApplicationServiceInterface
 {
@@ -46,6 +49,9 @@ class ApplicationService implements ApplicationServiceInterface
                                 private readonly AppStatusHistoryRepository $appStatusHistoryRepo,
                                 private readonly UserRepository $userRepo,
                                 private readonly ApplicationObiRepository $applicationObiRepo,
+                                private readonly ProductFactory $productFactory,
+                                private readonly ApplicationFactory $appFactory,
+                                private readonly DadataService $dadataService
     )
     {
         $this->obiUser = config('app.obi_user_id');
@@ -172,6 +178,7 @@ class ApplicationService implements ApplicationServiceInterface
 
     /**
      * @param StatusFrom1cRequestDTO[] $statusDTOs
+     * Обновление статусов из 1с
      */
     public function updateStatuses(array $statusDTOs): array
     {
@@ -224,7 +231,7 @@ class ApplicationService implements ApplicationServiceInterface
                 ];
 
                 // Если ошибка в логике, то просто обновляем версию
-                //
+                // для того, чтобы 1с пыталась забрать этот заказ в будущем
                 $app = $this->appRepo->getByOrderNumber($statusDTO->orderNumber);
 
                 if ($app) {
@@ -234,5 +241,87 @@ class ApplicationService implements ApplicationServiceInterface
         }
 
         return array_merge($statuses, $errors);
+    }
+
+    /**
+     * 1с запрашивает все заявки с определёнными статусами
+     * по id партнёра. Пример partnerId 000000025
+     * @throws PartnerNotFoundException
+     * @throws PartnerApplicationsNotFoundException
+     */
+    public function getOrdersBy1c(string $partnerId): array
+    {
+        $user = $this->userRepo->getBy1cId($partnerId);
+
+        if (!$user) {
+            throw new PartnerNotFoundException($partnerId);
+        }
+
+        $isObiPartner = $this->obiUser == $user->id;
+
+        if ($isObiPartner) {
+            $applications = $this->appObiRepo->getListByUserIdForUpdateStatus($user->id);
+        } else {
+            $applications = $this->appRepo->getListByUserIdForUpdateStatus($user->id);
+        }
+
+        if ($applications->count() == 0) {
+            throw new PartnerApplicationsNotFoundException($partnerId);
+        }
+
+        $apps = [];
+
+        foreach ($applications as $app) {
+            $productDTOs = [];
+                if ($isObiPartner) {
+                    /* @var ApplicationObi $app */
+                    $productsForFComment = [];
+                    $products = $app->getProductsWithoutExtraPays();
+
+                    foreach ($products as $i => $product) {
+                        $i += 1;
+                        $productDTOs[] = $this->productFactory
+                            ->makeProductObiDTOFor1c($app, $product->name, count($products), $i);
+                        $productsForFComment[] = $product->name;
+                    }
+
+                    $appDTO = $this->appFactory->makeApplicationObiDTOFor1c($app, $productDTOs, $productsForFComment);
+                } else {
+                    /* @var Application $app */
+                    $addressInfo = $this->dadataService->getCleanAddress($app->full_address);
+
+                    foreach ($app->products as $i => $product) {
+                        $i += 1;
+
+                        $productDTOs[] = $this->productFactory
+                            ->makeProductDTOFor1c($product, $user->suffix, $app->order_number, $i);
+                    }
+
+                    $appDTO = $this->appFactory->makeApplicationDTOFor1c($app, $productDTOs, $addressInfo, $user->suffix);
+                }
+
+//                try {
+//                    $appDTO = (new PartnerOrderDTO($app))->make();
+//                } catch (\Throwable $e) {
+//                    Log::info('Error creating dto for app ' . $app->order_number . 'error:' . $e->getMessage());
+//                    continue;
+//                }
+
+                $apps[] = $appDTO;
+
+                Log::info('Sent to 1c ' . json_encode($appDTO));
+
+                if ($isObiPartner) {
+                    $this->appObiRepo->updateByFields($appDTO->orderNumber, ['old_doc_ver' => $appDTO->docVer]);
+                } else {
+                    $this->appRepo->updateByFields($app, ['old_doc_ver' => $appDTO->docVer]);
+                }
+//            }
+        }
+
+        return $apps;
+        return response()->json($apps, 200,
+            ['Content-type' => 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
+        );
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Exceptions\UserNotFoundException;
 use App\Http\Controllers\Api\Exceptions\WarehouseNotFoundException;
 use App\Http\Requests\Application\ApplicationApiCreateRequest;
 use App\Http\Requests\Application\StatusesFrom1cRequest;
+use App\Http\Requests\GetApplicationStatusRequest;
 use App\Http\Resources\ApplicationApiCreateResource;
 use App\Http\Resources\ApplicationApiUpdatedStatusesResource;
 use App\Http\Resources\ApplicationStatusHistoryResource;
@@ -97,7 +98,7 @@ class ApplicationController
         return $stickers instanceof PDF ? $stickers->download() : $stickers;
     }
 
-    public function getOrderStatus(Request $request): Response
+    public function getOrderStatus(GetApplicationStatusRequest $request): Response
     {
         $orderNumber = $request->get('orderId');
         $partnerId = $request->get('partnerId');
