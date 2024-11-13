@@ -19,7 +19,6 @@ class ApplicationCheckService
     public function checkAppChangesAndUpdate(Application $app, ApplicationDTO $dto, int $warehouseId): void
     {
         if (!in_array($app->status, [ApplicationStatus::NEW, ApplicationStatus::REFUSAL])) {
-            //$data['app']['doc_ver'] = $app->doc_ver + 1;
             $this->appRepo->updateByFields($app, [
                 'doc_ver' => $app->doc_ver + 1,
                 'payment_type' => $dto->paymentType,

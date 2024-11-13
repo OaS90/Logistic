@@ -3,14 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Enum\ApplicationStatus;
-use App\Http\Controllers\Api\Exceptions\WarehouseNotFoundException;
 use App\Http\Requests\Application\ApplicationUICreateRequest;
 use App\Infrastructure\Exceptions\PartnerWarehouseNotFoundException;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Infrastructure\Repositories\ApplicationRepository;
-use App\Infrastructure\DadataAdapter;
+use App\Infrastructure\Services\Dadata\DadataService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use App\Infrastructure\Services\Import\CsvImportService;
@@ -24,7 +23,7 @@ class ApplicationController extends Controller
     private int $obiUser;
 
     public function __construct(private readonly ApplicationRepository $repo,
-                                private readonly DadataAdapter $dadataAdapter,
+                                private readonly DadataService $dadataService,
                                 private readonly CsvImportService $importService,
                                 private readonly ApplicationServiceInterface $appService,
                                 private readonly ApplicationObiRepository $applicationObiRepo,
@@ -99,7 +98,7 @@ class ApplicationController extends Controller
 
     public function getAddress(Request $request)
     {
-        return $this->dadataAdapter->getAddress($request->get('input'));
+        return $this->dadataService->getSuggestions($request->get('input'), 5);
     }
 
     public function delete(int $id): void

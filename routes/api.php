@@ -1,8 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\PartnerController;
 use App\Http\Controllers\Api\ApplicationController;
 
 /*
@@ -20,7 +18,7 @@ use App\Http\Controllers\Api\ApplicationController;
 //    return $request->user();
 //});
 Route::prefix('v1')->group(function () {
-    Route::get('partners/order', [PartnerController::class, 'getOrders']);
+    Route::get('partners/order', [ApplicationController::class, 'getOrders']);
     Route::post('set-status', [ApplicationController::class, 'setStatus']);
     Route::post('order/create', [ApplicationController::class, 'create']);
     Route::get('order/{id}/stickers', [ApplicationController::class, 'getSticker']);

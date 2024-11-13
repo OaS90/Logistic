@@ -3,8 +3,10 @@
 namespace App\Infrastructure\Services\Dadata\Api;
 
 use App\Domain\DTO\DadataCleanAddressDTO;
+use App\Domain\DTO\DadataSuggestionAddressDTO;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+use Illuminate\Support\Facades\Log;
 
 class Api
 {
@@ -12,8 +14,10 @@ class Api
     {
     }
 
-    public function suggestions(string $address, int $count = 1)
+    public function suggestions(string $address, int $count = 1): array
     {
+        $result = [];
+
         try {
             $response = $this->suggestClient->post('suggest/address', [
                 RequestOptions::JSON => [
@@ -22,13 +26,21 @@ class Api
                 ],
 
             ]);
-            dd($response->getBody()->getContents());
+            $content = $response->getBody()->getContents();
+            $data = json_decode($content, true);
+
+            if (isset($data['suggestions']) && count($data['suggestions']) > 0) {
+                $result = $data['suggestions'];
+            }
+
         } catch (\Throwable $e) {
-            dd($e->getMessage());
+            Log::error('Failed to get suggestions: ' . $e->getMessage());
         }
+
+        return $result;
     }
 
-    public function clean(string $address)
+    public function clean(string $address): array|DadataCleanAddressDTO
     {
         $result = [];
 
@@ -53,7 +65,7 @@ class Api
                 flat: $data[0]['flat_type_full']
             );
         } catch (\Throwable $e) {
-            dd($e->getMessage());
+            Log::error('Failed to get clean address: ' . $e->getMessage());
         }
 
         return $result;

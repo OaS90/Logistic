@@ -2,7 +2,9 @@
 
 namespace App\Domain\DTO;
 
-class DadataCleanAddressDTO
+use App\Application\DeliveryAddressDTOInterface;
+
+class DadataCleanAddressDTO implements DeliveryAddressDTOInterface
 {
     public function __construct(public readonly string $regionFias,
                                 public readonly string $region,

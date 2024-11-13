@@ -3,7 +3,6 @@
 namespace App\Infrastructure\Services\Application;
 
 use App\Application\ApplicationServiceInterface;
-use App\Application\DeliveryAddressService;
 use App\Domain\DTO\Requests\ApplicationApiCreateDTO;
 use App\Domain\DTO\Requests\ApplicationUICreateRequestDTO;
 use App\Domain\DTO\Requests\StatusFrom1cRequestDTO;
@@ -11,7 +10,6 @@ use App\Http\Controllers\Api\Exceptions\PartnerApplicationsNotFoundException;
 use App\Http\Controllers\Api\Exceptions\PartnerNotFoundException;
 use App\Http\Controllers\Api\Exceptions\UserNotFoundException;
 use App\Http\Controllers\Api\Exceptions\WarehouseNotFoundException;
-use App\Infrastructure\Api;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\AppStatusHistoryRepository;
@@ -32,6 +30,7 @@ use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 use Symfony\Component\HttpFoundation\Response;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Services\Dadata\DadataService;
+use App\Infrastructure\Services\Monolith\Api as MonolithApi;
 
 class ApplicationService implements ApplicationServiceInterface
 {
@@ -45,13 +44,13 @@ class ApplicationService implements ApplicationServiceInterface
                                 private readonly ApplicationCheckService $appCheckService,
                                 private readonly DeliveryAddressRepository $addressRepo,
                                 private readonly WarehouseRepository $warehouseRepo,
-                                private readonly DeliveryAddressService $deliveryAddressService,
                                 private readonly AppStatusHistoryRepository $appStatusHistoryRepo,
                                 private readonly UserRepository $userRepo,
                                 private readonly ApplicationObiRepository $applicationObiRepo,
                                 private readonly ProductFactory $productFactory,
                                 private readonly ApplicationFactory $appFactory,
-                                private readonly DadataService $dadataService
+                                private readonly DadataService $dadataService,
+                                private readonly MonolithApi $monolithApi
     )
     {
         $this->obiUser = config('app.obi_user_id');
@@ -76,15 +75,12 @@ class ApplicationService implements ApplicationServiceInterface
         ])->setPaper([30, -30, 280.77, 320.16]);
     }
 
-    // TODO переписать в провайдер.
     public function getDeliveryDateFromHru(Application $app, DeliveryAddress $addressEntity): bool
     {
-        $api = new Api(config('app.hru_delivery_url'));
-        $deliveryResponse = $api
-            ->query('', ['q' => 'DeliveryDateBortUdachi', 'address' => $addressEntity->region_and_city]);
+        $monolithDeliveryDate = $this->monolithApi->getDeliveryDate($addressEntity->region_and_city);
 
-        if ($deliveryResponse && isset($deliveryResponse['date'])) {
-            $this->appRepo->updateByFields($app, ['hru_delivery_date' => $deliveryResponse['date']]);
+        if ($monolithDeliveryDate) {
+            $this->appRepo->updateByFields($app, ['hru_delivery_date' => $monolithDeliveryDate]);
         }
 
         return false;
@@ -145,15 +141,14 @@ class ApplicationService implements ApplicationServiceInterface
             }
 
             if (!isset($appDTO->addressDTO->regionName) || !isset($appDTO->addressDTO->streetFias)) {
-                $dadataAddress = $this->deliveryAddressService
-                    ->checkFiasForCityAndStreet(
+                $dadataAddress = $this->dadataService
+                    ->getCleanAddress(
                         $appDTO->addressDTO->regionName . ' '
                         . $appDTO->addressDTO->cityName . ' '
                         . $appDTO->addressDTO->street
-                        , 1
                     );
-                $appDTO->addressDTO->cityFias = $dadataAddress ? $dadataAddress[0]['data']['city_fias_id'] : '';
-                $appDTO->addressDTO->streetFias = $dadataAddress ? $dadataAddress[0]['data']['street_fias_id'] : '';
+                $appDTO->addressDTO->cityFias = $dadataAddress ? $dadataAddress->cityFias : '';
+                $appDTO->addressDTO->streetFias = $dadataAddress ? $dadataAddress->cityFias : '';
             }
 
             $address = $this->addressRepo->create($appDTO->addressDTO);
@@ -273,55 +268,44 @@ class ApplicationService implements ApplicationServiceInterface
 
         foreach ($applications as $app) {
             $productDTOs = [];
-                if ($isObiPartner) {
-                    /* @var ApplicationObi $app */
-                    $productsForFComment = [];
-                    $products = $app->getProductsWithoutExtraPays();
+            if ($isObiPartner) {
+                /* @var ApplicationObi $app */
+                $productsForFComment = [];
+                $products = $app->getProductsWithoutExtraPays();
 
-                    foreach ($products as $i => $product) {
-                        $i += 1;
-                        $productDTOs[] = $this->productFactory
-                            ->makeProductObiDTOFor1c($app, $product->name, count($products), $i);
-                        $productsForFComment[] = $product->name;
-                    }
-
-                    $appDTO = $this->appFactory->makeApplicationObiDTOFor1c($app, $productDTOs, $productsForFComment);
-                } else {
-                    /* @var Application $app */
-                    $addressInfo = $this->dadataService->getCleanAddress($app->full_address);
-
-                    foreach ($app->products as $i => $product) {
-                        $i += 1;
-
-                        $productDTOs[] = $this->productFactory
-                            ->makeProductDTOFor1c($product, $user->suffix, $app->order_number, $i);
-                    }
-
-                    $appDTO = $this->appFactory->makeApplicationDTOFor1c($app, $productDTOs, $addressInfo, $user->suffix);
+                foreach ($products as $i => $product) {
+                    $i += 1;
+                    $productDTOs[] = $this->productFactory
+                        ->makeProductObiDTOFor1c($app, $product->name, count($products), $i);
+                    $productsForFComment[] = $product->name;
                 }
 
-//                try {
-//                    $appDTO = (new PartnerOrderDTO($app))->make();
-//                } catch (\Throwable $e) {
-//                    Log::info('Error creating dto for app ' . $app->order_number . 'error:' . $e->getMessage());
-//                    continue;
-//                }
+                $appDTO = $this->appFactory->makeApplicationObiDTOFor1c($app, $productDTOs, $productsForFComment);
+            } else {
+                /* @var Application $app */
+                $addressInfo = $this->dadataService->getCleanAddress($app->full_address);
 
-                $apps[] = $appDTO;
+                foreach ($app->products as $i => $product) {
+                    $i += 1;
 
-                Log::info('Sent to 1c ' . json_encode($appDTO));
-
-                if ($isObiPartner) {
-                    $this->appObiRepo->updateByFields($appDTO->orderNumber, ['old_doc_ver' => $appDTO->docVer]);
-                } else {
-                    $this->appRepo->updateByFields($app, ['old_doc_ver' => $appDTO->docVer]);
+                    $productDTOs[] = $this->productFactory
+                        ->makeProductDTOFor1c($product, $user->suffix, $app->order_number, $i);
                 }
-//            }
+
+                $appDTO = $this->appFactory->makeApplicationDTOFor1c($app, $productDTOs, $addressInfo, $user->suffix);
+            }
+
+            $apps[] = $appDTO;
+
+            Log::info('Sent to 1c ' . json_encode($appDTO));
+
+            if ($isObiPartner) {
+                $this->appObiRepo->updateByFields($appDTO->orderNumber, ['old_doc_ver' => $appDTO->docVer]);
+            } else {
+                $this->appRepo->updateByFields($app, ['old_doc_ver' => $appDTO->docVer]);
+            }
         }
 
         return $apps;
-        return response()->json($apps, 200,
-            ['Content-type' => 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
-        );
     }
 }

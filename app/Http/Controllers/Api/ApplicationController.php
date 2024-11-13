@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\Exceptions\ApplicationNotFoundException;
+use App\Http\Controllers\Api\Exceptions\PartnerApplicationsNotFoundException;
+use App\Http\Controllers\Api\Exceptions\PartnerNotFoundException;
 use App\Http\Controllers\Api\Exceptions\UserNotFoundException;
 use App\Http\Controllers\Api\Exceptions\WarehouseNotFoundException;
 use App\Http\Requests\Application\ApplicationApiCreateRequest;
 use App\Http\Requests\Application\StatusesFrom1cRequest;
 use App\Http\Requests\GetApplicationStatusRequest;
+use App\Http\Requests\Partner\PartnerGetOrdersRequest;
 use App\Http\Resources\ApplicationApiCreateResource;
 use App\Http\Resources\ApplicationApiUpdatedStatusesResource;
 use App\Http\Resources\ApplicationStatusHistoryResource;
+use App\Http\Resources\GetOrdersFor1cResource;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\AppStatusHistoryRepository;
 use App\Infrastructure\Repositories\UserRepository;
@@ -21,21 +25,16 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Контроллер для обработки api запросов из 1с
+ * Контроллер для обработки api запросов из 1с и партнёров
  */
 class ApplicationController
 {
-    private int $obiUser;
-
     public function __construct(private readonly UserRepository $userRepo,
                                 private readonly ApplicationService $appService,
                                 private readonly AppStatusHistoryRepository $appStatusHistoryRepo,
                                 private readonly ApplicationRepository $repo
-
     )
-    {
-        $this->obiUser = config('app.obi_user_id');
-    }
+    {}
 
     public function setStatus(StatusesFrom1cRequest $request): Response|ApplicationApiUpdatedStatusesResource
     {
@@ -144,5 +143,21 @@ class ApplicationController
         }
 
         return new ApplicationStatusHistoryResource($statuses);
+    }
+
+    public function getOrders(PartnerGetOrdersRequest $request): Response|GetOrdersFor1cResource
+    {
+        try {
+            $result = $this->appService->getOrdersBy1c($request->get('partnerId'));
+        } catch (PartnerNotFoundException $e) {
+            return $e->render();
+        } catch (PartnerApplicationsNotFoundException $e) {
+            return $e->render();
+        } catch (\Throwable $e) {
+            Log::error('Get partner order error ' . $e->getMessage());
+            return response(['success' => false, 'message' => 'Ошибка получения заказов']);
+        }
+
+        return new GetOrdersFor1cResource($result);
     }
 }

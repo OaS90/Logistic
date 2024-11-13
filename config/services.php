@@ -35,9 +35,14 @@ return [
         'token' => env('DADATA_TOKEN', ''),
         'secret' => env('DADATA_SECRET', '')
     ],
-    'delivery_holodilnik_service' => [
-        'uri' => env('DELIVERY_HOLODILNIK_SERVICE', 'http://gateway-stage.adeal.ru/v1.0/holodilnik-delivery/api/v1/'),
-        'login' => env('DELIVERY_HOLODILNIK_LOGIN', 'test@test.ru'),
-        'password' => env('DELIVERY_HOLODILNIK_PASSWORD', '123'),
+    'monolith_api' => [
+        'uri' => env('MONOLITH_API_URI', ''),
+        'token' => env('MONOLITH_API_TOKEN'),
+    ],
+    'hru_gateway' => [
+        'uri' => env('HRU_GATEWAY', 'http://gateway-stage.adeal.ru/v1.0/'),
+        'login' => env('HRU_GATEWAY_LOGIN', 'test@test.ru'),
+        'password' => env('HRU_GATEWAY_PASSWORD', '123'),
+        'api_delivery_service_token' => env('API_DELIVERY_SERVICE_TOKEN', ''),
     ]
 ];

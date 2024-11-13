@@ -18,7 +18,6 @@ class GetOrdersFor1cResource extends JsonResource
 
         foreach ($this->resource as $app) {
             $products = [];
-
             $i = 1;
 
             foreach ($app->products as $product) {

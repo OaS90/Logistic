@@ -14,15 +14,10 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
-
-    'api_hru_token' => env('API_HRU_TOKEN'),
-    'api_hru' => env('API_HRU'),
-    'api_user' => env('API_HRU_USER', 'holodilnik'),
-    'api_password' => env('API_HRU_PASSWORD', ''),
-    'hru_delivery_url' => env('API_DELIVERY_HRU', ''),
+    'hru_base_auth_user' => env('HRU_BASE_AUTH_USER', ''),
+    'hru_base_auth_password' => env('HRU_BASE_AUTH_PASS', ''),
     'obi_user_id' => env('OBI_USER_ID', 6),
-    'tk_hru_url' => env('TK_HRU_URL'),
-    'api_delivery_service_token' => env('API_DELIVERY_SERVICE_TOKEN', ''),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
@@ -181,8 +176,7 @@ return [
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
-        App\Providers\HruApiServiceProvider::class
+        App\Providers\RouteServiceProvider::class
     ],
 
     /*

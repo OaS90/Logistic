@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use App\Application\ApplicationServiceInterface;
 use App\Infrastructure\Services\Dadata\DadataService;
-use App\Application\DeliveryAddressService;
 use App\Infrastructure\Repositories\ApplicationObiRepository;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\AppStatusHistoryRepository;
@@ -16,7 +15,6 @@ use App\Infrastructure\Services\Application\ApplicationCheckService;
 use App\Infrastructure\Services\Application\ApplicationService;
 use App\Infrastructure\Services\Application\Factories\ApplicationFactory;
 use App\Infrastructure\Services\Application\Factories\ProductFactory;
-use App\Infrastructure\Services\Delivery\Api\Api;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Foundation\Application;
@@ -25,6 +23,8 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Routing\UrlGenerator;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 use App\Infrastructure\Services\Dadata\Api\Api as DadataApi;
+use App\Infrastructure\Services\Monolith\Api as MonolithApi;
+use App\Infrastructure\Services\HruGateway\Api as HruGatewayApi;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -46,20 +46,24 @@ class AppServiceProvider extends ServiceProvider
                 appCheckService: $this->app->make(ApplicationCheckService::class),
                 addressRepo: $this->app->make(DeliveryAddressRepository::class),
                 warehouseRepo: $this->app->make(WarehouseRepository::class),
-                deliveryAddressService: $this->app->make(DeliveryAddressService::class),
                 appStatusHistoryRepo: $this->app->make(AppStatusHistoryRepository::class),
                 userRepo: $this->app->make(UserRepository::class),
                 applicationObiRepo: $this->app->make(ApplicationObiRepository::class),
                 productFactory: $this->app->make(ProductFactory::class),
                 appFactory: $this->app->make(ApplicationFactory::class),
-                dadataService: $this->app->make(DadataService::class)
+                dadataService: $this->app->make(DadataService::class),
+                monolithApi: $this->app->make(MonolithApi::class)
             );
         });
 
-        $this->app->bind(Api::class, function () {
-            return new Api(
+        $this->app->bind(MonolithApi::class, function () {
+            return new MonolithApi(
                 new Client([
-                    'base_uri' => config('services.delivery_holodilnik_service.uri')
+                    'base_uri' => config('services.monolith_api.uri'),
+                    'headers' => [
+                        'Content-Type' => 'application/json', 'Accept' => 'application/json',
+                        'Authorization' => config('services.monolith.token')
+                    ],
                 ])
             );
         });
@@ -86,6 +90,18 @@ class AppServiceProvider extends ServiceProvider
                         'Accept' => 'application/json',
                         'Authorization' => 'Token ' . config('services.dadata.token'),
                         'X-Secret' => config('services.dadata.secret')
+                    ]
+                ])
+            );
+        });
+
+        $this->app->bind(HruGatewayApi::class, function () {
+            return new HruGatewayApi(
+                new Client([
+                    'base_uri' => config('services.hru_gateway.uri'),
+                    RequestOptions::HEADERS => [
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
                     ]
                 ])
             );
