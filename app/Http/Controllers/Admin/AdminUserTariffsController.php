@@ -34,6 +34,6 @@ class AdminUserTariffsController
         $tariff = $tariffRepo->findById($tariffId);
         $user->tariffsPermissions()->detach($tariff);
 
-        return response(['message' => 'Тариф добавлен для редактирования'], Response::HTTP_OK);
+        return response(['message' => 'Тариф удлён'], Response::HTTP_OK);
     }
 }

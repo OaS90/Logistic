@@ -151,6 +151,7 @@ class ApplicationService implements ApplicationServiceInterface
                 $appDTO->addressDTO->streetFias = $dadataAddress ? $dadataAddress->cityFias : '';
             }
 
+            // TODO проверить интерфейс
             $address = $this->addressRepo->create($appDTO->addressDTO);
             $newApp = $this->appRepo->create($appDTO, $user->id, $address->id, $warehouse->id);
 

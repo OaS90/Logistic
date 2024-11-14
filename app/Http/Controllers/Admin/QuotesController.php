@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Infrastructure\Admin\Services\Api\HruApi;
-use App\Models\Quote;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
-use App\Domain\Admin\QuoteDTO;
 use App\Infrastructure\Repositories\Admin\QuoteRepository;
 use App\Infrastructure\Repositories\Admin\IntervalQuoteRepository;
 use App\Application\ExcelExportService;
@@ -19,6 +16,7 @@ use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 use App\Infrastructure\Services\Monolith\Api;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Infrastructure\Admin\Services\Quote\QuoteService;
 
 class QuotesController extends Controller
 {
@@ -26,14 +24,14 @@ class QuotesController extends Controller
                                 private readonly IntervalQuoteRepository $intervalRepo,
                                 private readonly ExcelExportService $exportService,
                                 private readonly EmailQuoteRepository $emailQuoteRepo,
-                                private readonly Api $monolithApi
+                                private readonly Api $monolithApi,
+                                private readonly QuoteService $quoteService
     )
     {}
 
     public function show(): View
     {
-        // TODO аписать адаптер
-        $quotes = (new QuoteDTO())->toArrayForVue(Quote::with(['intervals', 'region'])->get());
+        $quotes = $this->quoteService->prepareForVue();
         $isGuest = (bool) backpack_user()->hasRole('guest');
 
         return view('vendor.backpack.quotes', ['quotes' => collect($quotes), 'guest' => $isGuest]);
@@ -54,10 +52,8 @@ class QuotesController extends Controller
         $this->intervalRepo->update($request->all());
         $updatedQuotes = $this->repo->update($request->all(), backpack_user()->id);
         $message = 'Данные сохранены.';
-
-        // TODO переписать на нормальное создание (не в дто)
-        $json = (new QuoteDTO())->makeDataForApiHru($this->repo->getAll());
-        $responseFromMonolithIsSuccess = $this->monolithApi->sendQuotes($json);
+        $quotes = $this->quoteService->prepareForMonolith();
+        $responseFromMonolithIsSuccess = $this->monolithApi->sendQuotes($quotes);
 
         if ($responseFromMonolithIsSuccess) {
             $message .= ' Квоты отправлены на сайт HRU';

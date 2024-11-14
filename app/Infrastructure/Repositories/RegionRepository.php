@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class RegionRepository
 {
-    public function __construct(private RegionDTOFactory $regionDTOFactory)
+    public function __construct(private readonly RegionDTOFactory $regionDTOFactory)
     {
     }
 
