@@ -102,11 +102,13 @@ class QuotesController extends Controller
             Log::info($e->getMessage());
         }
 
-        $sendedToConfigService = $this->configServiceApi
-            ->query('api/soa/regions/interval-quotas-config', $json, 'PATCH');
+        if (config('app.enable_config_service_api_for_quotes')) {
+            $sendedToConfigService = $this->configServiceApi
+                ->query('api/soa/regions/interval-quotas-config', $json, 'PATCH');
 
-        if (!$sendedToConfigService) {
-            Log::error('Not sended to config service');
+            if (!$sendedToConfigService) {
+                Log::error('Not sended to config service');
+            }
         }
 
         return response(['message' => $message]);
