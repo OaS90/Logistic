@@ -14,7 +14,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
-
+    'enable_config_service_api_for_quotes' => env('ENABLE_CONFIG_API_FOR_QUOTES', false),
     'api_hru_token' => env('API_HRU_TOKEN'),
     'api_hru' => env('API_HRU'),
     'api_user' => env('API_HRU_USER', 'holodilnik'),

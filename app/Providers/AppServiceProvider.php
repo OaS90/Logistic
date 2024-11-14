@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Infrastructure\Services\ConfigService\Api\ConfigServiceApi;
 use App\Infrastructure\Services\Delivery\Api\Api;
 use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Routing\UrlGenerator;
@@ -21,6 +23,19 @@ class AppServiceProvider extends ServiceProvider
             return new Api(
                 new Client([
                     'base_uri' => config('services.delivery_holodilnik_service.uri')
+                ])
+            );
+        });
+
+        $this->app->bind(ConfigServiceApi::class, function () {
+            return new ConfigServiceApi(
+                new Client([
+                    'base_uri' => config('services.config_service.uri'),
+                    RequestOptions::HEADERS => [
+                        'X-Config-Service-Token' => config('services.config_service.token'),
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json'
+                    ]
                 ])
             );
         });

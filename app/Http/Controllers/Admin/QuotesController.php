@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Infrastructure\Services\ConfigService\Api\ConfigServiceApi;
 use App\Models\Quote;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -23,21 +24,24 @@ use Symfony\Component\HttpFoundation\Response;
 
 class QuotesController extends Controller
 {
-    protected QuoteRepository $repo;
-    protected IntervalQuoteRepository $intervalRepo;
-    protected ExcelExportService $exportService;
-    protected EmailQuoteRepository $emailQuoteRepo;
+    private QuoteRepository $repo;
+    private IntervalQuoteRepository $intervalRepo;
+    private ExcelExportService $exportService;
+    private EmailQuoteRepository $emailQuoteRepo;
+    private ConfigServiceApi $configServiceApi;
 
     public function __construct(QuoteRepository $repo,
                                 IntervalQuoteRepository $intervalRepo,
                                 ExcelExportService $exportService,
-                                EmailQuoteRepository $emailQuoteRepository
+                                EmailQuoteRepository $emailQuoteRepository,
+                                ConfigServiceApi $configServiceApi
     )
     {
         $this->repo = $repo;
         $this->intervalRepo = $intervalRepo;
         $this->exportService = $exportService;
         $this->emailQuoteRepo = $emailQuoteRepository;
+        $this->configServiceApi = $configServiceApi;
     }
 
     public function show(): View
@@ -96,6 +100,15 @@ class QuotesController extends Controller
             );
         } catch (BadResponseException $e) {
             Log::info($e->getMessage());
+        }
+
+        if (config('app.enable_config_service_api_for_quotes')) {
+            $sendedToConfigService = $this->configServiceApi
+                ->query('api/soa/regions/interval-quotas-config', $json, 'PATCH');
+
+            if (!$sendedToConfigService) {
+                Log::error('Not sended to config service');
+            }
         }
 
         return response(['message' => $message]);

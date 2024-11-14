@@ -37,5 +37,9 @@ return [
         'uri' => env('DELIVERY_HOLODILNIK_SERVICE', 'http://gateway-stage.adeal.ru/v1.0/holodilnik-delivery/api/v1/'),
         'login' => env('DELIVERY_HOLODILNIK_LOGIN', 'test@test.ru'),
         'password' => env('DELIVERY_HOLODILNIK_PASSWORD', '123'),
+    ],
+    'config_service' => [
+        'uri' => env('CONFIG_SERVICE_URI', ''),
+        'token' => env('CONFIG_SERVICE_TOKEN', ''),
     ]
 ];
