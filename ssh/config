@@ -1,0 +1,5 @@
+ host gitrepo
+ hostname 172.31.4.46
+ user git
+ port 22
+ IdentityFile ~/.ssh/gitlab_testh
