@@ -14,7 +14,7 @@ deploy-testh:
     - ls -la
     - cp -r .ssh ~/.ssh
     - echo "$SSH_PRIVATE_GITLAB" > ~/.ssh/id_rsa
-    - chmod -R 600 ~/.ssh/
+    - chmod -R 600 ~/.ssh/*
   script:
     - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
     - rsync -avh --delete --exclude=".ssh" --exclude=".gitlab-ci" . logistic:/var/www/logistic;
