@@ -12,7 +12,7 @@ deploy-testh:
     - apk add --no-cache openssh rsync
     - eval $(.ssh-agent -s)
     - ls -la
-    - cp .ssh ~/.ssh
+    - cp -r .ssh ~/.ssh
     - echo "$SSH_PRIVATE_GITLAB" > ~/.ssh/id_rsa
     - chmod -R 600 ~/.ssh/
   script:
