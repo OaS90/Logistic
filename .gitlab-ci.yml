@@ -2,6 +2,8 @@ stages:
   - deploy
 
 deploy-testh:
+  tags:
+    - kub-prod
   stage: deploy
   image: alpine
   only:
