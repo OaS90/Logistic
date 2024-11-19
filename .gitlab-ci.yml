@@ -1,0 +1,16 @@
+stages:
+  - deploy
+
+deploy-testh:
+  stage: deploy
+  image: alpine
+  only:
+    - stage
+  before_script:
+    - apk add --no-cache openssh rsync
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_GITLAB" > .ssh/gitlab_testh
+    - chmod -R 600 .ssh/
+  script:
+    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
+    - rsync -a --exclude=".ssh" --exclude=".gitlab-ci" . holodilnik@gitrepo:/var/www/logistic;
