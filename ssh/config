@@ -1,5 +1,5 @@
-host gitrepo
-hostname 172.31.4.46
-user git
-port 22
-IdentityFile ~/.ssh/id_rsa
+host logistic
+    hostname 172.31.4.46
+    user git
+    port 22
+    IdentityFile ~/.ssh/id_rsa
