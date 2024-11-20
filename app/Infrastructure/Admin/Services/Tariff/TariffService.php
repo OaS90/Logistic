@@ -3,11 +3,14 @@
 namespace App\Infrastructure\Admin\Services\Tariff;
 
 use App\Domain\DTO\Requests\Tariff\TariffRegionCategoriesPricesDTO;
+use App\Infrastructure\Repositories\Admin\TariffCategoryRegionPricesRepository;
 use App\Infrastructure\Repositories\Admin\TariffCategoryRepository;
 use App\Infrastructure\Repositories\Admin\TariffCategorySettingsRepository;
 use App\Infrastructure\Repositories\Admin\TariffRepository;
 use App\Infrastructure\Repositories\Admin\UserTariffPermissionRepository;
 use App\Infrastructure\Repositories\RegionRepository;
+use App\Models\Tariff;
+use App\Models\TariffCategories;
 use App\Models\TariffRegionZone;
 use App\Infrastructure\Services\Delivery\Api\Api;
 use App\Infrastructure\Repositories\Admin\ZoneRepository;
@@ -23,6 +26,8 @@ class TariffService
     protected Api $deliveryServiceApi;
     protected ZoneRepository $zoneRepo;
     protected UserTariffPermissionRepository $permissionRepo;
+    protected TariffCategorySettingsRepository $tariffCategorySettingsRepo;
+
     protected string $token;
 
     public function __construct(TariffRepository $tariffRepo,
@@ -31,7 +36,8 @@ class TariffService
                                 TariffCategorySettingsRepository $categorySettingsRepo,
                                 Api $deliveryServiceApi,
                                 ZoneRepository $zoneRepo,
-                                UserTariffPermissionRepository $permissionRepo
+                                UserTariffPermissionRepository $permissionRepo,
+                                TariffCategorySettingsRepository $tariffCategorySettingsRepo,
     )
     {
         $this->tariffRepo = $tariffRepo;
@@ -41,6 +47,7 @@ class TariffService
         $this->deliveryServiceApi = $deliveryServiceApi;
         $this->zoneRepo = $zoneRepo;
         $this->permissionRepo = $permissionRepo;
+        $this->tariffCategorySettingsRepo = $tariffCategorySettingsRepo;
         $this->token = config('app.api_delivery_service_token');
     }
 
@@ -59,21 +66,17 @@ class TariffService
         }
     }
 
-    public function addRegions(int $tariffId, array $regions): void
+    public function addFewRegions(int $tariffId, array $regions): void
     {
         $tariff = $this->tariffRepo->findById($tariffId);
-
-        foreach ($regions as $regionData) {
-            $region = $this->regionRepo->getById($regionData['id']);
-            $this->tariffRepo->saveRegion($tariff, $region);
-        }
+        $this->addRegions($tariff, $regions);
     }
 
     public function addAllRegions(int $tariffId): void
     {
         $tariff = $this->tariffRepo->findById($tariffId);
         $regions = $this->regionRepo->getAll();
-        $this->tariffRepo->addAllRegions($tariff, $regions);
+        $this->addRegions($tariff, $regions->all());
     }
 
     public function deleteRegion(int $tariffId, int $regionId): void
@@ -290,7 +293,7 @@ class TariffService
     public function getFromDeliveryService(): bool
     {
         $tariffsFromService = $this->deliveryServiceApi
-            ->query('settings/calculation/courier-delivery-price-tariffs', [], 'GET');
+            ->query('settings/calculation/courier-delivery-price-tariffs', [], 'GET' , $this->token);
         $regions = $this->regionRepo->getAll();
 
         foreach ($tariffsFromService as $tariffFromService) {
@@ -320,12 +323,13 @@ class TariffService
                         [
                             'region_id' => $region->region_id,
                             'tariff_id' => $localTariff->delivery_service_tariff_id
-                        ], 'GET');
+                        ], 'GET', $this->token);
 
                 foreach ($pricesFromService as $priceFromService) {
                     $zone = $this->zoneRepo->getByCode($priceFromService['zone']);
                     $category = $this->categoryRepo
                         ->getByProductCategoryId($priceFromService['product_delivery_category_id']);
+
                     $price = $this->categoryRepo
                             ->getPrices($category, $localTariff->id, $region->id, $zone->id);
 
@@ -356,5 +360,34 @@ class TariffService
             ->query('settings/calculation/courier-delivery-price-tariffs/' . $tariff->delivery_service_tariff_id,
                 $data, 'PATCH', $this->token);
 
+    }
+
+    private function addRegions(Tariff $tariff, array $regions): void
+    {
+        $zones = $this->zoneRepo->getAll();
+        $categories = $this->categoryRepo->getAll();
+
+        foreach ($regions as $regionData) {
+            $region = $this->regionRepo->getById($regionData['id']);
+
+            foreach ($categories as $category) {
+                /* @var TariffCategories $category */
+
+                if (!$this->regionRepo->getTariffCategoryById($region, $category->id)) {
+                    $region->tariffCategories()->attach($category->id);
+                }
+
+                $this->tariffCategorySettingsRepo->create($tariff->id, $region->id, $category->id);
+                $prices = $this->categoryRepo->getPricesForAllZones($category, $tariff->id, $region->id, $category->id);
+
+                if ($prices->count() == 0) {
+                    foreach ($zones as $zone) {
+                        $this->categoryRepo->createPrice($category, $tariff->id, $region->id, $zone->id);
+                    }
+                }
+            }
+
+            $this->tariffRepo->saveRegion($tariff, $region, $categories);
+        }
     }
 }

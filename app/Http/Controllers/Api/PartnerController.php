@@ -55,7 +55,6 @@ class PartnerController extends Controller
 
             foreach ($applications as $app) {
                 if ($app->status == 'created' || $app->doc_ver > $app->old_doc_ver) {
-
                     try {
                         $appDTO = (new PartnerOrderDTO($app))->make();
                     } catch (\Throwable $e) {

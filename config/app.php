@@ -22,7 +22,7 @@ return [
     'hru_delivery_url' => env('API_DELIVERY_HRU', ''),
     'obi_user_id' => env('OBI_USER_ID', 6),
     'tk_hru_url' => env('TK_HRU_URL'),
-    'api_delivery_service_token' => env('API_DELIVERY_SERVICE_TOKEN'),
+    'api_delivery_service_token' => env('API_DELIVERY_SERVICE_TOKEN', ''),
     /*
     |--------------------------------------------------------------------------
     | Application Environment

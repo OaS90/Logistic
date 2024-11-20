@@ -16,7 +16,7 @@
                              format="H:mm"
                              value-type="H:mm"
                              :timePickerOptions="{
-                                        start: '00:00',
+                                        start: '01:00',
                                         step: '01:00',
                                         end: '23:00',
                                      }">

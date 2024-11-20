@@ -35,7 +35,7 @@ class TariffRepository
         return Tariff::get();
     }
 
-    public function saveRegion(Tariff $tariff, Region $region): ?\Illuminate\Database\Eloquent\Model
+    public function saveRegion(Tariff $tariff, Region $region, Collection $categories): ?\Illuminate\Database\Eloquent\Model
     {
         if ($tariff->regions()->where('tariff_region.region_id', $region->id)->doesntExist()) {
             return $tariff->regions()->save($region);
@@ -44,12 +44,17 @@ class TariffRepository
         return null;
     }
 
-    public function addAllRegions(Tariff $tariff, Collection $regions): void
+    public function addAllRegions(Tariff $tariff, Collection $regions, Collection $categories): void
     {
         foreach ($regions as $region) {
             if ($tariff->regions()->where('tariff_region.region_id', $region->id)->doesntExist()) {
                 $tariff->regions()->save($region);
             }
+
+            foreach ($categories as $category) {
+                $region->tariffCategories()->save($category);
+            }
+
         }
     }
 

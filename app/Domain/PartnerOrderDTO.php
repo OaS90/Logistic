@@ -2,6 +2,7 @@
 
 namespace App\Domain;
 
+use App\Models\Application;
 use App\Models\ApplicationObi;
 use App\Models\Product;
 use App\Application\DadataService;
@@ -9,7 +10,7 @@ use App\Application\DadataService;
 class PartnerOrderDTO
 {
     private $app;
-    protected $dadataService;
+    protected DadataService $dadataService;
 
     public function __construct($application)
     {
@@ -79,9 +80,10 @@ class PartnerOrderDTO
         return explode('-', $time);
     }
 
-    public function products($app): array
+    public function products(Application $app): array
     {
         $products = [];
+        $user = $app->user;
 
         foreach ($app->products as $index => $product) {
             /* @var Product $product */
@@ -104,7 +106,7 @@ class PartnerOrderDTO
                 'width' => (float) $product->width, // ширина в см
                 'height' => (float) $product->height, // высота в м2
                 'depth' => (float) $product->depth, // глубина в см
-                'shipmentCode' => 'TL-' . $app->order_number . '-' . $i
+                'shipmentCode' => $product->shipment_code ?: $user->suffix . '-' . $app->order_number . '-' . $i
             ];
         }
 
@@ -133,7 +135,7 @@ class PartnerOrderDTO
             }
         }
 
-        if (count($exceptExtraPaymentsProducts)) {
+        if (count($exceptExtraPaymentsProducts) > 1) {
             $eachProductCost = round($appCost / count($exceptExtraPaymentsProducts), 2);
             $eachProductWeight = round($appWeight / count($exceptExtraPaymentsProducts), 2);
         } else {
@@ -145,18 +147,18 @@ class PartnerOrderDTO
             /* @var Product $product */
             $i = $index + 1;
             $productsForFComment[] = $product->name;
-            $explodedName = explode('- ', $product->name);
-
-            if (is_array($explodedName)) {
-                $name = $explodedName[0];
-                $count = floatval(str_replace(',', '.', trim($explodedName[1])));
-            } else {
-                $name = $product->name;
-                $count = 1;
-            }
-
-            $explodedProductIdName = explode('_', $name);
-            $productId = $explodedProductIdName[0];
+//            $explodedName = explode('- ', $product->name);
+//
+//            if (is_array($explodedName)) {
+//                $name = $explodedName[0];
+//                $count = floatval(str_replace(',', '.', trim($explodedName[1])));
+//            } else {
+//                $name = $product->name;
+//                $count = 1;
+//            }
+//
+//            $explodedProductIdName = explode('_', $name);
+//            $productId = $explodedProductIdName[0];
 
 //            if ($count > 1) {
 //                $eachProductCost = round($eachProductCost / $count);
@@ -171,7 +173,7 @@ class PartnerOrderDTO
                 'VATRate' => 0, // Ставка НДС
                 'leftToPay' => 0, // Сумма к получению
                 'weight' => $eachProductWeight, // Расчетный вес (кг)
-                'setId' => $productId . '_' . $i,
+                'setId' => '',
                 'brand' => '', // Бренд
                 'tnved' => '', // Код ТНВЭД
                 'country' => '', // код страны происхождения по ОКСМ

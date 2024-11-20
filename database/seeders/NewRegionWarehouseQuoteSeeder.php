@@ -26,8 +26,7 @@ class NewRegionWarehouseQuoteSeeder extends Seeder
             if (!$newWarehouse)
                 $newWarehouse = Warehouse::create(['warehouse_name' => $region[0]]);
 
-            Region::create(['name' => $region[1], 'region_id' => $region[2],
-                'warehouse_id' => $newWarehouse->id]);
+            Region::create(['name' => $region[1], 'region_id' => $region[2]]);
         }
     }
 }

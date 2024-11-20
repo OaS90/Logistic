@@ -28,6 +28,14 @@
             <span slot="body">
                 {{ modalText }}
                 <br>
+                <button :class="btnClass" @click="showModal = !showModal">{{ btnText }}</button>
+            </span>
+            <span slot="footer"></span>
+        </modal>
+        <modal v-if="showDeleteRegionModal">
+            <span slot="body">
+                {{ modalText }} удаление
+                <br>
                 <button :class="btnClass" @click="deleteRegion(regionForDeleting.id, regionForDeleting.index)">{{ btnText }}</button>
             </span>
             <span slot="footer"></span>
@@ -50,6 +58,7 @@ export default {
         return {
             selected: null,
             showModal: false,
+            showDeleteRegionModal: false,
             modalText: 'Удалить регион?',
             modalBtnName: 'Удалить',
             modelBtnClass: 'btn btn-danger',
@@ -64,14 +73,14 @@ export default {
     },
     methods: {
         setRegionForDeleting(regionId, index) {
-            this.showModal = true
+            this.showDeleteRegionModal = true
             this.regionForDeleting = {id: regionId, index: index}
         },
         regionUrl(regionId) {
             return 'edit/regions/' + regionId + '/edit'
         },
         deleteRegion(regionId, index) {
-            this.showModal = !this.showModal
+            this.showDeleteRegionModal = !this.showDeleteRegionModal
             this.tariffRegionData.splice(index, 1)
 
             axios.delete('delete-region/' + regionId, {
@@ -80,7 +89,6 @@ export default {
                 }
             }).then((response) => {
                 if (response.status === 200) {
-                    const filteredPeople = people.filter((item) => item.id !== idToRemove);
                     this.showModal = true
                     this.modalText = response.data.message
                 }

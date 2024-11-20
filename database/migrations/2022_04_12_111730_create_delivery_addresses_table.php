@@ -28,8 +28,11 @@ class CreateDeliveryAddressesTable extends Migration
             $table->boolean('use_elevator')->default(false);
         });
 
+        DB::statement('ALTER TABLE applications ALTER COLUMN
+                  delivery_address TYPE integer USING (trim(delivery_address))::integer');
+
         Schema::table('applications', function (Blueprint $table) {
-            $table->integer('delivery_address')->index()->change();
+            //$table->integer('delivery_address')->index()->change();
             $table->dropColumn([
                 'flat',
                 'floor',

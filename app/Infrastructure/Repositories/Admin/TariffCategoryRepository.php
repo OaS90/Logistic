@@ -37,6 +37,18 @@ class TariffCategoryRepository
             ->first();
     }
 
+    public function getPricesForAllZones(TariffCategories $category,
+                                int $tariffId,
+                                int $regionId,
+                                int $categoryId
+    ): ?Collection
+    {
+        return $category->prices()->where('tariff_id', $tariffId)
+            ->where('region_id', $regionId)
+            ->where('category_id', $categoryId)
+            ->get()->unique('zone_id');
+    }
+
     public function deletePriceByZoneIdAndRegionId(TariffCategories $category,
                                                    int $tariffId,
                                                    int $regionId,
@@ -63,5 +75,16 @@ class TariffCategoryRepository
     public function deletePricesByTariffId(TariffCategories $category, int $tariffId)
     {
         return $category->prices()->where('tariff_id', $tariffId)->delete();
+    }
+
+    public function createPrice(TariffCategories $category, int $tariffId, int $regionId, int $zoneId): void
+    {
+        $category->prices()->create([
+            'tariff_id' => $tariffId,
+            'region_id' => $regionId,
+            'zone_id' => $zoneId,
+            'price' => 0,
+            'second_price' => 0
+        ]);
     }
 }

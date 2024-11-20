@@ -7,6 +7,13 @@ function parse_phone($phone): string
     return substr($phone, 1, 10);
 }
 
+function parse_to_float($value): ?float
+{
+    $removedSpaces = str_replace(' ', '', $value);
+
+    return (float) str_replace(',', '.', $removedSpaces);
+}
+
 
 
 

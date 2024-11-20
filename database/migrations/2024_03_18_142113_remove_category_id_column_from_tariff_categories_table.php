@@ -13,9 +13,11 @@ class RemoveCategoryIdColumnFromTariffCategoriesTable extends Migration
      */
     public function up(): void
     {
-        Schema::table('tariff_categories', function (Blueprint $table) {
-            $table->dropColumn('category_id');
-        });
+        if (Schema::hasColumn('tariff_categories', 'category_id')) {
+            Schema::table('tariff_categories', function (Blueprint $table) {
+                $table->dropColumn('category_id');
+            });
+        }
     }
 
     /**
