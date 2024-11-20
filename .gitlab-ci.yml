@@ -29,10 +29,14 @@ stages:
     fi
 
 build:
+  stage: build
   tags:
     - kub-prod
   script:
     - *init-env-container
+  only:
+    - stage
+    - main
 
 deploy-testh:
   tags:
