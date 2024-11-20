@@ -1,15 +1,38 @@
 stages:
   - deploy
+  - build
 
-#build:
-#  stage: build
-#  image: php:8.2-fpm-alpine
-#  tags:
-#    - kub-prod
-#  script:
-#    - apk add --no-cache git curl unzip
-#    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-#    - composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+.init-env-container: &init-env-container
+  - |
+    if [[ "main" = "${CI_COMMIT_BRANCH}" ]];
+    then
+      if [[ -f ${CONFIG_ENV_PROD} ]];
+      then
+        cat "${CONFIG_ENV_PROD}" >> .env;
+        echo added CONFIG_ENV_PROD to .env
+      else
+        echo file CONFIG_ENV_PROD not found
+        exit 1
+      fi
+    fi
+
+    if [[ "stage" = "${CI_COMMIT_BRANCH}" ]];
+    then
+      if [[ -f ${CONFIG_ENV_STAGE} ]];
+      then
+        cat "${CONFIG_ENV_STAGE}" >> .env;
+        echo added CONFIG_ENV_STAGE to .env
+      else
+        echo file CONFIG_ENV_STAGE not found
+        exit 1
+      fi
+    fi
+
+build:
+  tags:
+    - kub-prod
+  script:
+    - *init-env-container
 
 deploy-testh:
   tags:
@@ -25,5 +48,5 @@ deploy-testh:
     - chmod 600 ~/priv_key
   script:
     - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
-    - rsync -avh --delete --exclude=".git" --exclude=".gitlab-ci.yml"  . git@172.31.11.149:/var/www/logistic  -e "ssh -o StrictHostKeyChecking=no -i ~/priv_key";
-    - ssh -o StrictHostKeyChecking=no -i ~/priv_key git@172.31.11.149 'cd /var/www/logistic && composer install --ignore-platform-reqs'
+    - rsync -avh --exclude=".git" --exclude=".gitlab-ci.yml" --exclude="storage" --exclude=".env" --exclude="node_modules". git@172.31.11.149:/var/www/logistic  -e "ssh -o StrictHostKeyChecking=no -i ~/priv_key";
+    - ssh -o StrictHostKeyChecking=no -i ~/priv_key git@172.31.11.149 'cd /var/www/logistic && composer install --ignore-platform-reqs;'
