@@ -5,6 +5,8 @@ namespace App\Infrastructure\Admin\Services;
 use App\Infrastructure\Repositories\Admin\TransportCompanySettingsRepository;
 use App\Infrastructure\Repositories\Admin\TransportCompanyWarehouseRepository;
 use App\Infrastructure\Admin\Services\Api\HruApi;
+use App\Infrastructure\Services\ConfigService\Api\ConfigServiceApi;
+use Illuminate\Support\Facades\Log;
 
 class TCSettingsService
 {
@@ -12,14 +14,18 @@ class TCSettingsService
     private TransportCompanySettingsRepository $settingsRepo;
     private HruApi $hruApi;
 
+    private ConfigServiceApi $configServiceApi;
+
     public function __construct(TransportCompanyWarehouseRepository $warehouseRepo,
                                 TransportCompanySettingsRepository $settingsRepo,
-                                HruApi $hruApi
+                                HruApi $hruApi,
+                                ConfigServiceApi $configServiceApi
     )
     {
         $this->settingsRepo = $settingsRepo;
         $this->warehouseRepo = $warehouseRepo;
         $this->hruApi = $hruApi;
+        $this->configServiceApi = $configServiceApi;
     }
 
 
@@ -71,6 +77,15 @@ class TCSettingsService
                 'delay_days' => $warehouseEntity->delay_days,
                 'shipment' => $warehouseTCSettings
             ];
+        }
+
+        if (config('app.enable_config_service_api_for_quotes')) {
+            $sendedToConfigService = $this->configServiceApi
+                ->query('api/soa/regions/transport-companies-interval-quotas-config', $warehousesWithSettings, 'PATCH');
+
+            if (!$sendedToConfigService) {
+                Log::error('Not sended to config service');
+            }
         }
 
         return $this->hruApi->query('delivery/Holodilnik/SetQuoteTkSettings',
