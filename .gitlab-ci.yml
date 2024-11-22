@@ -18,5 +18,7 @@ deploy-testh:
     - rsync -avh --exclude=".git" --exclude=".gitlab-ci.yml" --exclude="storage" --exclude=".env" --exclude="node_modules". git@172.31.11.149:/var/www/logistic  -e "ssh -o StrictHostKeyChecking=no -i ~/priv_key";
     - ssh -o StrictHostKeyChecking=no -i ~/priv_key git@172.31.11.149 'cd /var/www/logistic && composer install --ignore-platform-reqs;'
     - echo "'Value of CONFIG_ENV_STAGE:' $(cat ${CONFIG_ENV_STAGE})"
-    - cat ${CONFIG_ENV_STAGE} >> .env
+    - cat ${CONFIG_ENV_STAGE} >> .env || echo "Failed to write to .env"
+    - echo "Contents of .env:"
+    - cat .env
 
