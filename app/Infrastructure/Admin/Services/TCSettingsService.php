@@ -80,12 +80,8 @@ class TCSettingsService
         }
 
         if (config('app.enable_config_service_api_for_quotes')) {
-            $sendedToConfigService = $this->configServiceApi
+            $this->configServiceApi
                 ->query('api/soa/regions/transport-companies-interval-quotas-config', $warehousesWithSettings, 'PATCH');
-
-            if (!$sendedToConfigService) {
-                Log::error('Not sended to config service');
-            }
         }
 
         return $this->hruApi->query('delivery/Holodilnik/SetQuoteTkSettings',
