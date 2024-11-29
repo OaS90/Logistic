@@ -41,8 +41,13 @@ class QuoteRepository
         return $updatedQuotes;
     }
 
-    public function getAll()
+    public function getAll(): array
     {
         return Quote::all();
+    }
+
+    public function getAllWithRelations(array $relations): array
+    {
+        return Quote::with($relations)->get();
     }
 }

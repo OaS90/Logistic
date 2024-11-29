@@ -2,243 +2,162 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Application\DeliveryAddressService;
-use App\Domain\ApplicationDTO;
-use App\Domain\DeliveryAddressDTO;
-use App\Domain\ProductDTO;
-use App\Http\Controllers\Api\Exceptions\JsonParseException;
-use App\Infrastructure\Admin\Exceptions\ProductWithoutSkuException;
-use App\Infrastructure\Repositories\ApplicationObiRepository;
+use App\Http\Controllers\Api\Exceptions\ApplicationNotFoundException;
+use App\Http\Controllers\Api\Exceptions\PartnerApplicationsNotFoundException;
+use App\Http\Controllers\Api\Exceptions\PartnerNotFoundException;
+use App\Http\Controllers\Api\Exceptions\UserNotFoundException;
+use App\Http\Controllers\Api\Exceptions\WarehouseNotFoundException;
+use App\Http\Requests\Application\ApplicationApiCreateRequest;
+use App\Http\Requests\Application\StatusesFrom1cRequest;
+use App\Http\Requests\GetApplicationStatusRequest;
+use App\Http\Requests\Partner\PartnerGetOrdersRequest;
+use App\Http\Resources\ApplicationApiCreateResource;
+use App\Http\Resources\ApplicationApiUpdatedStatusesResource;
+use App\Http\Resources\ApplicationStatusHistoryResource;
+use App\Http\Resources\GetOrdersFor1cResource;
 use App\Infrastructure\Repositories\ApplicationRepository;
 use App\Infrastructure\Repositories\AppStatusHistoryRepository;
 use App\Infrastructure\Repositories\UserRepository;
+use App\Infrastructure\Services\Application\ApplicationService;
 use Barryvdh\DomPDF\PDF;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Api\Exceptions\StatusUpdateException;
-use App\Infrastructure\Repositories\ProductRepository;
-use App\Infrastructure\Repositories\DeliveryAddressRepository;
-use App\Infrastructure\Repositories\WarehouseRepository;
-use App\Application\ApplicationService;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
-
+/**
+ * Контроллер для обработки api запросов из 1с и партнёров
+ */
 class ApplicationController
 {
-    protected $repo;
-    protected $addressRepo;
-    protected $productRepo;
-    protected $warehouseRepo;
-    protected $userRepo;
-    protected $appService;
-    protected $appRepo;
-    protected $appStatusHistoryRepo;
-    protected $deliveryAddressService;
-    protected ApplicationObiRepository $applicationObiRepo;
-    private int $obiUser;
-
-    public function __construct(ApplicationRepository $repository,
-                                DeliveryAddressRepository $addressRepo,
-                                ProductRepository $productRepo,
-                                WarehouseRepository $warehouseRepo,
-                                UserRepository $userRepo,
-                                ApplicationService $appService,
-                                ApplicationRepository $appRepo,
-                                AppStatusHistoryRepository $appStatusHistoryRepo,
-                                DeliveryAddressService $deliveryAddressService,
-                                ApplicationObiRepository $applicationObiRepo
+    public function __construct(private readonly UserRepository $userRepo,
+                                private readonly ApplicationService $appService,
+                                private readonly AppStatusHistoryRepository $appStatusHistoryRepo,
+                                private readonly ApplicationRepository $repo
     )
+    {}
+
+    public function setStatus(StatusesFrom1cRequest $request): Response|ApplicationApiUpdatedStatusesResource
     {
-        $this->repo = $repository;
-        $this->productRepo = $productRepo;
-        $this->addressRepo = $addressRepo;
-        $this->warehouseRepo = $warehouseRepo;
-        $this->userRepo = $userRepo;
-        $this->appService = $appService;
-        $this->appRepo = $appRepo;
-        $this->appStatusHistoryRepo = $appStatusHistoryRepo;
-        $this->deliveryAddressService = $deliveryAddressService;
-        $this->applicationObiRepo = $applicationObiRepo;
-        $this->obiUser = config('app.obi_user_id');
-    }
+        try {
+            $DTOs = $request->getDTOs();
+            $statuses = $this->appService->updateStatuses($DTOs);
+        } catch (\Throwable $e) {
+            Log::error('Updating statuses error ' . $e->getMessage());
 
-    public function setStatus(Request $request): \Illuminate\Http\JsonResponse
-    {
-        $errors = [];
-        $statuses = [];
-
-       $data = json_decode($request->getContent(), true);
-       // TODO сделать проверку, что отправляют не массив массивов заказ, а просто заказ
-       if (!$data || !is_array($data)) {
-           $exception = new JsonParseException('Ошибка формата json');
-
-           return response()->json([
-               'message' => $exception->getMessage(),
-               'success' => false
-           ], Response::HTTP_INTERNAL_SERVER_ERROR);
-       }
-
-       foreach ($data as $item) {
-           // из 1с может приходить история статусов, если апи партнёра не отвечала
-           // из-за этого берём последний(актуальный) статус
-           $newStatus = last($item['statuses']);
-
-           try {
-               $app = $this->repo->getByOrderNumber($item['id']);
-
-               // Ищем обычную заявку для обновления статуса по номеру заказа
-               // если не находим, то ищем заявку Obi
-               if (!$app) {
-                    $app = $this->applicationObiRepo->getByOrderNumber($item['id']);
-
-                    if ($app) {
-                        $this->applicationObiRepo->updateByFields($item['id'], ['status' => $newStatus['status']]);
-                    } else {
-                        Log::error('Не найден заказ Obi с номером ' . $item['id']);
-                    }
-               } else {
-                   $this->repo->updateStatus($item['id'], $newStatus['status']);
-               }
-
-               // записываем историю обновления статусов заказа
-               $this->appStatusHistoryRepo->create([
-                   'number' => $item['id'],
-                   'status' => $newStatus['status'],
-                   'dateTime' => $newStatus['dateTime']
-               ]);
-
-               $statuses[] = [
-                   'id' => $item['id'],
-                   'success' => true,
-                   'message' => ""
-               ];
-           } catch (\Throwable $e) {
-               $exception = new StatusUpdateException();
-               $errors[] = $exception->getError($e, $item['id']);
-               $app = $this->repo->getByOrderNumber($item['id']);
-
-               if ($app)
-                   $app->update(['doc_ver' => $app->doc_ver + 1]);
-           }
-       }
-
-       return response()->json(array_merge($statuses, $errors));
-    }
-
-    /**
-     * @throws ProductWithoutSkuException
-     */
-    public function create(Request $request)
-    {
-        $data = json_decode($request->getContent(), true);
-
-        foreach ($data as $app) {
-            $user = $this->userRepo->getBy1cId($app['partnerId']);
-
-            if (!$user)
-                return response()
-                    ->json(
-                        ['message' => 'Не найден пользователь с идентификаторм ' . $app['partnerId']], Response::HTTP_INTERNAL_SERVER_ERROR,
-                        ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
-                    );
-
-            $app['user_id'] = $user->id;
-            $warehouse = $this->warehouseRepo->findByStoreId($app['storeId']);
-
-            if (!$warehouse)
-                return response()
-                    ->json(
-                        ['message' => 'Не найден склад'], Response::HTTP_INTERNAL_SERVER_ERROR,
-                        ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
-                    );
-
-            $app['storeId'] = $warehouse->id;
-
-            if (!isset($app['address']['cityId']) || !isset($app['address']['streetId'])) {
-                $dadataAddress = $this->deliveryAddressService
-                    ->checkFiasForCityAndStreet($app['address']['regionName'] . ' '. $app['address']['cityName'] . ' ' .$app['address']['street'] , 1);
-
-                $app['address']['cityId'] = $dadataAddress ? $dadataAddress[0]['data']['city_fias_id'] : '';
-                $app['address']['streetId'] = $dadataAddress && $dadataAddress[0]['data']['street_fias_id'] ? $dadataAddress[0]['data']['street_fias_id'] : '';
-            }
-
-            $address = $this->addressRepo->createFromCsv((new DeliveryAddressDTO())->apiRows($app['address']));
-            $newApp = $this->repo->create((new ApplicationDTO())->apiRows($app, $address->id));
-
-            // записываем историю статусов заказа
-            $this->appStatusHistoryRepo->create([
-                'number' => $newApp->order_number,
-                'status' => 'created',
-                'dateTime' => $newApp->created_at
-            ]);
-
-            // todo написать общий метод для файлов и апишных запросов на проверку изменения заявки и товаров в ней
-            $appProductsSku = $newApp->products()->pluck('sku')->all();
-
-            foreach ($app['products'] as $product) {
-                if (!in_array($product['sku'], $appProductsSku)) {
-                    $this->productRepo->create((new ProductDTO())->apiRows($product, $newApp->id));
-                }
-            }
+            return response(['success' => false, 'message' => 'Ошибка обновления статусов'],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
         }
 
-        return response(['code' => $newApp->order_number . '-' . $newApp->id,
-            'success' => true,
-            'message' => ''
-        ], Response::HTTP_OK);
+        return new ApplicationApiUpdatedStatusesResource($statuses);
     }
 
-    public function getSticker($partnerOrderId)
+    public function create(ApplicationApiCreateRequest $request): Response|ApplicationApiCreateResource
     {
-        $app = $this->repo->getByOrderNumber($partnerOrderId);
+        try {
+            $DTOs = $request->getDTOs();
+            $createdApps = $this->appService->createByApi($DTOs);
+        } catch (UserNotFoundException $e) {
+            return $e->render();
+        } catch (WarehouseNotFoundException $e) {
+            return $e->render();
+        } catch (\Throwable $e) {
+            Log::error('Creating apps error: ' . $e->getMessage());
 
-        if (!$app)
-            return response()
-                ->json(
-                    ['message' => 'Не найдена заявка с номером заказа ' . $partnerOrderId], Response::HTTP_INTERNAL_SERVER_ERROR,
-                    ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
-                );
+            return response(['success' => false, 'message' => 'Ошибка создания заявки(ок)'],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
 
-        $stickers = $this->appService->makeStickers($app);
+        return new ApplicationApiCreateResource($createdApps);
+    }
+
+    public function getSticker(string $partnerOrderId): PDF|Response
+    {
+        $stickers = null;
+
+        try {
+            $app = $this->repo->getByOrderNumber($partnerOrderId);
+
+            if (!$app) {
+                throw new ApplicationNotFoundException($partnerOrderId);
+            }
+
+            $stickers = $this->appService->makeStickers($app);
+        } catch (ApplicationNotFoundException $e) {
+            $e->render();
+        } catch (\Throwable $e) {
+            Log::error('Get sticker error ' . $e->getMessage());
+
+            return response(['success' => false, 'message' => 'Ошибка получения штрих-кода'],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
 
         return $stickers instanceof PDF ? $stickers->download() : $stickers;
     }
 
-    public function getOrderStatus(Request $request): \Illuminate\Http\JsonResponse
+    public function getOrderStatus(GetApplicationStatusRequest $request): Response
     {
+        $orderNumber = $request->get('orderId');
+        $partnerId = $request->get('partnerId');
+        $app = null;
+
         try {
-            $order = $this->userRepo->getOrderByNumberAndUser1cId(
-                $request->get('partnerId'),
-                $request->get('orderId')
-            );
+            $app = $this->userRepo->getOrderByNumberAndUser1cId($partnerId, $orderNumber);
+
+            if (!$app) {
+                throw new ApplicationNotFoundException($orderNumber);
+            }
+
+        } catch (ApplicationNotFoundException $e) {
+            $e->render();
         } catch (\Throwable $e) {
-            return response()
-                ->json(
-                    ['message' => 'Не удалось найти заказ с номер ' . $request->get('orderId')], Response::HTTP_INTERNAL_SERVER_ERROR,
-                    ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
-                );
+            Log::error('Get order status error: ' . $e->getMessage());
+
+            return response(['success' => false, 'message' => 'Ошибка получения статуса'],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
         return response()->json([
             'message' => 'success',
-            'orderNumber' => $order->order_number,
-            'orderStatus' => $order->status
+            'orderNumber' => $app->order_number,
+            'orderStatus' => $app->status
         ]);
     }
 
-    public function statusHistory(Request $request): \Illuminate\Http\JsonResponse
+    public function getAppStatusHistory(Request $request): Response|ApplicationStatusHistoryResource
     {
         try {
-            $data = json_decode($request->getContent(), true);
-            $statuses = $this->appStatusHistoryRepo->getByFewOrders($data['ids']);
+            $statuses = $this->appStatusHistoryRepo->getByFewOrders($request->get('ids'));
 
-            if (count($statuses) == 0)
+            if (count($statuses) == 0) {
                 $statuses = ['message' => 'История статусов для заказа(ов) пуста'];
+            }
         } catch (\Throwable $e) {
-            return response()->json(['message' => 'Ошибка получения истории'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            Log::error('Get statuses history error ' . $e->getMessage());
+            return response(['message' => 'Ошибка получения истории'],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
-        return response()->json($statuses);
+        return new ApplicationStatusHistoryResource($statuses);
+    }
+
+    public function getOrders(PartnerGetOrdersRequest $request): Response|GetOrdersFor1cResource
+    {
+        try {
+            $result = $this->appService->getOrdersBy1c($request->get('partnerId'));
+        } catch (PartnerNotFoundException $e) {
+            return $e->render();
+        } catch (PartnerApplicationsNotFoundException $e) {
+            return $e->render();
+        } catch (\Throwable $e) {
+            Log::error('Get partner order error ' . $e->getMessage());
+            return response(['success' => false, 'message' => 'Ошибка получения заказов']);
+        }
+
+        return new GetOrdersFor1cResource($result);
     }
 }

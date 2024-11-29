@@ -2,17 +2,19 @@
 
 namespace App\Application;
 
+use App\Infrastructure\Services\Dadata\DadataService;
+
 class DeliveryAddressService
 {
-    protected $dadataService;
+    private DadataService $dadataService;
 
-    public function __construct()
+    public function __construct(DadataService $dadataService)
     {
-        $this->dadataService = new DadataService();
+        $this->dadataService = $dadataService;
     }
 
-    public function checkFiasForCityAndStreet($address, $count)
+    public function checkFiasForCityAndStreet($address)
     {
-        return $this->dadataService->getAddress($address, $count);
+        return $this->dadataService->getCleanAddress($address);
     }
 }

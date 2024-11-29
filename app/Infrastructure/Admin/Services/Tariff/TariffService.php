@@ -3,52 +3,45 @@
 namespace App\Infrastructure\Admin\Services\Tariff;
 
 use App\Domain\DTO\Requests\Tariff\TariffRegionCategoriesPricesDTO;
-use App\Infrastructure\Repositories\Admin\TariffCategoryRegionPricesRepository;
 use App\Infrastructure\Repositories\Admin\TariffCategoryRepository;
 use App\Infrastructure\Repositories\Admin\TariffCategorySettingsRepository;
 use App\Infrastructure\Repositories\Admin\TariffRepository;
 use App\Infrastructure\Repositories\Admin\UserTariffPermissionRepository;
 use App\Infrastructure\Repositories\RegionRepository;
-use App\Models\Tariff;
-use App\Models\TariffCategories;
 use App\Models\TariffRegionZone;
-use App\Infrastructure\Services\Delivery\Api\Api;
 use App\Infrastructure\Repositories\Admin\ZoneRepository;
-use Illuminate\Support\Facades\Log;
 use Exception;
+use App\Infrastructure\Services\HruGateway\Api as HruGatewayApi;
 
 class TariffService
 {
-    protected TariffRepository $tariffRepo;
-    protected RegionRepository $regionRepo;
-    protected TariffCategoryRepository $categoryRepo;
-    protected TariffCategorySettingsRepository $categorySettingsRepo;
-    protected Api $deliveryServiceApi;
-    protected ZoneRepository $zoneRepo;
-    protected UserTariffPermissionRepository $permissionRepo;
-    protected TariffCategorySettingsRepository $tariffCategorySettingsRepo;
-
+    private TariffRepository $tariffRepo;
+    private RegionRepository $regionRepo;
+    private TariffCategoryRepository $categoryRepo;
+    private TariffCategorySettingsRepository $categorySettingsRepo;
+    private ZoneRepository $zoneRepo;
+    private UserTariffPermissionRepository $permissionRepo;
     protected string $token;
+
+    private HruGatewayApi $hruGatewayApi;
 
     public function __construct(TariffRepository $tariffRepo,
                                 RegionRepository $regionRepo,
                                 TariffCategoryRepository $categoryRepo,
                                 TariffCategorySettingsRepository $categorySettingsRepo,
-                                Api $deliveryServiceApi,
                                 ZoneRepository $zoneRepo,
                                 UserTariffPermissionRepository $permissionRepo,
-                                TariffCategorySettingsRepository $tariffCategorySettingsRepo,
+                                HruGatewayApi $hruGatewayApi
     )
     {
         $this->tariffRepo = $tariffRepo;
         $this->regionRepo = $regionRepo;
         $this->categoryRepo = $categoryRepo;
         $this->categorySettingsRepo = $categorySettingsRepo;
-        $this->deliveryServiceApi = $deliveryServiceApi;
         $this->zoneRepo = $zoneRepo;
         $this->permissionRepo = $permissionRepo;
-        $this->tariffCategorySettingsRepo = $tariffCategorySettingsRepo;
-        $this->token = config('app.api_delivery_service_token');
+        $this->hruGatewayApi = $hruGatewayApi;
+        $this->token = config('services.hru_gateway.api_delivery_service_token');
     }
 
     /**
@@ -57,26 +50,29 @@ class TariffService
     public function create(array $data): void
     {
         $newTariff = $this->tariffRepo->create($data);
-        $response = $this->deliveryServiceApi
-                ->query('settings/calculation/courier-delivery-price-tariffs', $data, 'POST', $this->token);
-        Log::info('response ' . json_encode($response));
+        $response = $this->hruGatewayApi
+            ->tariffs('settings/calculation/courier-delivery-price-tariffs', $data, $this->token);
 
         if ($response) {
             $this->tariffRepo->updateByFields($newTariff, ['delivery_service_tariff_id' => $response['created_id']]);
         }
     }
 
-    public function addFewRegions(int $tariffId, array $regions): void
+    public function addRegions(int $tariffId, array $regions): void
     {
         $tariff = $this->tariffRepo->findById($tariffId);
-        $this->addRegions($tariff, $regions);
+
+        foreach ($regions as $regionData) {
+            $region = $this->regionRepo->getById($regionData['id']);
+            $this->tariffRepo->saveRegion($tariff, $region);
+        }
     }
 
     public function addAllRegions(int $tariffId): void
     {
         $tariff = $this->tariffRepo->findById($tariffId);
         $regions = $this->regionRepo->getAll();
-        $this->addRegions($tariff, $regions->all());
+        $this->tariffRepo->addAllRegions($tariff, $regions);
     }
 
     public function deleteRegion(int $tariffId, int $regionId): void
@@ -187,8 +183,8 @@ class TariffService
                     ];
                 }
 
-                $result = $this->deliveryServiceApi
-                    ->query('settings/calculation/group/courier-delivery-prices', $priceForUpdate, 'PUT', $this->token);
+                $result = $this->hruGatewayApi
+                    ->tariffs('settings/calculation/group/courier-delivery-prices', $priceForUpdate,  $this->token, 'PUT');
 
                 if (!$result) {
                     throw new Exception('Не удалось обновить цены в сервисе');
@@ -203,23 +199,20 @@ class TariffService
     public function deleteZone(int $tariffId, int $regionId, array $zoneData): void
     {
         $tariff = $this->tariffRepo->findById($tariffId);
-        $region = $this->regionRepo->getById($regionId);
 
-        foreach ($zoneData['categories'] as $categoryId) {
-            $category = $this->categoryRepo->getById($categoryId);
-            $result = $this->deliveryServiceApi
-                    ->query('settings/calculation/group/courier-delivery-prices', [
-                        'region_id' => $region->region_id,
-                        'tariff_id' => $tariff->delivery_service_tariff_id,
-                        'zone' => $zoneData['zone'],
-                        'product_delivery_category_id' => $category->result_category_id,
-                    ], 'DELETE', $this->token);
+        foreach ($zoneData['categories'] as $categoryInfo) {
+            $category = $this->categoryRepo->getById($categoryInfo['id']);
+            $result = $this->hruGatewayApi
+                ->tariffs('settings/calculation/group/courier-delivery-prices', [
+                    'region_id' => $regionId,
+                    'tariff_id' => $tariff->delivery_service_tariff_id,
+                    'zone' => $zoneData['zone'],
+                    'product_delivery_category_id' => $category->result_category_id,
+                ], $this->token, 'DELETE');
 
-//            убрал исключение т.к. сервис не возвращает ошибку удаления
-//            поэтому считаем, что удаление всегда успешно
-//            if (!$result) {
-//                throw new Exception('Не удалось удалить цены в сервисе');
-//            }
+            if (!$result) {
+                throw new Exception('Не удалось удалить цены в сервисе');
+            }
 
             $this->categoryRepo->deletePriceByZoneIdAndRegionId($category, $tariffId, $regionId, $zoneData['zoneId']);
         }
@@ -233,9 +226,9 @@ class TariffService
         $tariff = $this->tariffRepo->findById($tariffId);
         $this->permissionRepo->deleteByTariffId($tariffId);
         $this->tariffRepo->delete($tariff);
-        $result = $this->deliveryServiceApi
-            ->query('settings/calculation/courier-delivery-price-tariffs/' . $tariff->delivery_service_tariff_id, [],
-                'DELETE', $this->token);
+        $result = $this->hruGatewayApi
+            ->tariffs('settings/calculation/courier-delivery-price-tariffs/' . $tariff->delivery_service_tariff_id, [],
+                $this->token, 'DELETE');
 
         if (!$result) {
             throw new Exception('Не удалось удалить тариф в сервисе');
@@ -252,11 +245,11 @@ class TariffService
         $clone->alias = $tariff->alias . 'Clone_' . substr(md5(mt_rand()), 0, 7);;
         $clone->save();
 
-        $response = $this->deliveryServiceApi
-            ->query('settings/calculation/courier-delivery-price-tariffs', [
+        $response = $this->hruGatewayApi
+            ->tariffs('settings/calculation/courier-delivery-price-tariffs', [
                 'name' => $clone->name,
                 'alias' => $clone->alias
-            ], 'POST', $this->token);
+            ], $this->token);
 
         if ($response) {
             $this->tariffRepo->updateByFields($clone, ['delivery_service_tariff_id' => $response['created_id']]);
@@ -292,8 +285,8 @@ class TariffService
      */
     public function getFromDeliveryService(): bool
     {
-        $tariffsFromService = $this->deliveryServiceApi
-            ->query('settings/calculation/courier-delivery-price-tariffs', [], 'GET' , $this->token);
+        $tariffsFromService = $this->hruGatewayApi
+            ->tariffs('settings/calculation/courier-delivery-price-tariffs', [], null, 'GET');
         $regions = $this->regionRepo->getAll();
 
         foreach ($tariffsFromService as $tariffFromService) {
@@ -318,18 +311,17 @@ class TariffService
 
             foreach ($regions as $region) {
                 $this->tariffRepo->saveRegion($localTariff, $region);
-                $pricesFromService = $this->deliveryServiceApi
-                    ->query('settings/calculation/group/courier-delivery-prices',
+                $pricesFromService = $this->hruGatewayApi
+                    ->tariffs('settings/calculation/group/courier-delivery-prices',
                         [
                             'region_id' => $region->region_id,
                             'tariff_id' => $localTariff->delivery_service_tariff_id
-                        ], 'GET', $this->token);
+                        ], null, 'GET');
 
                 foreach ($pricesFromService as $priceFromService) {
                     $zone = $this->zoneRepo->getByCode($priceFromService['zone']);
                     $category = $this->categoryRepo
                         ->getByProductCategoryId($priceFromService['product_delivery_category_id']);
-
                     $price = $this->categoryRepo
                             ->getPrices($category, $localTariff->id, $region->id, $zone->id);
 
@@ -356,38 +348,9 @@ class TariffService
     {
         $tariff = $this->tariffRepo->findById($tariffId);
         $this->tariffRepo->updateByFields($tariff, $data);
-        $this->deliveryServiceApi
-            ->query('settings/calculation/courier-delivery-price-tariffs/' . $tariff->delivery_service_tariff_id,
-                $data, 'PATCH', $this->token);
+        $this->hruGatewayApi
+            ->tariffs('settings/calculation/courier-delivery-price-tariffs/' . $tariff->delivery_service_tariff_id,
+                $data, $this->token, 'PATCH');
 
-    }
-
-    private function addRegions(Tariff $tariff, array $regions): void
-    {
-        $zones = $this->zoneRepo->getAll();
-        $categories = $this->categoryRepo->getAll();
-
-        foreach ($regions as $regionData) {
-            $region = $this->regionRepo->getById($regionData['id']);
-
-            foreach ($categories as $category) {
-                /* @var TariffCategories $category */
-
-                if (!$this->regionRepo->getTariffCategoryById($region, $category->id)) {
-                    $region->tariffCategories()->attach($category->id);
-                }
-
-                $this->tariffCategorySettingsRepo->create($tariff->id, $region->id, $category->id);
-                $prices = $this->categoryRepo->getPricesForAllZones($category, $tariff->id, $region->id, $category->id);
-
-                if ($prices->count() == 0) {
-                    foreach ($zones as $zone) {
-                        $this->categoryRepo->createPrice($category, $tariff->id, $region->id, $zone->id);
-                    }
-                }
-            }
-
-            $this->tariffRepo->saveRegion($tariff, $region, $categories);
-        }
     }
 }

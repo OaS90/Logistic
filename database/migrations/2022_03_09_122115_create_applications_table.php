@@ -32,7 +32,7 @@ class CreateApplicationsTable extends Migration
             $table->text('warehouse_address')->comment('адрес склада отгрузки');
             $table->date('delivery_date');
             $table->string('delivery_time');
-            $table->text('delivery_address');
+            $table->integer('delivery_address');
             $table->integer('flat');
             $table->integer('floor');
             $table->integer('entrance');

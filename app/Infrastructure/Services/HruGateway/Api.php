@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\Services\Delivery\Api;
+namespace App\Infrastructure\Services\HruGateway;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -10,17 +10,17 @@ use Illuminate\Support\Facades\Log;
 
 class Api
 {
-    protected Client $client;
+    private const DELIVERY_URI = 'holodilnik-delivery/api/v1/';
 
-    public function __construct(Client $client)
+    public function __construct(private readonly Client $client)
     {
-        $this->client = $client;
     }
 
-    public function query(string $uri, array $data = [], $method = 'POST', string $token = ''): array
+    public function tariffs(string $uri, array $data, ?string $token, string $method = 'POST')
     {
         $parameters = [];
         $result = [];
+        $fullUri = self::DELIVERY_URI . $uri;
 
         if ($method != 'GET' && $method != 'DELETE') {
             $parameters[RequestOptions::JSON] = $data;
@@ -33,13 +33,16 @@ class Api
         }
 
         if (env('APP_ENV') != 'production') {
-            $parameters[RequestOptions::HEADERS]['Authorization'] .= ', Basic ' . base64_encode('holodilnik:xoN1thowahPai1iyah4a');
+            $user = config('app.hru_base_auth_user');
+            $password = config('app.hru_base_auth_pass');
+            $parameters[RequestOptions::HEADERS]['Authorization'] .= ', Basic ' . base64_encode($user . ':' . $password);
         }
 
         try {
-            $request = $this->client->request($method, $uri, $parameters);
+            $request = $this->client->request($method, $fullUri, $parameters);
             $content = $request->getBody()->getContents();
             $result = json_decode($content, true);
+            Log::info('response from Delivery Tariff service ' . $content);
 
             if ($request->getStatusCode() === 204) {
                 return [

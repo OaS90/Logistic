@@ -42,15 +42,15 @@ class AppStatusHistoryRepository
 
                 foreach ($historyItems as $item) {
                     $statuses[] = [
-                        "description" => $item->getStatus($item->status) ?? 'Неизвестный статус.',
-                        "status" => $item->status,
-                        "datetime" => $item->date_time
+                        'description' => $item->getStatus($item->status) ?? 'Неизвестный статус.',
+                        'status' => $item->status,
+                        'datetime' => $item->date_time
                     ];
                 }
 
                 $history[] = [
-                    "orderId" => $number,
-                    "statuses" => $statuses
+                    'orderId' => $number,
+                    'statuses' => $statuses
                 ];
             }
         }

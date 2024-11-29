@@ -3,50 +3,35 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Infrastructure\Services\ConfigService\Api\ConfigServiceApi;
-use App\Models\Quote;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
-use App\Domain\Admin\QuoteDTO;
 use App\Infrastructure\Repositories\Admin\QuoteRepository;
 use App\Infrastructure\Repositories\Admin\IntervalQuoteRepository;
 use App\Application\ExcelExportService;
 use App\Infrastructure\Exports\Admin\QuoteExport;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use GuzzleHttp\Exception\BadResponseException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\QuotesChange;
 use App\Infrastructure\Repositories\Admin\EmailQuoteRepository;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
+use App\Infrastructure\Services\Monolith\Api;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Infrastructure\Admin\Services\Quote\QuoteService;
 
 class QuotesController extends Controller
 {
-    private QuoteRepository $repo;
-    private IntervalQuoteRepository $intervalRepo;
-    private ExcelExportService $exportService;
-    private EmailQuoteRepository $emailQuoteRepo;
-    private ConfigServiceApi $configServiceApi;
-
-    public function __construct(QuoteRepository $repo,
-                                IntervalQuoteRepository $intervalRepo,
-                                ExcelExportService $exportService,
-                                EmailQuoteRepository $emailQuoteRepository,
-                                ConfigServiceApi $configServiceApi
+    public function __construct(private readonly QuoteRepository $repo,
+                                private readonly IntervalQuoteRepository $intervalRepo,
+                                private readonly ExcelExportService $exportService,
+                                private readonly EmailQuoteRepository $emailQuoteRepo,
+                                private readonly Api $monolithApi,
+                                private readonly QuoteService $quoteService
     )
-    {
-        $this->repo = $repo;
-        $this->intervalRepo = $intervalRepo;
-        $this->exportService = $exportService;
-        $this->emailQuoteRepo = $emailQuoteRepository;
-        $this->configServiceApi = $configServiceApi;
-    }
+    {}
 
     public function show(): View
     {
-        $quotes = (new QuoteDTO())->toArrayForVue(Quote::with(['intervals', 'region'])->get());
+        $quotes = $this->quoteService->prepareForVue();
         $isGuest = (bool) backpack_user()->hasRole('guest');
 
         return view('vendor.backpack.quotes', ['quotes' => collect($quotes), 'guest' => $isGuest]);
@@ -66,40 +51,18 @@ class QuotesController extends Controller
 
         $this->intervalRepo->update($request->all());
         $updatedQuotes = $this->repo->update($request->all(), backpack_user()->id);
-        $client = new Client();
         $message = 'Данные сохранены.';
-        $json = (new QuoteDTO())->makeDataForApiHru($this->repo->getAll());
+        $quotes = $this->quoteService->prepareForMonolith();
+        $responseFromMonolithIsSuccess = $this->monolithApi->sendQuotes($quotes);
 
-        // TODO вынести в hruApi и поправить endpoints
-        try {
-            $response = $client->post(config('app.api_hru'), [
-                'headers' => [
-                    'Content-Type' => 'application/json', 'Accept' => 'application/json',
-                    'Authorization' => config('app.api_hru_token')
-                ],
-                //'auth' => [config('app.api_user'), config('app.api_password')], //для теста раскоментить
-                'json' => $json
-            ]);
-
-            $responseContents = json_decode($response->getBody()->getContents(), true);
-
-            if ($response->getStatusCode() == 200 && (isset($responseContents['success']) && $responseContents['success']))
-                $message .= ' Квоты отправлены на сайт HRU';
-            else
-                $message .= ' Ошибка отправки квот на сайт!';
+        if ($responseFromMonolithIsSuccess) {
+            $message .= ' Квоты отправлены на сайт HRU';
 
             foreach ($updatedQuotes as $quote) {
                 Mail::to($this->emailQuoteRepo->getAllActiveEmails())->send(new QuotesChange($quote));
             }
-
-            Log::info('Response: ' .
-                $response->getBody()->getContents() .
-                ', code:' . $response->getStatusCode() .
-                ' headers: ' . json_encode($response->getHeaders()) .
-                ', request: ' . json_encode($json)
-            );
-        } catch (BadResponseException $e) {
-            Log::info($e->getMessage());
+        } else {
+            $message .= ' Ошибка отправки квот на сайт!';
         }
 
         if (config('app.enable_config_service_api_for_quotes')) {
@@ -114,7 +77,7 @@ class QuotesController extends Controller
         return response(['message' => $message]);
     }
 
-    public function download(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function download(): BinaryFileResponse
     {
         return $this->exportService->download(new QuoteExport());
     }
