@@ -14,6 +14,7 @@ class Application extends Model
     use ConvertsToUtfTrait;
     use ApplicationStatuses;
 
+    protected $connection = 'pgsql';
     protected $table = 'applications';
     protected $guarded = ['id'];
 

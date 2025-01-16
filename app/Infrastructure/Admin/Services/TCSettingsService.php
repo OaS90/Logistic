@@ -5,26 +5,26 @@ namespace App\Infrastructure\Admin\Services;
 use App\Infrastructure\Repositories\Admin\TransportCompanySettingsRepository;
 use App\Infrastructure\Repositories\Admin\TransportCompanyWarehouseRepository;
 use App\Infrastructure\Admin\Services\Api\HruApi;
-use App\Infrastructure\Services\ConfigService\Api\ConfigServiceApi;
-use Illuminate\Support\Facades\Log;
+use App\Infrastructure\Services\Monolith\Api;
 
 class TCSettingsService
 {
     private TransportCompanyWarehouseRepository $warehouseRepo;
     private TransportCompanySettingsRepository $settingsRepo;
-    private HruApi $hruApi;
+    private Api $monolithApi;
 
     private ConfigServiceApi $configServiceApi;
 
     public function __construct(TransportCompanyWarehouseRepository $warehouseRepo,
                                 TransportCompanySettingsRepository $settingsRepo,
+                                Api $monolithApi,
                                 HruApi $hruApi,
                                 ConfigServiceApi $configServiceApi
     )
     {
         $this->settingsRepo = $settingsRepo;
         $this->warehouseRepo = $warehouseRepo;
-        $this->hruApi = $hruApi;
+        $this->monolithApi = $monolithApi;
         $this->configServiceApi = $configServiceApi;
     }
 
@@ -84,8 +84,6 @@ class TCSettingsService
                 ->query('api/soa/regions/transport-companies-interval-quotas-config', $warehousesWithSettings, 'PATCH');
         }
 
-        return $this->hruApi->query('delivery/Holodilnik/SetQuoteTkSettings',
-            $warehousesWithSettings
-        );
+        return $this->monolithApi->sendTkQuotes($warehousesWithSettings);
     }
 }

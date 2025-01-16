@@ -9,7 +9,7 @@ use App\Models\Region;
 
 class RegionRepository
 {
-    public function __construct(private RegionDTOFactory $regionDTOFactory)
+    public function __construct(private readonly RegionDTOFactory $regionDTOFactory)
     {
     }
 

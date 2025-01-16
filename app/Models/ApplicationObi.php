@@ -13,6 +13,9 @@ class ApplicationObi extends Model
     use CrudTrait;
     use ApplicationStatuses;
 
+    public const DEFAULT_PAYMENT_TYPE = 'Предоплата';
+    public const DEFAULT_STORE_ID = 14010;
+
     protected $table = 'applications_obi';
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
@@ -56,5 +59,27 @@ class ApplicationObi extends Model
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getTotalCost()
+    {
+        return $this->getAttribute('products_cost');
+    }
+
+    public function getTotalWeight()
+    {
+        return $this->getAttribute('order_weight');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection
+     * Получение всех товаров исключая Доставку и Доплату
+     */
+    public function getProductsWithoutExtraPays(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->products()
+            ->whereRaw('LOWER(name) NOT LIKE ?', ['%' . strtolower('доплата') . '%'])
+            ->whereRaw('LOWER(name) NOT LIKE ?', ['%' . strtolower('доставка') . '%'])
+            ->get();
     }
 }
