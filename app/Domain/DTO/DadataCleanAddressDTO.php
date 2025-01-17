@@ -6,8 +6,8 @@ use App\Application\DeliveryAddressDTOInterface;
 
 class DadataCleanAddressDTO implements DeliveryAddressDTOInterface
 {
-    public function __construct(public readonly string $regionFias,
-                                public readonly string $region,
+    public function __construct(public readonly ?string $regionFias,
+                                public readonly ?string $region,
                                 public readonly ?string $cityFias,
                                 public readonly ?string $city,
                                 public readonly ?string $streetFias,

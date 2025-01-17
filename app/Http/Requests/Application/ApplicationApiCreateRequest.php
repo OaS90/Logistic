@@ -53,12 +53,12 @@ class ApplicationApiCreateRequest extends FormRequest
             '*.products.*.count' => 'required|integer|min:1',
             '*.products.*.cost' => 'required|numeric|min:1',
             '*.products.*.VATRate' => 'required|integer|min:10',
-            '*.products.*.leftToPay' => 'required|numeric|min:1',
-            '*.products.*.weight' => 'required|numeric|min:1',
-            '*.products.*.volume' => 'required|numeric|min:1',
-            '*.products.*.width' => 'required|numeric|min:1',
-            '*.products.*.height' => 'required|numeric|min:1',
-            '*.products.*.depth' => 'required|numeric|min:1',
+            '*.products.*.leftToPay' => 'required|numeric|min:0',
+            '*.products.*.weight' => 'required|numeric|min:0',
+            '*.products.*.volume' => 'required|numeric|min:0',
+            '*.products.*.width' => 'required|numeric|min:0',
+            '*.products.*.height' => 'required|numeric|min:0',
+            '*.products.*.depth' => 'required|numeric|min:0',
         ];
     }
 

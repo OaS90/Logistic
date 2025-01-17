@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Infrastructure\Repositories\UserRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -67,6 +68,8 @@ class SupportController extends Controller
                     ->import($request->file('document'), $this->importService->extensionHandler($fileExtension, false), $userId, $storeId);
             }
         } catch (\Throwable $e) {
+            Log::error('Support upload file error ' . $e->getMessage());
+
             return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 

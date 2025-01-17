@@ -8,8 +8,8 @@ class DeliveryAddressDTO implements DeliveryAddressDTOInterface
 {
     public function __construct(public readonly string $regionName,
                                 public readonly string $cityName,
-                                public readonly string $street,
-                                public readonly string $building,
+                                public readonly ?string $street,
+                                public readonly ?string $building,
                                 public readonly ?int $floor = null,
                                 public readonly ?string $flat = null,
                                 public ?string $cityFias = null,

@@ -74,8 +74,6 @@ class ApplicationController
 
     public function getSticker(string $partnerOrderId): PDF|Response
     {
-        $stickers = null;
-
         try {
             $app = $this->repo->getByOrderNumber($partnerOrderId);
 
@@ -85,7 +83,7 @@ class ApplicationController
 
             $stickers = $this->appService->makeStickers($app);
         } catch (ApplicationNotFoundException $e) {
-            $e->render();
+            return $e->render();
         } catch (\Throwable $e) {
             Log::error('Get sticker error ' . $e->getMessage());
 
@@ -101,17 +99,24 @@ class ApplicationController
     {
         $orderNumber = $request->get('orderId');
         $partnerId = $request->get('partnerId');
-        $app = null;
 
         try {
+            $partner = $this->userRepo->getBy1cId($partnerId);
+
+            if (!$partner) {
+                throw new PartnerNotFoundException($partnerId);
+            }
+
             $app = $this->userRepo->getOrderByNumberAndUser1cId($partnerId, $orderNumber);
 
             if (!$app) {
                 throw new ApplicationNotFoundException($orderNumber);
             }
 
+        } catch (PartnerNotFoundException $e) {
+            return $e->render();
         } catch (ApplicationNotFoundException $e) {
-            $e->render();
+            return $e->render();
         } catch (\Throwable $e) {
             Log::error('Get order status error: ' . $e->getMessage());
 
@@ -131,12 +136,9 @@ class ApplicationController
     {
         try {
             $statuses = $this->appStatusHistoryRepo->getByFewOrders($request->get('ids'));
-
-            if (count($statuses) == 0) {
-                $statuses = ['message' => 'История статусов для заказа(ов) пуста'];
-            }
         } catch (\Throwable $e) {
             Log::error('Get statuses history error ' . $e->getMessage());
+
             return response(['message' => 'Ошибка получения истории'],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
@@ -155,6 +157,7 @@ class ApplicationController
             return $e->render();
         } catch (\Throwable $e) {
             Log::error('Get partner order error ' . $e->getMessage());
+
             return response(['success' => false, 'message' => 'Ошибка получения заказов']);
         }
 

@@ -59,7 +59,7 @@ class CsvImportService
 
         foreach ($dataFromCsv as $orderNumber => $appDTO) {
             /* @var ApplicationDTO $appDTO */
-            $existApp = $this->appRepo->getByOrderNumber($orderNumber);
+            $existApp = $this->appRepo->getByOrderNumber($orderNumber, $userId);
 
             if (!$warehouse) {
                 $warehouse = $this->warehouseRepo->findByAddressAndUserId($userId, $appDTO->storeAddress);

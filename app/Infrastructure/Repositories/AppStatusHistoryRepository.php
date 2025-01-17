@@ -30,16 +30,15 @@ class AppStatusHistoryRepository
      * @param array $numbers
      * @return array
      */
-    public function getByFewOrders(array $numbers): array
+    public function getByFewOrders(array $orderNumbers): array
     {
         $history = [];
 
-        foreach ($numbers as $number) {
+        foreach ($orderNumbers as $number) {
             $historyItems = $this->getByOneOrder($number);
+            $statuses = [];
 
             if (count($historyItems) > 0) {
-                $statuses = [];
-
                 foreach ($historyItems as $item) {
                     $statuses[] = [
                         'description' => $item->getStatus($item->status) ?? 'Неизвестный статус.',
@@ -48,11 +47,12 @@ class AppStatusHistoryRepository
                     ];
                 }
 
-                $history[] = [
-                    'orderId' => $number,
-                    'statuses' => $statuses
-                ];
             }
+
+            $history[] = [
+                'orderId' => $number,
+                'statuses' => $statuses
+            ];
         }
 
         return $history;

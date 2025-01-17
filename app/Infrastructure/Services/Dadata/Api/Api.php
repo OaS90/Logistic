@@ -42,32 +42,28 @@ class Api
 
     public function clean(string $address): array|DadataCleanAddressDTO
     {
-        $result = [];
-
         try {
             $response = $this->cleanClient->post('clean/address', [
                 RequestOptions::JSON => [$address]
             ]);
 
             $data = json_decode($response->getBody()->getContents(), true);
-
-            $result = new DadataCleanAddressDTO(
-                regionFias: $data[0]['region_fias_id'],
-                region: $data[0]['region_with_type'],
-                cityFias: $data[0]['city_fias_id'],
-                city: $data[0]['city_with_type'],
-                streetFias: $data[0]['street_fias_id'],
-                street: $data[0]['street_with_type'],
-                house: $data[0]['house_type_full'],
-                block: $data[0]['block_type_full'],
-                entrance: $data[0]['entrance'],
-                floor: $data[0]['floor'],
-                flat: $data[0]['flat_type_full']
-            );
         } catch (\Throwable $e) {
             Log::error('Failed to get clean address: ' . $e->getMessage());
         }
 
-        return $result;
+        return new DadataCleanAddressDTO(
+            regionFias: $data[0]['region_fias_id'] ?? null,
+            region: $data[0]['region_with_type'] ?? null,
+            cityFias: $data[0]['city_fias_id'] ?? null,
+            city: $data[0]['city_with_type'] ?? null,
+            streetFias: $data[0]['street_fias_id'] ?? null,
+            street: $data[0]['street_with_type'] ?? null,
+            house: $data[0]['house_type_full'] ?? null,
+            block: $data[0]['block_type_full'] ?? null,
+            entrance: $data[0]['entrance'] ?? null,
+            floor: $data[0]['floor'] ?? null,
+            flat: $data[0]['flat_type_full'] ?? null
+        );
     }
 }

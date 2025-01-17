@@ -2,12 +2,13 @@
 
 namespace App\Infrastructure\Repositories;
 
+use App\Application\DeliveryAddressDTOInterface;
 use App\Domain\DTO\DeliveryAddressDTO;
 use App\Models\DeliveryAddress;
 
 class DeliveryAddressRepository
 {
-    public function create(DeliveryAddressDTO $dto): ?DeliveryAddress
+    public function create(DeliveryAddressDTOInterface $dto): ?DeliveryAddress
     {
         $building = $dto->building ?? null;
 

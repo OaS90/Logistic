@@ -6,7 +6,6 @@ use App\Domain\DTO\ApplicationDTO;
 use App\Domain\Enum\ApplicationStatus;
 use App\Models\Application;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Builder;
 
 class ApplicationRepository
@@ -16,9 +15,12 @@ class ApplicationRepository
         return Application::find($id);
     }
 
-    public function getByOrderNumber(string $orderId)
+    public function getByOrderNumber(string $orderId, int $userId = null)
     {
-        return Application::where('order_number', $orderId)->first();
+        return Application::where('order_number', $orderId)
+            ->when($userId, function (Builder $query) use ($userId) {
+                $query->where('user_id', $userId);
+            })->first();
     }
 
     public function getListByUserId(int $userId)

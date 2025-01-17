@@ -14,7 +14,7 @@ class ApplicationDTOFor1c
                                 public readonly string $deliveryDate,
                                 public readonly string $deliveryTimeFrom,
                                 public readonly string $deliveryTimeTo,
-                                public readonly int $storeId,
+                                public readonly ?int $storeId,
                                 public readonly string $clientFullName,
                                 public readonly string $clientPhone,
                                 public readonly DadataCleanAddressDTO $deliveryAddress,
