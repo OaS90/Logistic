@@ -224,20 +224,13 @@
         <!--        </p>-->
 
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body">
+            <span slot="body" v-if="loading">
                 {{ modalText }}
-                <br>
-                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+                <pulse-loader :loading="loading" :color="'#7c69ef'" :size="'15px'"></pulse-loader>
             </span>
-            <span slot="footer"></span>
-        </modal>
-        <modal v-if="showModal" @close="showModal = false">
-                <span slot="body" v-if="loading">
-                    {{ modalText }}
-                    <pulse-loader :loading="loading" :color="'#7c69ef'" :size="'15px'"></pulse-loader>
-                </span>
             <span slot="body" v-else>
                 {{ modalText }}
+                <br>
                 <button class="btn btn-secondary" @click="showModal = false">ОК</button>
             </span>
             <span slot="footer"></span>
@@ -315,6 +308,7 @@ export default {
                 this.showModal = !this.showModal
                 this.modalText = 'Не выбрано ни одного филиала для обновления'
             } else {
+                this.showModal = true
                 this.quotesToSave.forEach(item => {
                     if ((item.tmp_date && item.tmp_date.length > 0) &&
                         (item.tmp_date[0] && item.tmp_date[1])) {
@@ -333,10 +327,10 @@ export default {
 
                 axios.post('save-quotes', this.quotesToSave).then(response => {
                     this.loading = false
-                    this.showModal = !this.showModal
+                    this.showModal = true
                     this.modalText = response.data.message
                 }).catch(errors => {
-                    this.showModal = !this.showModal
+                    this.showModal = true
                     this.loading = false
                     this.modalText = errors.response.data.message
                 })
