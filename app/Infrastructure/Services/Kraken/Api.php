@@ -59,7 +59,7 @@ class Api
         $params[RequestOptions::HEADERS]['X-Config-Service-Token'] = config('services.config_service.token');
 
         if ($method !== 'GET') {
-            $params[RequestOptions::JSON] = $data;
+            $params[RequestOptions::JSON] = ['data' => $data];
         } else {
             $params[RequestOptions::QUERY] = $data;
         }

@@ -62,8 +62,10 @@ class QuotesController extends Controller
         if ($responseFromMonolithIsSuccess) {
             $message .= ' Квоты отправлены на сайт HRU.';
 
-            foreach ($updatedQuotes as $quote) {
-                Mail::to($this->emailQuoteRepo->getAllActiveEmails())->send(new QuotesChange($quote));
+            if (env('APP_ENV') === 'production') {
+                foreach ($updatedQuotes as $quote) {
+                    Mail::to($this->emailQuoteRepo->getAllActiveEmails())->send(new QuotesChange($quote));
+                }
             }
         } else {
             $message .= ' Ошибка отправки на сайт HRU!';
