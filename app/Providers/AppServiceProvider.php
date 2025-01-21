@@ -23,8 +23,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Routing\UrlGenerator;
 use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 use App\Infrastructure\Services\Dadata\Api\Api as DadataApi;
-use App\Infrastructure\Services\Monolith\Api as MonolithApi;
-use App\Infrastructure\Services\HruGateway\Api as HruGatewayApi;
+use App\Infrastructure\Services\Kraken\Api as KrakenApi;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -52,18 +51,19 @@ class AppServiceProvider extends ServiceProvider
                 productFactory: $this->app->make(ProductFactory::class),
                 appFactory: $this->app->make(ApplicationFactory::class),
                 dadataService: $this->app->make(DadataService::class),
-                monolithApi: $this->app->make(MonolithApi::class)
+                krakenApi: $this->app->make(KrakenApi::class)
             );
         });
 
-        $this->app->bind(MonolithApi::class, function () {
-            return new MonolithApi(
+        $this->app->bind(KrakenApi::class, function () {
+            return new KrakenApi(
                 new Client([
-                    'base_uri' => config('services.monolith_api.uri'),
-                    'headers' => [
-                        'Content-Type' => 'application/json', 'Accept' => 'application/json',
-                        'Authorization' => config('services.monolith.token')
-                    ],
+                    'base_uri' => 'https://krakend-stage.adeal.ru/api/v1/',
+                    RequestOptions::HEADERS =>  [
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
+                        'x-kraken-authorization' => config('services.kraken.token'),
+                    ]
                 ])
             );
         });
@@ -90,18 +90,6 @@ class AppServiceProvider extends ServiceProvider
                         'Accept' => 'application/json',
                         'Authorization' => 'Token ' . config('services.dadata.token'),
                         'X-Secret' => config('services.dadata.secret')
-                    ]
-                ])
-            );
-        });
-
-        $this->app->bind(HruGatewayApi::class, function () {
-            return new HruGatewayApi(
-                new Client([
-                    'base_uri' => config('services.hru_gateway.uri'),
-                    RequestOptions::HEADERS => [
-                        'Content-Type' => 'application/json',
-                        'Accept' => 'application/json',
                     ]
                 ])
             );

@@ -9,6 +9,7 @@ use App\Infrastructure\Repositories\Admin\QuoteRepository;
 use App\Infrastructure\Repositories\Admin\IntervalQuoteRepository;
 use App\Application\ExcelExportService;
 use App\Infrastructure\Exports\Admin\QuoteExport;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\QuotesChange;
 use App\Infrastructure\Repositories\Admin\EmailQuoteRepository;
@@ -17,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Infrastructure\Services\Monolith\Api;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Infrastructure\Admin\Services\Quote\QuoteService;
+use App\Infrastructure\Services\Kraken\Api as KrakenApi;
 
 class QuotesController extends Controller
 {
@@ -25,7 +27,8 @@ class QuotesController extends Controller
                                 private readonly ExcelExportService $exportService,
                                 private readonly EmailQuoteRepository $emailQuoteRepo,
                                 private readonly Api $monolithApi,
-                                private readonly QuoteService $quoteService
+                                private readonly QuoteService $quoteService,
+                                private readonly KrakenApi $krakenApi,
     )
     {}
 
@@ -53,24 +56,27 @@ class QuotesController extends Controller
         $updatedQuotes = $this->repo->update($request->all(), backpack_user()->id);
         $message = 'Данные сохранены.';
         $quotes = $this->quoteService->prepareForMonolith();
-        $responseFromMonolithIsSuccess = $this->monolithApi->sendQuotes($quotes);
+        $responseFromMonolithIsSuccess = $this->krakenApi
+            ->monolithRequest($this->krakenApi::MONOLITH_UPDATE_QUOTES_URI, $quotes, 'POST');
 
         if ($responseFromMonolithIsSuccess) {
-            $message .= ' Квоты отправлены на сайт HRU';
+            $message .= ' Квоты отправлены на сайт HRU.';
 
             foreach ($updatedQuotes as $quote) {
                 Mail::to($this->emailQuoteRepo->getAllActiveEmails())->send(new QuotesChange($quote));
             }
         } else {
-            $message .= ' Ошибка отправки квот на сайт!';
+            $message .= ' Ошибка отправки на сайт HRU!';
         }
 
         if (config('app.enable_config_service_api_for_quotes')) {
-            $sendedToConfigService = $this->configServiceApi
-                ->query('api/soa/regions/interval-quotas-config', $json, 'PATCH');
+            $sentToConfigService = $this->krakenApi
+                ->configServiceRequest($this->krakenApi::CONFIG_UPDATE_QUOTES_URI, $quotes, 'PATCH');
 
-            if (!$sendedToConfigService) {
-                Log::error('Not sended to config service');
+            if ($sentToConfigService) {
+                $message .= ' Квоты отправлены в сервис Config';
+            } else {
+                $message .= ' Ошибка отправки квот в сервис Config!';
             }
         }
 

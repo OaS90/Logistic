@@ -30,7 +30,7 @@ use Picqer\Barcode\BarcodeGeneratorDynamicHTML;
 use Symfony\Component\HttpFoundation\Response;
 use App\Infrastructure\Repositories\DeliveryAddressRepository;
 use App\Infrastructure\Services\Dadata\DadataService;
-use App\Infrastructure\Services\Monolith\Api as MonolithApi;
+use App\Infrastructure\Services\Kraken\Api as KrakenApi;
 
 class ApplicationService implements ApplicationServiceInterface
 {
@@ -50,7 +50,8 @@ class ApplicationService implements ApplicationServiceInterface
                                 private readonly ProductFactory $productFactory,
                                 private readonly ApplicationFactory $appFactory,
                                 private readonly DadataService $dadataService,
-                                private readonly MonolithApi $monolithApi
+                                private readonly KrakenApi $krakenApi,
+
     )
     {
         $this->obiUser = config('app.obi_user_id');
@@ -77,10 +78,10 @@ class ApplicationService implements ApplicationServiceInterface
 
     public function getDeliveryDateFromHru(Application $app, DeliveryAddress $addressEntity): bool
     {
-        $monolithDeliveryDate = $this->monolithApi->getDeliveryDate($addressEntity->region_and_city);
+        $monolithDeliveryDate = $this->krakenApi->monolithRequest('', ['q' => 'DeliveryDateBortUdachi', 'address' => $addressEntity->region_and_city]);
 
-        if ($monolithDeliveryDate) {
-            $this->appRepo->updateByFields($app, ['hru_delivery_date' => $monolithDeliveryDate]);
+        if ($monolithDeliveryDate && isset($deliveryResponse['date'])) {
+            $this->appRepo->updateByFields($app, ['hru_delivery_date' => $monolithDeliveryDate['date']]);
         }
 
         return false;
