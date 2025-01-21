@@ -29,7 +29,7 @@ class Api
             $response = $this->client->request($method, $uri, $data);
             $result = json_decode($response->getBody()->getContents(), true);
 
-            Log::info('Response: ' .
+            Log::info('Send to monolith response: ' .
                 $response->getBody()->getContents() .
                 ', code:' . $response->getStatusCode() .
                 ' headers: ' . json_encode($response->getHeaders())
@@ -64,7 +64,7 @@ class Api
             $params[RequestOptions::QUERY] = $data;
         }
 
-        Log::info('Send to delivery service. Request: ' . json_encode($data));
+        Log::info('Send to config service. Request: ' . json_encode($data));
 
         try {
             $response = $this->client->request($method, $uri, $params);

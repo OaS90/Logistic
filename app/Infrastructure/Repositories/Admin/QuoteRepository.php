@@ -42,7 +42,7 @@ class QuoteRepository
         return $updatedQuotes;
     }
 
-    public function getAll(): array
+    public function getAll(): Collection
     {
         return Quote::all();
     }

@@ -17,6 +17,7 @@ return [
     'hru_base_auth_user' => env('HRU_BASE_AUTH_USER', ''),
     'hru_base_auth_password' => env('HRU_BASE_AUTH_PASS', ''),
     'obi_user_id' => env('OBI_USER_ID', 6),
+    'enable_config_service_api_for_quotes' => env('ENABLE_CONFIG_API_FOR_QUOTES', false),
 
     /*
     |--------------------------------------------------------------------------
