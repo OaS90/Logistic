@@ -231,6 +231,17 @@
             </span>
             <span slot="footer"></span>
         </modal>
+        <modal v-if="showModal" @close="showModal = false">
+                <span slot="body" v-if="loading">
+                    {{ modalText }}
+                    <pulse-loader :loading="loading" :color="'#7c69ef'" :size="'15px'"></pulse-loader>
+                </span>
+            <span slot="body" v-else>
+                {{ modalText }}
+                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+            </span>
+            <span slot="footer"></span>
+        </modal>
     </div>
 </template>
 
@@ -248,6 +259,8 @@ export default {
             showModal: false,
             modalText: '',
             dataQuotes: this.quotes,
+            loading: false,
+            loadModal: false,
             filter: '',
             pageSize: 10,
             currentPage: 1,
@@ -319,10 +332,12 @@ export default {
                 })
 
                 axios.post('save-quotes', this.quotesToSave).then(response => {
+                    this.loading = false
                     this.showModal = !this.showModal
                     this.modalText = response.data.message
                 }).catch(errors => {
                     this.showModal = !this.showModal
+                    this.loading = false
                     this.modalText = errors.response.data.message
                 })
             }

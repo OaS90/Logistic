@@ -15,7 +15,6 @@ use App\Mail\QuotesChange;
 use App\Infrastructure\Repositories\Admin\EmailQuoteRepository;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
-use App\Infrastructure\Services\Monolith\Api;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Infrastructure\Admin\Services\Quote\QuoteService;
 use App\Infrastructure\Services\Kraken\Api as KrakenApi;
@@ -26,7 +25,6 @@ class QuotesController extends Controller
                                 private readonly IntervalQuoteRepository $intervalRepo,
                                 private readonly ExcelExportService $exportService,
                                 private readonly EmailQuoteRepository $emailQuoteRepo,
-                                private readonly Api $monolithApi,
                                 private readonly QuoteService $quoteService,
                                 private readonly KrakenApi $krakenApi,
     )

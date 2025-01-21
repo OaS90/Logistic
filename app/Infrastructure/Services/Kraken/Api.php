@@ -29,11 +29,7 @@ class Api
             $response = $this->client->request($method, $uri, $data);
             $result = json_decode($response->getBody()->getContents(), true);
 
-            Log::info('Send to monolith response: ' .
-                $response->getBody()->getContents() .
-                ', code:' . $response->getStatusCode() .
-                ' headers: ' . json_encode($response->getHeaders())
-            );
+            Log::info('Monolith response: ' . $response->getBody()->getContents());
 
             if ($response->getStatusCode() == 200 && (isset($result['success']) && $result['success'])) {
                 $result['status'] = true;
@@ -69,6 +65,12 @@ class Api
         try {
             $response = $this->client->request($method, $uri, $params);
             $result = json_decode($response->getBody()->getContents(), true);
+
+            if ($response->getStatusCode() === 204) {
+                $result = ['status' => true];
+            }
+
+            Log::info('Config service response: ' . $response->getBody()->getContents());
         } catch (ClientException $e) {
             Log::error('Send to config service response error: ' . $e->getResponse()->getBody()->getContents());
         } catch (GuzzleException $e) {
@@ -94,6 +96,15 @@ class Api
         try {
             $response = $this->client->request($method, $uri, $params);
             $result = json_decode($response->getBody()->getContents(), true);
+
+            if ($response->getStatusCode() === 204) {
+                $result = [
+                    'status' => true,
+                    'message' => 'Prices created or updated.'
+                ];
+            }
+
+            Log::info('Delivery service response: ' . $response->getBody()->getContents());
         } catch (ClientException $e) {
             Log::error('Send to delivery service response error: ' . $e->getResponse()->getBody()->getContents());
         } catch (GuzzleException $e) {
