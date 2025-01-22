@@ -16,7 +16,7 @@ deploy-testh:
     - chmod 600 ~/priv_key
     - if [ "$CI_COMMIT_BRANCH" == "stage" ]; then
         mv "$CONFIG_ENV_STAGE" ./.env;
-        export DEPLOY_IP="172.31.11.149";
+        export DEPLOY_IP="172.17.233.7";
       fi
     - if [ "$CI_COMMIT_BRANCH" == "main" ]; then
         mv "$CONFIG_ENV_PROD" ./.env;

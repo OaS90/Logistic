@@ -242,6 +242,7 @@
 import DatePicker from "vue2-datepicker";
 import Modal from "./Modal";
 import Popup from "../Popup";
+import PulseLoader from "vue-spinner/src/PulseLoader"
 
 export default {
     name: "QuotesTable",
@@ -252,7 +253,7 @@ export default {
             showModal: false,
             modalText: '',
             dataQuotes: this.quotes,
-            loading: false,
+            loading: true,
             loadModal: false,
             filter: '',
             pageSize: 10,
@@ -391,7 +392,8 @@ export default {
     components: {
         Popup,
         DatePicker,
-        Modal
+        Modal,
+        PulseLoader
     }
 }
 </script>
