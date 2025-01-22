@@ -15,7 +15,7 @@ class Api
     public const MONOLITH_UPDATE_TC_QUOTES_URI = 'config-old/update-transport-companies-interval-quotas-config';
     public const MONOLITH_UPDATE_QUOTES_URI = 'config-old/update-interval-quotas-config';
     public const DELIVERY_TARIFFS_URI = 'holodilnik-delivery/api/v1/settings/calculation/courier-delivery-price-tariffs';
-    public const DELIVERY_COURIER_PRICES_URI = 'holodilnik-delivery/api/v1/settings/group/calculation/courier-delivery-price';
+    public const DELIVERY_COURIER_PRICES_URI = 'holodilnik-delivery/api/v1/settings/calculation/group/courier-delivery-prices';
 
 
     public function __construct(private readonly Client $client)
