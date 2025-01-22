@@ -15,6 +15,7 @@ class Api
     public const MONOLITH_UPDATE_TC_QUOTES_URI = 'config-old/update-transport-companies-interval-quotas-config';
     public const MONOLITH_UPDATE_QUOTES_URI = 'config-old/update-interval-quotas-config';
     public const DELIVERY_TARIFFS_URI = 'holodilnik-delivery/api/v1/settings/calculation/courier-delivery-price-tariffs';
+    public const DELIVERY_COURIER_PRICES_URI = 'holodilnik-delivery/api/v1/settings/group/calculation/courier-delivery-price';
 
 
     public function __construct(private readonly Client $client)
@@ -25,11 +26,13 @@ class Api
     {
         $result = [];
 
+        Log::info('Send to monolith. Request: ' . json_encode($data) . ' uri: ' . $uri);
+
         try {
             $response = $this->client->request($method, $uri, $data);
             $result = json_decode($response->getBody()->getContents(), true);
 
-            Log::info('Monolith response: ' . $response->getBody()->getContents());
+            Log::info('Monolith response: ' . $response->getBody()->getContents() . ' code: ' . $response->getStatusCode());
 
             if ($response->getStatusCode() == 200 && (isset($result['success']) && $result['success'])) {
                 $result['status'] = true;
@@ -60,7 +63,7 @@ class Api
             $params[RequestOptions::QUERY] = $data;
         }
 
-        Log::info('Send to config service. Request: ' . json_encode($data));
+        Log::info('Send to config service. Request: ' . json_encode($data) . ' uri: ' . $uri);
 
         try {
             $response = $this->client->request($method, $uri, $params);
@@ -70,7 +73,7 @@ class Api
                 $result = ['status' => true];
             }
 
-            Log::info('Config service response: ' . $response->getBody()->getContents());
+            Log::info('Config service response: ' . $response->getBody()->getContents() . ' code: ' . $response->getStatusCode());
         } catch (ClientException $e) {
             Log::error('Send to config service response error: ' . $e->getResponse()->getBody()->getContents());
         } catch (GuzzleException $e) {
@@ -91,7 +94,7 @@ class Api
             $params[RequestOptions::QUERY] = $data;
         }
 
-        Log::info('Send to delivery service. Request: ' . json_encode($data));
+        Log::info('Send to delivery service. Request: ' . json_encode($data) . ' uri: ' . $uri);
 
         try {
             $response = $this->client->request($method, $uri, $params);

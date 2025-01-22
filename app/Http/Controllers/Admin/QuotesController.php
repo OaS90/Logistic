@@ -57,7 +57,7 @@ class QuotesController extends Controller
         $responseFromMonolithIsSuccess = $this->krakenApi
             ->monolithRequest($this->krakenApi::MONOLITH_UPDATE_QUOTES_URI, $quotes, 'POST');
 
-        if ($responseFromMonolithIsSuccess) {
+        if ($responseFromMonolithIsSuccess && $responseFromMonolithIsSuccess['status']) {
             $message .= ' Квоты отправлены на сайт HRU.';
 
             if (env('APP_ENV') === 'production') {

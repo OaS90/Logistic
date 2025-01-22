@@ -119,7 +119,7 @@ class TariffService
                     $data['categories'][$category->id . '_' . $zone->id] = [
                         'id' => $category->id,
                         'name' => $category->name,
-                        'isUse' => $settings ? (bool) $settings->is_use : false,
+                        'isUse' => $settings && (bool)$settings->is_use,
                         'prices' => $prices[$category->id] ?? []
                     ];
                 }
@@ -182,7 +182,7 @@ class TariffService
                 }
 
                 $result = $this->krakenApi
-                    ->deliveryServiceRequest($this->krakenApi::DELIVERY_TARIFFS_URI, $priceForUpdate, 'PUT');
+                    ->deliveryServiceRequest($this->krakenApi::DELIVERY_COURIER_PRICES_URI, $priceForUpdate, 'PUT');
 
                 if (!$result) {
                     throw new Exception('Не удалось обновить цены в сервисе');
@@ -201,7 +201,7 @@ class TariffService
         foreach ($zoneData['categories'] as $categoryInfo) {
             $category = $this->categoryRepo->getById($categoryInfo['id']);
             $result = $this->krakenApi
-                ->deliveryServiceRequest($this->krakenApi::DELIVERY_TARIFFS_URI, [
+                ->deliveryServiceRequest($this->krakenApi::DELIVERY_COURIER_PRICES_URI, [
                     'region_id' => $regionId,
                     'tariff_id' => $tariff->delivery_service_tariff_id,
                     'zone' => $zoneData['zone'],
