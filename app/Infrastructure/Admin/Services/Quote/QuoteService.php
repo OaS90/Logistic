@@ -146,7 +146,22 @@ class QuoteService
 
     private function parseIntervals($intervals): array
     {
-        $parsedIntervals = [];
+        $parsedIntervals = [
+            'periodTenTwo' => [
+                'percent' => 0,
+                'active' => false
+            ],
+            'periodTwoSix' => [
+                'percent' => 0,
+                'active' => false
+            ],
+            'periodSixTen'=> [
+                'percent' => 0,
+                'active' => false
+            ],
+            'inDay' => false,
+            'inHour' => false,
+        ];
 
         foreach ($intervals as $interval) {
             switch ($interval->period) {
