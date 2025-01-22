@@ -86,7 +86,7 @@ class Api
     public function deliveryServiceRequest(string $uri, array $data = [], $method = 'GET'): array
     {
         $result = [];
-        $params[RequestOptions::HEADERS]['Authorization'] = 'Bearer ' . config('services.config_service.token');
+        $params[RequestOptions::HEADERS]['Authorization'] = 'Bearer ' . config('services.delivery_service.token');
 
         if ($method !== 'GET') {
             $params[RequestOptions::JSON] = $data;
