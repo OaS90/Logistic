@@ -306,6 +306,7 @@ export default {
     methods: {
         save() {
             if (this.quotesToSave.length === 0) {
+                this.loading = false
                 this.showModal = !this.showModal
                 this.modalText = 'Не выбрано ни одного филиала для обновления'
             } else {

@@ -28,8 +28,14 @@ class Api
 
         Log::info('Send to monolith. Request: ' . json_encode($data) . ' uri: ' . $uri);
 
+        if ($method !== 'GET') {
+            $params[RequestOptions::JSON] = $data;
+        } else {
+            $params[RequestOptions::QUERY] = $data;
+        }
+
         try {
-            $response = $this->client->request($method, $uri, $data);
+            $response = $this->client->request($method, $uri, $params);
             $result = json_decode($response->getBody()->getContents(), true);
 
             Log::info('Monolith response: ' . $response->getBody()->getContents() . ' code: ' . $response->getStatusCode());
