@@ -116,7 +116,7 @@ export default {
                 let end = this.currentPage * this.pageSize;
 
                 if (this.filter !== '') {
-                    return name.includes(searchTerm) || region.includes(searchTerm)
+                    return name.includes(searchTerm) || region.includes(searchTerm) || warehouse.code.includes(searchTerm)
                 }
 
                 if (index >= start && index < end) return true

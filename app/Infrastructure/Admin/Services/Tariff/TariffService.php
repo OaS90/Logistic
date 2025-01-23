@@ -182,7 +182,7 @@ class TariffService
                 }
 
                 $result = $this->krakenApi
-                    ->deliveryServiceRequest($this->krakenApi::DELIVERY_COURIER_PRICES_URI, ['items' => $priceForUpdate], 'PUT');
+                    ->deliveryServiceRequest($this->krakenApi::DELIVERY_COURIER_PRICES_URI, $priceForUpdate, 'PUT');
 
                 if (!$result) {
                     throw new Exception('Не удалось обновить цены в сервисе');
