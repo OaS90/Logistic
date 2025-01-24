@@ -77,7 +77,8 @@ class TariffService
     {
         $tariff = $this->tariffRepo->findById($tariffId);
         $regions = $this->regionRepo->getAll();
-        $this->tariffRepo->addAllRegions($tariff, $regions);
+        $categories = $this->categoryRepo->getAll();
+        $this->tariffRepo->addAllRegions($tariff, $regions, $categories);
     }
 
     public function deleteRegion(int $tariffId, int $regionId): void
