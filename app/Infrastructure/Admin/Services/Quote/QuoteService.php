@@ -100,8 +100,9 @@ class QuoteService
                 if (count($periods) > 0)
                     $mainQuote['interval_percent'] = $periods;
 
-                if ($days)
+                if ($days) {
                     $mainQuote['days'] = $days;
+                }
 
                 if ($quote->time_last)
                     $mainQuote['time_last'] = Carbon::parse($quote->time_last)->format('H:i');
@@ -135,6 +136,8 @@ class QuoteService
 
                 if ($quote->in_day_limitation) {
                     $mainQuote['in_day_limitation'] = Carbon::parse($quote->in_day_limitation)->format('H:i');
+                } else {
+                    $mainQuote['in_day_limitation'] = null;
                 }
 
                 $data[] = array_merge($mainQuote, $tmpPeriods, $dayHourPeriods, $blockedDates);
