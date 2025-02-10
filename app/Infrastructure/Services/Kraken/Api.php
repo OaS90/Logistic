@@ -106,7 +106,7 @@ class Api
             $response = $this->client->request($method, $uri, $params);
             $result = json_decode($response->getBody()->getContents(), true);
 
-            if ($response->getStatusCode() === 204) {
+            if ($response->getStatusCode() === 204 || $response->getStatusCode() == 200) {
                 $result = [
                     'status' => true,
                     'message' => 'Prices created or updated.'

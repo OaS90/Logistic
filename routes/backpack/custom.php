@@ -82,4 +82,8 @@ Route::group([
     Route::post('tariffs-holodilnik/get', [TariffController::class, 'getFromService']);
     Route::post('admin-user/tariff/permission-edit/add', [AdminUserTariffsController::class, 'addTariff']);
     Route::post('admin-user/tariff/permission-edit/remove', [AdminUserTariffsController::class, 'removeTariff']);
+    Route::get('yandex-zones', [\App\Http\Controllers\Admin\YandexZonesController::class, 'index']);
+    Route::post('yandex-zones/prepare-import', [\App\Http\Controllers\Admin\YandexZonesController::class, 'prepareImport']);
+    Route::post('yandex-zones/import-to-service', [\App\Http\Controllers\Admin\YandexZonesController::class, 'importToService']);
+    Route::get('yandex-zones/export', [\App\Http\Controllers\Admin\YandexZonesController::class, 'export']);
 }); // this should be the absolute last line of this file
