@@ -103,7 +103,7 @@ class Api
         Log::info('Send to delivery service. Request: ' . json_encode($data) . ' uri: ' . $uri);
 
         try {
-            $response = $this->client->request($method, $uri, $params);
+            $response = $this->client->request($method, 'holodilnik-delivery/api/v1/' . $uri, $params);
             $result = json_decode($response->getBody()->getContents(), true);
 
             if ($response->getStatusCode() === 204 || $response->getStatusCode() == 200) {
