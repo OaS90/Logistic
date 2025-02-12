@@ -14,8 +14,8 @@ class Api
     public const CONFIG_UPDATE_TC_QUOTES_URI = 'config/update-transport-companies-interval-quotas-config';
     public const MONOLITH_UPDATE_TC_QUOTES_URI = 'config-old/update-transport-companies-interval-quotas-config';
     public const MONOLITH_UPDATE_QUOTES_URI = 'config-old/update-interval-quotas-config';
-    public const DELIVERY_TARIFFS_URI = 'holodilnik-delivery/api/v1/settings/calculation/courier-delivery-price-tariffs';
-    public const DELIVERY_COURIER_PRICES_URI = 'holodilnik-delivery/api/v1/settings/calculation/group/courier-delivery-prices';
+    public const DELIVERY_TARIFFS_URI = 'settings/calculation/courier-delivery-price-tariffs';
+    public const DELIVERY_COURIER_PRICES_URI = 'settings/calculation/group/courier-delivery-prices';
 
 
     public function __construct(private readonly Client $client)
@@ -104,16 +104,20 @@ class Api
 
         try {
             $response = $this->client->request($method, 'holodilnik-delivery/api/v1/' . $uri, $params);
-            $result = json_decode($response->getBody()->getContents(), true);
+            $contents = $response->getBody()->getContents();
+
+            Log::info('Delivery service response: ' . $contents);
 
             if ($response->getStatusCode() === 204 || $response->getStatusCode() == 200) {
-                $result = [
-                    'status' => true,
-                    'message' => 'Prices created or updated.'
-                ];
+                if (in_array($uri, [self::DELIVERY_TARIFFS_URI, self::DELIVERY_COURIER_PRICES_URI])) {
+                    $result = [
+                        'status' => true,
+                        'message' => 'Prices created or updated.'
+                    ];
+                } else {
+                    $result = json_decode($contents, true);
+                }
             }
-
-            Log::info('Delivery service response: ' . $response->getBody()->getContents());
         } catch (ClientException $e) {
             Log::error('Send to delivery service response error: ' . $e->getResponse()->getBody()->getContents());
         } catch (GuzzleException $e) {
