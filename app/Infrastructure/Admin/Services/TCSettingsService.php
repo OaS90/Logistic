@@ -4,28 +4,22 @@ namespace App\Infrastructure\Admin\Services;
 
 use App\Infrastructure\Repositories\Admin\TransportCompanySettingsRepository;
 use App\Infrastructure\Repositories\Admin\TransportCompanyWarehouseRepository;
-use App\Infrastructure\Admin\Services\Api\HruApi;
-use App\Infrastructure\Services\ConfigService\Api\ConfigServiceApi;
-use Illuminate\Support\Facades\Log;
+use App\Infrastructure\Services\Kraken\Api as KrakenApi;
 
 class TCSettingsService
 {
     private TransportCompanyWarehouseRepository $warehouseRepo;
     private TransportCompanySettingsRepository $settingsRepo;
-    private HruApi $hruApi;
-
-    private ConfigServiceApi $configServiceApi;
+    private KrakenApi $krakenApi;
 
     public function __construct(TransportCompanyWarehouseRepository $warehouseRepo,
                                 TransportCompanySettingsRepository $settingsRepo,
-                                HruApi $hruApi,
-                                ConfigServiceApi $configServiceApi
+                                KrakenApi $krakenApi
     )
     {
         $this->settingsRepo = $settingsRepo;
         $this->warehouseRepo = $warehouseRepo;
-        $this->hruApi = $hruApi;
-        $this->configServiceApi = $configServiceApi;
+        $this->krakenApi = $krakenApi;
     }
 
 
@@ -80,16 +74,11 @@ class TCSettingsService
         }
 
         if (config('app.enable_config_service_api_for_quotes')) {
-            $sendedToConfigService = $this->configServiceApi
-                ->query('api/soa/regions/transport-companies-interval-quotas-config', $warehousesWithSettings, 'PATCH');
-
-            if (!$sendedToConfigService) {
-                Log::error('Not sended to config service');
-            }
+            $this->krakenApi
+                ->configServiceRequest($this->krakenApi::CONFIG_UPDATE_TC_QUOTES_URI, $warehousesWithSettings, 'PATCH');
         }
 
-        return $this->hruApi->query('delivery/Holodilnik/SetQuoteTkSettings',
-            $warehousesWithSettings
-        );
+        return $this->krakenApi
+            ->monolithRequest($this->krakenApi::MONOLITH_UPDATE_TC_QUOTES_URI, $warehousesWithSettings, 'POST');
     }
 }

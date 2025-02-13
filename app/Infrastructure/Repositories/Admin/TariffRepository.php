@@ -38,6 +38,10 @@ class TariffRepository
     public function saveRegion(Tariff $tariff, Region $region, Collection $categories): ?\Illuminate\Database\Eloquent\Model
     {
         if ($tariff->regions()->where('tariff_region.region_id', $region->id)->doesntExist()) {
+            foreach ($categories as $category) {
+                $region->tariffCategories()->save($category);
+            }
+
             return $tariff->regions()->save($region);
         }
 

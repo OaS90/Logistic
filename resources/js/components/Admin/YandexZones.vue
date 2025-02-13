@@ -1,0 +1,138 @@
+<template>
+    <div>
+        <label for="file-upload" class="btn btn-primary" data-modal="modal-request1" style="margin-bottom: 0" id="button">
+            <span>Импорт c выводом изменений</span>
+        </label>
+        <input type="file" hidden id="file-upload" @change="beforeImport" ref="fileUpload">
+        <button class="btn btn-primary"  @click="exportSettings">Экспорт</button>
+
+        <hr>
+
+        <div v-if="changedZones">
+            <h2>Изменения в зонах</h2>
+
+            <button class="btn btn-primary mb-2" @click="importSettings">Отправить в сервис</button>
+            <p>Изменено: {{ changedZones.length }}</p>
+            <table class="table table-bordered" style="width: 70%">
+                <thead>
+                <tr>
+                    <th class="choice"><input type="checkbox" class="input-lg checkbox" @change="selectAllZones($event)"></th>
+                    <th>Id Региона</th>
+                    <th>Тип полигона</th>
+                    <th>Зона</th>
+                    <th>Регион</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(zone, index) in changedZones">
+                    <td class="choice">
+                        <input type="checkbox" class="input-lg checkbox" v-model="zone.to_import">
+                    </td>
+                    <td>{{ zone.region_id }}</td>
+                    <td>{{ zone.type }}</td>
+                    <td>{{ zone.zone_name }}</td>
+                    <td>{{ zone.region_name }}</td>
+                </tr>
+                </tbody>
+
+            </table>
+        </div>
+
+        <modal v-if="showModal" @close="showModal = false">
+            <span slot="body" v-if="loading">
+                <pulse-loader :loading="loading" :color="'#7c69ef'" :size="'15px'"></pulse-loader>
+            </span>
+            <span slot="body" v-else>
+                {{ errorText }}
+                <br>
+                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+            </span>
+            <span slot="footer"></span>
+        </modal>
+    </div>
+</template>
+
+<script>
+import Modal from "./Modal.vue";
+import PulseLoader from "vue-spinner/src/PulseLoader";
+export default {
+    data() {
+        return {
+            changedZones: null,
+            showModal: false,
+            loading: false,
+            errorText: ''
+        }
+    },
+    components: {
+        Modal,
+        PulseLoader
+    },
+    methods: {
+        selectAllZones(event) {
+            this.changedZones.forEach(zone => {
+                zone.to_import = !!event.target.checked
+            })
+        },
+        beforeImport(event) {
+            let formData = new FormData()
+            formData.append('document', event.target.files[0])
+
+            axios.post('/admin/yandex-zones/prepare-import', formData)
+                .then(response => {
+                    this.changedZones = response.data.changes
+                }).catch(errors => {
+                    this.loading = false
+                    this.errorText = 'Ошибка обработки данных.'
+                })
+
+            this.$refs.fileUpload.value = null;
+        },
+        exportSettings() {
+            this.loading = true;
+            this.showModal = true
+
+            axios.get('/admin/yandex-zones/export', {responseType: 'blob'})
+                .then(response => {
+                    this.loading = false
+                    this.showModal = false
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'data.geojson');
+                    document.body.appendChild(link);
+                    link.click();
+                })
+                .catch(error => {
+                    this.loading = false
+                    this.errorText = 'Ошибка экспорта из сервиса.'
+                })
+        },
+
+        importSettings() {
+            let zonesToImport = this.changedZones.filter(point => {
+                return point.to_import === true
+            })
+
+            this.showModal = true;
+
+            axios.post('/admin/yandex-zones/import-to-service', {zones: zonesToImport})
+                .then(response => {
+                    this.showModal = false;
+                    this.loading = false
+                    this.changedZones = null
+                }).catch(errors => {
+                    this.loading = false
+                    this.errorText = 'Ошибка импорта в сервис.'
+                })
+        }
+    }
+}
+</script>
+
+<style scoped>
+.choice {
+    text-align: center;
+    width: 5%;
+}
+</style>

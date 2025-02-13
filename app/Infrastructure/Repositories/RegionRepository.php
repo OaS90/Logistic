@@ -9,7 +9,7 @@ use App\Models\Region;
 
 class RegionRepository
 {
-    public function __construct(private RegionDTOFactory $regionDTOFactory)
+    public function __construct()
     {
     }
 
@@ -21,7 +21,7 @@ class RegionRepository
             return null;
         }
 
-        return $this->regionDTOFactory->createFromModel($entity);
+        return $entity;
     }
 
     public function getById(int $id): ?Region

@@ -16,7 +16,7 @@ class ProfileComposer
      * @param  \Illuminate\View\View  $view
      * @return void
      */
-    public function compose(View $view)
+    public function compose(View $view): void
     {
         $user = Auth::user();
         $view->with('user', $user);

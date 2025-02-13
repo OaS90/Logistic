@@ -2,24 +2,25 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Application\ApplicationService;
-use App\Application\CsvImportService;
+use App\Application\ApplicationServiceInterface;
+use App\Infrastructure\Services\Import\CsvImportService;
 use App\Http\Controllers\Controller;
 use App\Infrastructure\Repositories\UserRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class SupportController extends Controller
 {
-    private ApplicationService $applicationService;
+    private ApplicationServiceInterface $applicationService;
     private CsvImportService $importService;
     private UserRepository $partnerRepository;
     private int $obiUser;
 
-    public function __construct(ApplicationService $applicationService,
+    public function __construct(ApplicationServiceInterface $applicationService,
                                 CsvImportService $importService,
                                 UserRepository $partnerRepository
     )
@@ -61,12 +62,14 @@ class SupportController extends Controller
         try {
             if ($userId == $this->obiUser) {
                 $this->importService
-                    ->importObi($request->file('document'), $this->applicationService->extensionHandler($fileExtension, true), $userId);
+                    ->importObi($request->file('document'), $this->importService->extensionHandler($fileExtension, true), $userId);
             } else {
                 $this->importService
-                    ->import($request->file('document'), $this->applicationService->extensionHandler($fileExtension, false), $userId, $storeId);
+                    ->import($request->file('document'), $this->importService->extensionHandler($fileExtension, false), $userId, $storeId);
             }
         } catch (\Throwable $e) {
+            Log::error('Support upload file error ' . $e->getMessage());
+
             return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -75,6 +78,6 @@ class SupportController extends Controller
 
     public function getPartnerWarehouses(int $partnerId): Response
     {
-        return response(['id' => $partnerId], 200);
+        return response(['id' => $partnerId], Response::HTTP_OK);
     }
 }

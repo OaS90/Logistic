@@ -2,8 +2,10 @@
 
 namespace App\Infrastructure\Repositories;
 
+use App\Domain\DTO\ApplicationDTO;
+use App\Domain\Enum\ApplicationStatus;
 use App\Models\Application;
-use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 class ApplicationRepository
@@ -13,9 +15,12 @@ class ApplicationRepository
         return Application::find($id);
     }
 
-    public function getByOrderNumber(string $orderId)
+    public function getByOrderNumber(string $orderId, int $userId = null)
     {
-        return Application::where('order_number', $orderId)->first();
+        return Application::where('order_number', $orderId)
+            ->when($userId, function (Builder $query) use ($userId) {
+                $query->where('user_id', $userId);
+            })->first();
     }
 
     public function getListByUserId(int $userId)
@@ -26,24 +31,36 @@ class ApplicationRepository
     public function getListByUserIdForUpdateStatus(int $userId)
     {
         return Application::where('user_id', $userId)
-            ->where(function (Builder $query) {
-                $query->where('status', 'created')
-                    ->orWhereRaw('doc_ver > old_doc_ver');
-            })->get();
+            ->with('products')
+            ->where('status', 'created')
+            ->orWhereRaw('doc_ver > old_doc_ver')
+            ->get();
     }
 
-    public function create(array $data)
+    public function create(ApplicationDTO $dto,
+                           int $userId,
+                           int $addressId,
+                           int $warehouseId
+    ): Application
     {
-        $existsApplication = $this->getByOrderNumber($data['order_number']);
-        $data['client_phone'] = (int) $data['client_phone'];
-
-        if (!$existsApplication) {
-            return Application::create($data);
-        } else {
-            $existsApplication->update($data);
-
-            return $existsApplication;
-        }
+        return Application::updateOrCreate([
+                'user_id' => $userId,
+                'order_number' => $dto->orderNumber
+            ],
+            [
+            'user_id' => $userId,
+            'order_number' => $dto->orderNumber,
+            'payment_type' => $dto->paymentType,
+            'delivery_date' => Carbon::parse($dto->deliveryDate)->format('Y-m-d'),
+            'delivery_cost' => $dto->deliveryCost ?? 0,
+            'delivery_time' => $dto->deliveryTime,
+            'delivery_address' => $addressId,
+            'warehouse_id' => $warehouseId,
+            'comment' => $dto->comment,
+            'client_name' => $dto->clientFullName,
+            'client_phone' => parse_phone($dto->clientPhone), // переписать в класс парсер
+            'status' => ApplicationStatus::CREATED,
+        ]);
     }
 
     public function updateStatus(string $orderId, string $status): void
@@ -52,15 +69,9 @@ class ApplicationRepository
         $app->update(['status' => $status]);
     }
 
-    public function updateByFields($number, $fields): void
+    public function updateByFields(Application $app, $fields): void
     {
-        $app = $this->getByOrderNumber($number);
-
-        if ($app) {
-            $app->update($fields);
-        } else {
-            Log::error('Не удалось найти заказ №' . $number);
-        }
+        $app->update($fields);
     }
 
     public function getAll(int $limit = 300)

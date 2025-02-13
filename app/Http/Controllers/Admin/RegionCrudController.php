@@ -48,7 +48,7 @@ class RegionCrudController extends CrudController
     {
         CRUD::column('id');
         CRUD::column('name')->label('Название региона');
-        CRUD::column('region_id')->label('Регион Hru');
+        CRUD::column('region_id')->label('Регион Monolith');
         $this->crud->addColumn([
             'name'  => 'warehouse',
             'label' => 'Склад', // Table column heading
@@ -82,7 +82,7 @@ class RegionCrudController extends CrudController
 
         $this->crud->addField([
             'name' => 'region_id',
-            'label' => 'Id региона Hru'
+            'label' => 'Id региона Monolith'
         ]);
 
         $this->crud->addField([

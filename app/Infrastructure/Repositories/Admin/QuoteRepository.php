@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repositories\Admin;
 
 use App\Models\Quote;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 class QuoteRepository
 {
@@ -41,8 +42,13 @@ class QuoteRepository
         return $updatedQuotes;
     }
 
-    public function getAll()
+    public function getAll(): Collection
     {
         return Quote::all();
+    }
+
+    public function getAllWithRelations(array $relations): Collection
+    {
+        return Quote::with($relations)->get();
     }
 }

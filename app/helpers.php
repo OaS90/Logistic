@@ -59,4 +59,3 @@ function parse_to_float($value): ?float
 
 
 
-

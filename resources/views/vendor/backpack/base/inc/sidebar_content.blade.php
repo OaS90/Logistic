@@ -77,6 +77,24 @@
     backpack_user()->hasRole('support') ||
     backpack_user()->hasRole('admin')
 )
+    <li class="nav-item nav-dropdown">
+        <a class="nav-link nav-dropdown-toggle" href="#">
+            <i class="nav-icon la la-map-marked"></i> Яндекс зоны
+        </a>
+        <ul class="nav-dropdown-items">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ backpack_url('yandex-zones') }}">
+                    <i class="nav-icon la la-gears"></i> <span>Настройка</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+@endif
+
+@if(backpack_user()->hasRole('transportation department') ||
+    backpack_user()->hasRole('support') ||
+    backpack_user()->hasRole('admin')
+)
 <li class="nav-item nav-dropdown">
     <a class="nav-link nav-dropdown-toggle" href="#">
         <i class="nav-icon la la-support"></i> Поддержка

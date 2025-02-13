@@ -224,7 +224,11 @@
         <!--        </p>-->
 
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body">
+            <span slot="body" v-if="loading">
+                {{ modalText }}
+                <pulse-loader :loading="loading" :color="'#7c69ef'" :size="'15px'"></pulse-loader>
+            </span>
+            <span slot="body" v-else>
                 {{ modalText }}
                 <br>
                 <button class="btn btn-secondary" @click="showModal = false">ОК</button>
@@ -238,6 +242,7 @@
 import DatePicker from "vue2-datepicker";
 import Modal from "./Modal";
 import Popup from "../Popup";
+import PulseLoader from "vue-spinner/src/PulseLoader"
 
 export default {
     name: "QuotesTable",
@@ -248,6 +253,8 @@ export default {
             showModal: false,
             modalText: '',
             dataQuotes: this.quotes,
+            loading: true,
+            loadModal: false,
             filter: '',
             pageSize: 10,
             currentPage: 1,
@@ -299,9 +306,11 @@ export default {
     methods: {
         save() {
             if (this.quotesToSave.length === 0) {
+                this.loading = false
                 this.showModal = !this.showModal
                 this.modalText = 'Не выбрано ни одного филиала для обновления'
             } else {
+                this.showModal = true
                 this.quotesToSave.forEach(item => {
                     if ((item.tmp_date && item.tmp_date.length > 0) &&
                         (item.tmp_date[0] && item.tmp_date[1])) {
@@ -319,10 +328,12 @@ export default {
                 })
 
                 axios.post('save-quotes', this.quotesToSave).then(response => {
-                    this.showModal = !this.showModal
+                    this.loading = false
+                    this.showModal = true
                     this.modalText = response.data.message
                 }).catch(errors => {
-                    this.showModal = !this.showModal
+                    this.showModal = true
+                    this.loading = false
                     this.modalText = errors.response.data.message
                 })
             }
@@ -382,7 +393,8 @@ export default {
     components: {
         Popup,
         DatePicker,
-        Modal
+        Modal,
+        PulseLoader
     }
 }
 </script>

@@ -30,16 +30,18 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
     'dadata' => [
+        'suggest_url' => env('DADATA_SUGGEST_URL', ''),
+        'clean_url' => env('DADATA_CLEAN_URL'),
         'token' => env('DADATA_TOKEN', ''),
         'secret' => env('DADATA_SECRET', '')
     ],
-    'delivery_holodilnik_service' => [
-        'uri' => env('DELIVERY_HOLODILNIK_SERVICE', 'http://gateway-stage.adeal.ru/v1.0/holodilnik-delivery/api/v1/'),
-        'login' => env('DELIVERY_HOLODILNIK_LOGIN', 'test@test.ru'),
-        'password' => env('DELIVERY_HOLODILNIK_PASSWORD', '123'),
+    'delivery_service' => [
+        'token' => env('DELIVERY_SERVICE_TOKEN', ''),
     ],
     'config_service' => [
-        'uri' => env('CONFIG_SERVICE_URI', ''),
         'token' => env('CONFIG_SERVICE_TOKEN', ''),
+    ],
+    'kraken' => [
+        'token' => env('KRAKEN_TOKEN', ''),
     ]
 ];

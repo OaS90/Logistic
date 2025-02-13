@@ -24,17 +24,9 @@
                title="Удалить регион"
                @click="setRegionForDeleting(region.id, index)"></i>
         </div>
-        <modal v-if="showModal">
-            <span slot="body">
-                {{ modalText }}
-                <br>
-                <button :class="btnClass" @click="showModal = !showModal">{{ btnText }}</button>
-            </span>
-            <span slot="footer"></span>
-        </modal>
         <modal v-if="showDeleteRegionModal">
             <span slot="body">
-                {{ modalText }} удаление
+                {{ modalText }}
                 <br>
                 <button :class="btnClass" @click="deleteRegion(regionForDeleting.id, regionForDeleting.index)">{{ btnText }}</button>
             </span>
@@ -57,7 +49,6 @@ export default {
     data() {
         return {
             selected: null,
-            showModal: false,
             showDeleteRegionModal: false,
             modalText: 'Удалить регион?',
             modalBtnName: 'Удалить',
@@ -89,12 +80,11 @@ export default {
                 }
             }).then((response) => {
                 if (response.status === 200) {
-                    this.showModal = true
                     this.modalText = response.data.message
                 }
             }).catch((error) => {
                 if (error.response.status === 500) {
-                    this.showModal = true
+                    this.showDeleteRegionModal = !this.showDeleteRegionModal
                     this.modalText = 'Ошибка ' + error.response.data.message
                 }
             })

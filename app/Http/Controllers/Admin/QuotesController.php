@@ -3,50 +3,36 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Infrastructure\Services\ConfigService\Api\ConfigServiceApi;
-use App\Models\Quote;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
-use App\Domain\Admin\QuoteDTO;
 use App\Infrastructure\Repositories\Admin\QuoteRepository;
 use App\Infrastructure\Repositories\Admin\IntervalQuoteRepository;
 use App\Application\ExcelExportService;
 use App\Infrastructure\Exports\Admin\QuoteExport;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use GuzzleHttp\Exception\BadResponseException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\QuotesChange;
 use App\Infrastructure\Repositories\Admin\EmailQuoteRepository;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Infrastructure\Admin\Services\Quote\QuoteService;
+use App\Infrastructure\Services\Kraken\Api as KrakenApi;
 
 class QuotesController extends Controller
 {
-    private QuoteRepository $repo;
-    private IntervalQuoteRepository $intervalRepo;
-    private ExcelExportService $exportService;
-    private EmailQuoteRepository $emailQuoteRepo;
-    private ConfigServiceApi $configServiceApi;
-
-    public function __construct(QuoteRepository $repo,
-                                IntervalQuoteRepository $intervalRepo,
-                                ExcelExportService $exportService,
-                                EmailQuoteRepository $emailQuoteRepository,
-                                ConfigServiceApi $configServiceApi
+    public function __construct(private readonly QuoteRepository $repo,
+                                private readonly IntervalQuoteRepository $intervalRepo,
+                                private readonly ExcelExportService $exportService,
+                                private readonly EmailQuoteRepository $emailQuoteRepo,
+                                private readonly QuoteService $quoteService,
+                                private readonly KrakenApi $krakenApi,
     )
-    {
-        $this->repo = $repo;
-        $this->intervalRepo = $intervalRepo;
-        $this->exportService = $exportService;
-        $this->emailQuoteRepo = $emailQuoteRepository;
-        $this->configServiceApi = $configServiceApi;
-    }
+    {}
 
     public function show(): View
     {
-        $quotes = (new QuoteDTO())->toArrayForVue(Quote::with(['intervals', 'region'])->get());
+        $quotes = $this->quoteService->prepareForVue();
         $isGuest = (bool) backpack_user()->hasRole('guest');
 
         return view('vendor.backpack.quotes', ['quotes' => collect($quotes), 'guest' => $isGuest]);
@@ -66,55 +52,39 @@ class QuotesController extends Controller
 
         $this->intervalRepo->update($request->all());
         $updatedQuotes = $this->repo->update($request->all(), backpack_user()->id);
-        $client = new Client();
         $message = 'Данные сохранены.';
-        $json = (new QuoteDTO())->makeDataForApiHru($this->repo->getAll());
+        $quotes = $this->quoteService->prepareForMonolith();
 
-        // TODO вынести в hruApi и поправить endpoints
-        try {
-            $response = $client->post(config('app.api_hru'), [
-                'headers' => [
-                    'Content-Type' => 'application/json', 'Accept' => 'application/json',
-                    'Authorization' => config('app.api_hru_token')
-                ],
-                //'auth' => [config('app.api_user'), config('app.api_password')], //для теста раскоментить
-                'json' => $json
-            ]);
+        $responseFromMonolithIsSuccess = $this->krakenApi
+            ->monolithRequest($this->krakenApi::MONOLITH_UPDATE_QUOTES_URI, $quotes, 'POST');
 
-            $responseContents = json_decode($response->getBody()->getContents(), true);
+        if ($responseFromMonolithIsSuccess && $responseFromMonolithIsSuccess['status']) {
+            $message .= ' Квоты отправлены на сайт HRU.';
 
-            if ($response->getStatusCode() == 200 && (isset($responseContents['success']) && $responseContents['success']))
-                $message .= ' Квоты отправлены на сайт HRU';
-            else
-                $message .= ' Ошибка отправки квот на сайт!';
-
-            foreach ($updatedQuotes as $quote) {
-                Mail::to($this->emailQuoteRepo->getAllActiveEmails())->send(new QuotesChange($quote));
+            if (env('APP_ENV') === 'production') {
+                foreach ($updatedQuotes as $quote) {
+                    Mail::to($this->emailQuoteRepo->getAllActiveEmails())->send(new QuotesChange($quote));
+                }
             }
-
-            Log::info('Response: ' .
-                $response->getBody()->getContents() .
-                ', code:' . $response->getStatusCode() .
-                ' headers: ' . json_encode($response->getHeaders()) .
-                ', request: ' . json_encode($json)
-            );
-        } catch (BadResponseException $e) {
-            Log::info($e->getMessage());
+        } else {
+            $message .= ' Ошибка отправки на сайт HRU!';
         }
 
         if (config('app.enable_config_service_api_for_quotes')) {
-            $sendedToConfigService = $this->configServiceApi
-                ->query('api/soa/regions/interval-quotas-config', $json, 'PATCH');
+            $sentToConfigService = $this->krakenApi
+                ->configServiceRequest($this->krakenApi::CONFIG_UPDATE_QUOTES_URI, $quotes, 'PATCH');
 
-            if (!$sendedToConfigService) {
-                Log::error('Not sended to config service');
+            if ($sentToConfigService) {
+                $message .= ' Квоты отправлены в сервис Config';
+            } else {
+                $message .= ' Ошибка отправки квот в сервис Config!';
             }
         }
 
         return response(['message' => $message]);
     }
 
-    public function download(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function download(): BinaryFileResponse
     {
         return $this->exportService->download(new QuoteExport());
     }

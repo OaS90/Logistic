@@ -138,12 +138,12 @@ return [
             // This optional option determines the channel name sent with the
             // message in the 'facility' field. Default is equal to app.env
             // configuration value
-            'name' => env('APP_ENV', 'LK BORTUDACHI'),
+            'name' => env('APP_ENV', 'stage'),
 
             // This optional option determines the system name sent with the
             // message in the 'source' field. When forgotten or set to null,
             // the current hostname is used.
-            'system_name' => env('APP_NAME', 'LK BORTUDACHI'),
+            'system_name' => env('APP_NAME', 'BORTUDACHI'),
 
             // This optional option determines if you want the UDP, TCP or HTTP
             // transport for the gelf log messages. Default is UDP
