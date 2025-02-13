@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Infrastructure\Repositories\UserRepository;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
@@ -15,12 +16,12 @@ class UserController extends Controller
         $this->repo = $userRepository;
     }
 
-    public function show()
+    public function show(): View
     {
         return view('profile', ['user' => Auth::user()]);
     }
 
-    public function editForm()
+    public function editForm(): View
     {
         return view('profile-edit', ['user' => Auth::user()]);
     }

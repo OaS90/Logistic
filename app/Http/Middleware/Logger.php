@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
 class Logger
@@ -17,8 +18,14 @@ class Logger
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $route = $request->route() ?? 'undefined';
+        /** @var JsonResponse $response */
+        $response = $next($request);
 
+        if ($response instanceof View) {
+            return $response;
+        }
+
+        $route = $request->route() ?? 'undefined';
         $route = str_replace('/', '.', $route->uri());
 
         if (!is_string($route)) {
@@ -50,9 +57,6 @@ class Logger
         ]);
 
         $startTime = microtime(true);
-
-        /** @var JsonResponse $response */
-        $response = $next($request);
 
         $endTime = microtime(true);
 
