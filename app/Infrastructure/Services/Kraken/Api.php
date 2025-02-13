@@ -117,7 +117,9 @@ class Api
                         'message' => 'Prices created or updated.'
                     ];
                 } else {
-                    $result = json_decode($contents, true);
+                    $result = [
+                        'success' => true
+                    ];
                 }
             }
         } catch (ClientException $e) {
