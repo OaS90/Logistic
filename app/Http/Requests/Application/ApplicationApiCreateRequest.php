@@ -48,7 +48,7 @@ class ApplicationApiCreateRequest extends FormRequest
             '*.products.*.name' => 'required|string|min:1',
             '*.products.*.brand' => 'required|string|min:1',
             '*.products.*.sku' => 'required|string|min:1',
-            '*.products.*.tnved' => 'required|string|min:1',
+            '*.products.*.tnved' => 'string|min:1',
             '*.products.*.barcode' => 'required|string|min:1',
             '*.products.*.count' => 'required|integer|min:1',
             '*.products.*.cost' => 'required|numeric|min:1',
