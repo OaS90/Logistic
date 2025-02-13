@@ -199,6 +199,8 @@ class ApplicationService implements ApplicationServiceInterface
                 }
 
                 if (!$app) {
+                    Log::error('Не найден заказ с номером ' . $statusDTO->orderNumber);
+
                     $errors[] = [
                         'id' => $statusDTO->orderNumber,
                         'success' => false,
@@ -226,6 +228,8 @@ class ApplicationService implements ApplicationServiceInterface
                     'success' => false,
                     'message' => 'Произошла непредвиденная ошибка'
                 ];
+
+                Log::error('Ошибка поиска товара для 1с с номером ' . $statusDTO->orderNumber);
 
                 // Если ошибка в логике, то просто обновляем версию
                 // для того, чтобы 1с пыталась забрать этот заказ в будущем
