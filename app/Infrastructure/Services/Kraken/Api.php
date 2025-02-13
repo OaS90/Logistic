@@ -25,6 +25,7 @@ class Api
     public function monolithRequest(string $uri, array $data = [], string $method = 'GET'): array
     {
         $result = [];
+        $params[RequestOptions::HEADERS]['Authorization'] = config('services.monolith.token');
 
         Log::info('Send to monolith. Request: ' . json_encode($data) . ' uri: ' . $uri);
 
@@ -93,6 +94,7 @@ class Api
     {
         $result = [];
         $params[RequestOptions::HEADERS]['Authorization'] = 'Bearer ' . config('services.delivery_service.token');
+        $uri = 'holodilnik-delivery/api/v1/' . $uri;
 
         if ($method !== 'GET') {
             $params[RequestOptions::JSON] = $data;
@@ -103,7 +105,7 @@ class Api
         Log::info('Send to delivery service. Request: ' . json_encode($data) . ' uri: ' . $uri);
 
         try {
-            $response = $this->client->request($method, 'holodilnik-delivery/api/v1/' . $uri, $params);
+            $response = $this->client->request($method, $uri, $params);
             $contents = $response->getBody()->getContents();
 
             Log::info('Delivery service response: ' . $contents);
@@ -119,7 +121,8 @@ class Api
                 }
             }
         } catch (ClientException $e) {
-            Log::error('Send to delivery service response error: ' . $e->getResponse()->getBody()->getContents());
+            Log::error('Send to delivery service response error: ' . $e->getResponse()->getBody()->getContents()
+                . ' ' . $e->getRequest()->getHeaders());
         } catch (GuzzleException $e) {
             Log::error('Send to delivery service response error: ' . $e->getMessage());
         }

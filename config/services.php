@@ -35,6 +35,9 @@ return [
         'token' => env('DADATA_TOKEN', ''),
         'secret' => env('DADATA_SECRET', '')
     ],
+    'monolith' => [
+        'token' => env('MONOLITH_TOKEN', ''),
+    ],
     'delivery_service' => [
         'token' => env('DELIVERY_SERVICE_TOKEN', ''),
     ],
@@ -42,6 +45,8 @@ return [
         'token' => env('CONFIG_SERVICE_TOKEN', ''),
     ],
     'kraken' => [
+        'base_uri' => '',
+        'uri' => env('KRAKEN_URI', 'https://krakend-stage.adeal.ru/api/v1/'),
         'token' => env('KRAKEN_TOKEN', ''),
     ]
 ];

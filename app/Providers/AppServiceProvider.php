@@ -58,7 +58,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(KrakenApi::class, function () {
             return new KrakenApi(
                 new Client([
-                    'base_uri' => 'https://krakend-stage.adeal.ru/api/v1/',
+                    'base_uri' => config('services.kraken.uri'),
                     RequestOptions::HEADERS =>  [
                         'Accept' => 'application/json',
                         'Content-Type' => 'application/json',
