@@ -10,10 +10,18 @@ class ApplicationApiCreateResource extends JsonResource
 
     public function toArray($request): array
     {
-        return [
-            'codes' => $this->resource,
-            'success' => true,
-            'message' => ''
-        ];
+        if (count($this->resource) > 1) {
+            return [
+                'codes' => $this->resource,
+                'success' => true,
+                'message' => ''
+            ];
+        } else {
+            return [
+                'code' => $this->resource[0],
+                'success' => true,
+                'message' => ''
+            ];
+        }
     }
 }
