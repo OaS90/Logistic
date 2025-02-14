@@ -122,6 +122,10 @@ class ApplicationFactory
 
     private function getDeliveryTime(string $time): array
     {
+        if (!$time) {
+            $time = '10:00-18:00';
+        }
+
         return explode('-', $time);
     }
 }

@@ -24,5 +24,5 @@ deploy-testh:
       fi
   script:
     - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
-    - rsync -avh --progress --exclude=".git" --exclude=".gitlab-ci.yml" --exclude="storage" --exclude="node_modules" . git@$DEPLOY_IP:/var/www/logistic -e "ssh -o StrictHostKeyChecking=no -i ~/priv_key";
+    - rsync -avh --progress --chown=nginx:git --exclude=".git" --exclude=".gitlab-ci.yml" --exclude="storage" --exclude="node_modules" . git@$DEPLOY_IP:/var/www/logistic -e "ssh -o StrictHostKeyChecking=no -i ~/priv_key";
     - ssh -o StrictHostKeyChecking=no -i ~/priv_key git@$DEPLOY_IP 'cd /var/www/logistic && composer install --ignore-platform-reqs;'

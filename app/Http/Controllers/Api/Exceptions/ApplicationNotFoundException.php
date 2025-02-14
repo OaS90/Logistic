@@ -17,7 +17,7 @@ class ApplicationNotFoundException extends Exception
         $status = Response::HTTP_INTERNAL_SERVER_ERROR;
         $message = 'Не найдена заявка с номером заказа ';
 
-        response()
+        return response()
             ->json(
                 ['message' => $message . $this->orderNumber], $status,
                 ['Content-type' => 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE

@@ -38,7 +38,7 @@ class ApplicationApiCreateRequest extends FormRequest
             '*.buyer' => 'required|array|min:2',
             '*.buyer.fio' => 'required|string|min:1',
             '*.buyer.phone' => 'required|string|min:1',
-            '*.address' => 'required|array|min:5',
+            '*.address' => 'required|array|min:4',
             '*.address.regionName' => 'required|string|min:1',
             '*.address.cityName' => 'required|string|min:1',
             '*.address.street' => 'required|string|nullable',
