@@ -96,6 +96,7 @@ class ApplicationFactory
      */
     public function makeApplicationObiDTOFor1c(ApplicationObi $app,
                                                array $productDTOs,
+                                               DadataCleanAddressDTO $addressDTO ,
                                                array $productsDescription = [],
     ): ApplicationObiDTOFor1c
     {
@@ -116,7 +117,7 @@ class ApplicationFactory
             clientFullName: $app->client_name,
             clientPhone: $app->mobile_phone,
             products: $productDTOs,
-            deliveryAddress: $app->delivery_address,
+            deliveryAddress: $addressDTO,
         );
     }
 

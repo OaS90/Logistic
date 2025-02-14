@@ -46,23 +46,19 @@ class GetOrdersFor1cResource extends JsonResource
                 $i++;
             }
 
-            if ($app instanceof ApplicationObiDTOFor1c) {
-                $address = $app->deliveryAddress ?? [];
-            } else {
-                $building = $app->deliveryAddress->block ?
-                    $app->deliveryAddress->house . ' ' . $app->deliveryAddress->block : $app->deliveryAddress->house;
+            $building = $app->deliveryAddress->block ?
+                $app->deliveryAddress->house . ' ' . $app->deliveryAddress->block : $app->deliveryAddress->house;
 
-                $address = $app->deliveryAddress ? [
-                    'regionName'=> $app->deliveryAddress->region,
-                    'cityName'=> $app->deliveryAddress->city,
-                    'cityId'=> $app->deliveryAddress->cityFias, // ФИАС код города/населенного пункта
-                    'street'=> $app->deliveryAddress->street,
-                    'streetId'=> $app->deliveryAddress->streetFias, // ФИАС код улицы
-                    'building'=> $building,
-                    'floor'=> $app->deliveryAddress->floor, // необязательно
-                    'flat'=> $app->deliveryAddress->flat // необязательно
-                ] : [];
-            }
+            $address = $app->deliveryAddress ? [
+                'regionName' => $app->deliveryAddress->region,
+                'cityName' => $app->deliveryAddress->city,
+                'cityId' => $app->deliveryAddress->cityFias, // ФИАС код города/населенного пункта
+                'street' => $app->deliveryAddress->street,
+                'streetId' => $app->deliveryAddress->streetFias, // ФИАС код улицы
+                'building' => $building,
+                'floor' => $app->deliveryAddress->floor, // необязательно
+                'flat' => $app->deliveryAddress->flat // необязательно
+            ] : [];
 
             $data[] = [
                 'id' => $app->orderNumber,

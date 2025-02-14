@@ -285,8 +285,8 @@ class ApplicationService implements ApplicationServiceInterface
                         ->makeProductObiDTOFor1c($app, $product->name, count($products), $i);
                     $productsForFComment[] = $product->name;
                 }
-
-                $appDTO = $this->appFactory->makeApplicationObiDTOFor1c($app, $productDTOs, $productsForFComment);
+                $addressInfo = $this->dadataService->getCleanAddress($app->delivery_address);
+                $appDTO = $this->appFactory->makeApplicationObiDTOFor1c($app, $productDTOs, $addressInfo, $productsForFComment);
             } else {
                 /* @var Application $app */
                 $addressInfo = $this->dadataService->getCleanAddress($app->full_address);
