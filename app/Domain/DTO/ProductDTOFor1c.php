@@ -2,26 +2,26 @@
 
 namespace App\Domain\DTO;
 
-class ProductDTOFor1c
+readonly class ProductDTOFor1c
 {
-    public function __construct(public readonly string $name,
-                                public readonly string $vendorCode,
-                                public readonly int $count,
-                                public readonly float $cost,
-                                public readonly float $costAfterDiscounts,
-                                public readonly int $vatRate,
-                                public readonly float $leftToPay,
-                                public readonly float $weight,
-                                public readonly string $setId,
-                                public readonly string $brand,
-                                public readonly ?string $tnved,
-                                public readonly ?string $country,
-                                public readonly string $barcode,
-                                public readonly float $volume,
-                                public readonly float $width,
-                                public readonly float $height,
-                                public readonly float $depth,
-                                public readonly string $shipmentCode
+    public function __construct(public string $name,
+                                public string $vendorCode,
+                                public int $count,
+                                public float $cost,
+                                public float $costAfterDiscounts,
+                                public int $vatRate,
+                                public float $leftToPay,
+                                public float $weight,
+                                public string $setId,
+                                public string $brand,
+                                public ?string $tnved,
+                                public ?string $country,
+                                public ?string $barcode,
+                                public float $volume,
+                                public float $width,
+                                public float $height,
+                                public float $depth,
+                                public string $shipmentCode
     )
     {
     }

@@ -156,7 +156,6 @@ class ApplicationController
         } catch (PartnerApplicationsNotFoundException $e) {
             return $e->render();
         } catch (\Throwable $e) {
-            dd($e->getTraceAsString());
             Log::error('Get partner order error ' . $e->getMessage());
 
             return response(['success' => false, 'message' => 'Ошибка получения заказов']);
