@@ -141,7 +141,7 @@ class YandexZonesService
             if ($deliveryZones) {
                 foreach ($deliveryZones as $deliveryZone) {
                     $deliveryZone['region_id'] = (int) $deliveryZone['region_id'];
-                    $this->krakenApi->deliveryServiceRequest('settings/delivery-zones/', $deliveryZones, 'PATCH');
+                    $this->krakenApi->deliveryServiceRequest('settings/delivery-zones/', $deliveryZone, 'PATCH');
                 }
             }
 
