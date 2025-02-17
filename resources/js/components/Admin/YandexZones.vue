@@ -114,7 +114,8 @@ export default {
                 return point.to_import === true
             })
 
-            this.showModal = true;
+            this.showModal = true
+            this.loading = true
 
             axios.post('/admin/yandex-zones/import-to-service', {zones: zonesToImport})
                 .then(response => {

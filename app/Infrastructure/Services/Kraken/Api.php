@@ -102,7 +102,7 @@ class Api
             $params[RequestOptions::QUERY] = $data;
         }
 
-        Log::info('Send to delivery service. Request: ' . json_encode($data) . ' uri: ' . $uri);
+        Log::withContext(['uri' => $uri,])->info('Send to delivery service. Request: ' . json_encode($data));
 
         try {
             $response = $this->client->request($method, $uri, $params);
@@ -123,10 +123,16 @@ class Api
                 }
             }
         } catch (ClientException $e) {
-            Log::error('Send to delivery service response error: ' . $e->getResponse()->getBody()->getContents()
-                . ' ' . $e->getRequest()->getHeaders());
+            Log::withContext([
+                'uri' => $uri,
+                'headers' => $e->getResponse()->getHeaders(),
+                'status' => $e->getResponse()->getStatusCode()
+            ])->error('Send to delivery service response error: ' . $e->getResponse()->getBody()->getContents());
         } catch (GuzzleException $e) {
-            Log::error('Send to delivery service response error: ' . $e->getMessage());
+            Log::withContext([
+                'uri' => $uri,
+                'status' => $e->getCode()
+            ])->error('Send to delivery service response error: ' . $e->getMessage());
         }
 
         return $result;
