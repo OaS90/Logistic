@@ -13,7 +13,7 @@ class ProductDTOFor1c
                                 public readonly float $leftToPay,
                                 public readonly float $weight,
                                 public readonly string $setId,
-                                public readonly string $brand,
+                                public readonly ?string $brand,
                                 public readonly ?string $tnved,
                                 public readonly ?string $country,
                                 public readonly ?string $barcode,
