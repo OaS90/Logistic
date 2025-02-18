@@ -42,6 +42,8 @@ class Api
 
     public function clean(string $address): array|DadataCleanAddressDTO
     {
+        $data = [];
+
         try {
             $response = $this->cleanClient->post('clean/address', [
                 RequestOptions::JSON => [$address]
@@ -59,11 +61,11 @@ class Api
             city: $data[0]['city_with_type'] ?? null,
             streetFias: $data[0]['street_fias_id'] ?? null,
             street: $data[0]['street_with_type'] ?? null,
-            house: $data[0]['house_type_full'] ?? null,
-            block: $data[0]['block_type_full'] ?? null,
+            house: $data[0]['house'] ? $data[0]['house_type'] . ' ' . $data[0]['house']  : null,
+            block: $data[0]['block'] ? $data[0]['block_type'] . ' ' . $data[0]['block'] : null,
             entrance: $data[0]['entrance'] ?? null,
             floor: $data[0]['floor'] ?? null,
-            flat: $data[0]['flat_type_full'] ?? null
+            flat: $data[0]['flat'] ? $data[0]['flat_type'] . ' ' .  $data[0]['flat'] : null
         );
     }
 }
