@@ -8,9 +8,9 @@ class ProductDTO
      * Последние параметры на данный момент не предусмотрены в форме
      * создания заявки. Возможно в будущем будет доработка.
      */
-    public function __construct(public readonly string $name,
-                                public readonly string $brand,
-                                public readonly string $sku,
+    public function __construct(public readonly string  $name,
+                                public readonly ?string $brand,
+                                public readonly string  $sku,
                                 public readonly int $count,
                                 public readonly float $cost,
                                 public readonly int $vat,
