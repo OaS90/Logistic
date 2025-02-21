@@ -229,11 +229,7 @@ class YandexZonesService
 
             $data[] = [
                 'type' => 'Feature',
-                'id' => $polygon['id'] - 1,
-                'geometry' => [
-                    'type' => 'Polygon',
-                    'coordinates' => [$polygon['points']]
-                ],
+                'id' => $polygon['id'],
                 'properties' => [
                     'description' => trim($description),
                     'fill' => $fill,
@@ -241,6 +237,10 @@ class YandexZonesService
                     'stroke' => $stroke,
                     'stroke-width' => '5',
                     'stroke-opacity' => $strokeOpacity
+                ],
+                'geometry' => [
+                    'type' => 'Polygon',
+                    'coordinates' => [$polygon['points']]
                 ]
             ];
         }
