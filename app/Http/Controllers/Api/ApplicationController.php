@@ -64,9 +64,8 @@ class ApplicationController
         } catch (\Throwable $e) {
             Log::error('Creating apps error: ' . $e->getMessage());
 
-            return response(['success' => false, 'message' => 'Ошибка создания заявки(ок)'],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return response()->json(['success' => false, 'message' => 'Ошибка создания заявки(ок)'],
+                Response::HTTP_INTERNAL_SERVER_ERROR, ['Content-type' => 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE);
         }
 
         return new ApplicationApiCreateResource($createdApps);

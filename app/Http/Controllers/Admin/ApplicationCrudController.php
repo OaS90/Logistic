@@ -447,7 +447,7 @@ class ApplicationCrudController extends CrudController
                 $product = $this->productRepo->getById($productId);
 
                 if ($product->tnved != $tnved || $product->barcode != $barcode || $product->cost != $cost) {
-                    $this->appRepo->updateByFields($currentApp->order_number, ['doc_ver' => $currentApp->doc_ver + 1]);
+                    $this->appRepo->updateByFields($currentApp, ['doc_ver' => $currentApp->doc_ver + 1]);
                     $this->productRepo->updateByFields($productId, [
                         'tnved' => $tnved,
                         'barcode' => $barcode,

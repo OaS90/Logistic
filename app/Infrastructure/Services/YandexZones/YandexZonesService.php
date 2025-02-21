@@ -8,18 +8,22 @@ use Illuminate\Support\Facades\Storage;
 
 class YandexZonesService
 {
+    const FILE_NAME = 'zones.json';
+    const UPDATED_FILE_NAME = 'updated_zones.json';
     public function __construct(protected readonly Api $krakenApi) {}
 
+    /**
+     * @throws \Exception
+     */
     public function importFromDelivery(array $newData): array
     {
-        $filename = 'zones.json';
-
-        if (Storage::exists($filename)) {
-            $contents = Storage::get($filename);
+        if (Storage::exists(self::FILE_NAME)) {
+            $contents = Storage::get(self::FILE_NAME);
             $oldData = json_decode($contents, true);
             $changes = [];
             $notFoundPolygons = [];
             $diffsRegions = [];
+
             foreach ($newData['features'] as $newPolygon) {
                 $newCoordinates = $newPolygon['geometry']['coordinates'][0];
                 $newDescription = trim($newPolygon['properties']['description']);
@@ -55,6 +59,7 @@ class YandexZonesService
                 }
             }
 
+            Storage::disk('local')->put(self::UPDATED_FILE_NAME, json_encode($newData));
         } else {
             throw new \Exception('Не найден файл с настройками из сервиса');
         }
@@ -151,6 +156,9 @@ class YandexZonesService
                     $this->krakenApi->deliveryServiceRequest('settings/allow-zones', $allowZone, 'PATCH');
                 }
             }
+
+            Storage::disk('local')->delete(self::FILE_NAME);
+            Storage::disk('local')->move(self::UPDATED_FILE_NAME, self::FILE_NAME);
         }
     }
 
@@ -205,9 +213,19 @@ class YandexZonesService
                 $description = $regionId . '-polygon-' . 'Зона-' . $polygon['code'] .  '-' . $name;
             }
 
-            foreach ($polygon['points'] as &$point) {
+            $uniquePoints = [];
+
+            foreach ($polygon['points'] as $index => &$point) {
                 list($point[0], $point[1]) = [$point[1], $point[0]];
+
+                if (in_array($point, $uniquePoints, true)) {
+                    unset($polygon['points'][$index]); // Удаляем дубликат
+                } else {
+                    $uniquePoints[] = $point; // Добавляем уникальную точку
+                }
             }
+
+            $polygon['points'] = array_values($uniquePoints);
 
             $data[] = [
                 'type' => 'Feature',
