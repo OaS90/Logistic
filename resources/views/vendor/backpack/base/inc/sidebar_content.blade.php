@@ -77,6 +77,7 @@
     backpack_user()->hasRole('support') ||
     backpack_user()->hasRole('admin')
 )
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('filial') }}"><i class="nav-icon la la-question"></i> Филиалы</a></li>
     <li class="nav-item nav-dropdown">
         <a class="nav-link nav-dropdown-toggle" href="#">
             <i class="nav-icon la la-map-marked"></i> Яндекс зоны

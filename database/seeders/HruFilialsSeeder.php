@@ -6,13 +6,15 @@ use App\Domain\DTO\HruFilialDTO;
 use App\Infrastructure\Imports\ApplicationImportCsv;
 use App\Infrastructure\Repositories\Hru\FilialRepository;
 use App\Infrastructure\Repositories\Hru\WarehouseRepository;
+use App\Infrastructure\Repositories\RegionRepository;
+use App\Models\Region;
 use Illuminate\Database\Seeder;
 use Maatwebsite\Excel\Facades\Excel;
 
 class HruFilialsSeeder extends Seeder
 {
     public function __construct(private readonly WarehouseRepository $warehouseRepo,
-                                private readonly FilialRepository $filialRepo,
+                                private readonly FilialRepository $filialRepo
     )
     {
     }
@@ -25,6 +27,7 @@ class HruFilialsSeeder extends Seeder
     {
         $dataFromFile = Excel::toArray(new ApplicationImportCsv(), storage_path('app/public/filials.csv'))[0];
         unset($dataFromFile[0]);
+
         foreach ($dataFromFile as $filial) {
             $warehouse = $this->warehouseRepo->getByCode($filial[2]);
 
@@ -32,10 +35,12 @@ class HruFilialsSeeder extends Seeder
                 $dto = new HruFilialDto(
                     code: $filial[0],
                     name: $filial[1],
-                    warehouseId: $warehouse->id
+                    warehouseId: $warehouse->id,
+                    regionId: $warehouse->region->id
                 );
 
-                $this->filialRepo->create($dto);
+                $filial = $this->filialRepo->create($dto);
+                $filial->warehouses()->save($warehouse);
             } else {
                 echo "Filial $filial[1] code: $filial[0] not found\n";
             }

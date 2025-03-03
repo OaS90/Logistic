@@ -13,8 +13,8 @@
                 <tr v-for="(item, id) in filteredRows" align="center" :key="`division-${id}`">
                     <td class="choose"><input type="checkbox" v-model="item.to_save"
                                               @change="quoteToSave(item, id)"></td>
-                    <td>{{ item.warehouse }}</td>
-                    <td>{{ item.division }}</td>
+                    <td>{{ item.filial_name }}</td>
+                    <td class="p-2">{{ item.region_name }}</td>
                     <td v-if="showQuoteProperties"></td>
                     <td></td>
                     <td></td>
@@ -136,8 +136,8 @@
                 <thead>
                 <tr align="center">
                     <th class="choose-th">Выбрать</th>
-                    <th class="store">Склад</th>
-                    <th class="regions">Регионы России</th>
+                    <th class="store">Филиал</th>
+                    <th class="regions">Регион</th>
                     <th class="show-rows quote-settings" @click="showQutes()">Квоты <br> <i
                         :class="[showQuoteProperties ? 'la-angle-up' : 'la-angle-down', 'las']"></i></th>
                     <th class="show-rows site-settings" @click="showSite()">Настройки для сайта <br> <i
@@ -273,12 +273,12 @@ export default {
     computed: {
         filteredRows() {
             return this.dataQuotes.filter((quote, index) => {
-                const division = quote.warehouse.toLowerCase();
+                const filialName = quote.filial_name.toLowerCase();
                 const searchTerm = this.filter.toLowerCase();
                 // let start = (this.currentPage - 1) * this.pageSize;
                 // let end = this.currentPage * this.pageSize;
 
-                if (this.filter !== '') return division.includes(searchTerm)
+                if (this.filter !== '') return filialName.includes(searchTerm)
                 // if (index >= start && index < end)
                 return true
             });

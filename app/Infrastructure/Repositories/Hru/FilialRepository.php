@@ -4,23 +4,31 @@ namespace App\Infrastructure\Repositories\Hru;
 
 use App\Domain\DTO\HruFilialDTO;
 use App\Models\Hru\Filial;
+use Illuminate\Support\Collection;
 
 class FilialRepository
 {
-    public function create(HruFilialDTO $dto)
+    public function create(HruFilialDTO $dto): Filial
     {
         $existsEntity = Filial::where('code', $dto->code)
-            ->where('warehouse_id', $dto->warehouseId)
+            ->with(['warehouses' => function ($query) use ($dto) {
+                $query->where('warehouse_id', $dto->warehouseId);
+            }])
             ->first();
 
         if (!$existsEntity) {
             return Filial::create([
                 'code' => $dto->code,
                 'name' => $dto->name,
-                'warehouse_id' => $dto->warehouseId
+                'region_id' => $dto->regionId
             ]);
         }
 
         return $existsEntity;
+    }
+
+    public function getAll(): Collection
+    {
+        return Filial::all();
     }
 }

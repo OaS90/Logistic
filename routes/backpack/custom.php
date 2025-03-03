@@ -86,4 +86,5 @@ Route::group([
     Route::post('yandex-zones/prepare-import', [\App\Http\Controllers\Admin\YandexZonesController::class, 'prepareImport']);
     Route::post('yandex-zones/import-to-service', [\App\Http\Controllers\Admin\YandexZonesController::class, 'importToService']);
     Route::get('yandex-zones/export', [\App\Http\Controllers\Admin\YandexZonesController::class, 'export']);
+    Route::crud('filial', 'FilialCrudController');
 }); // this should be the absolute last line of this file

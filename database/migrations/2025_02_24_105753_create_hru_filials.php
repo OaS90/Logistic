@@ -11,14 +11,14 @@ class CreateHruFilials extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('hru_filials', function (Blueprint $table) {
             $table->id();
             $table->string('code', 10);
             $table->string('name', 100);
-            $table->bigInteger('warehouse_id')->unsigned();
-            $table->foreign('warehouse_id')->references('id')->on('hru_warehouses');
+            $table->integer('region_id')->unsigned();
+            $table->foreign('region_id')->references('id')->on('regions');
             $table->timestamps();
         });
     }
@@ -28,7 +28,7 @@ class CreateHruFilials extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('hru_filials');
     }

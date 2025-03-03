@@ -5,6 +5,8 @@ namespace App\Models;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Quote extends Model
 {
@@ -25,5 +27,10 @@ class Quote extends Model
     public function region(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Region::class, 'id', 'division_id');
+    }
+
+    public function filial(): BelongsTo
+    {
+        return $this->belongsTo(Filial::class, 'filial_id', 'id');
     }
 }
