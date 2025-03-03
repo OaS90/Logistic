@@ -54,7 +54,7 @@ class ApplicationApiCreateRequest extends FormRequest
             '*.products.*.barcode' => 'string|nullable',
             '*.products.*.count' => 'required|integer|min:1',
             '*.products.*.cost' => 'required|numeric|min:1',
-            '*.products.*.VATRate' => 'required|integer|min:10',
+            '*.products.*.VATRate' => 'required|integer|min:0',
             '*.products.*.leftToPay' => 'required|numeric|min:0',
             '*.products.*.weight' => 'required|numeric|min:0',
             '*.products.*.volume' => 'required|numeric|min:0',
