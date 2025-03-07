@@ -39,10 +39,11 @@ class QuoteService
                     str_replace('-', ', ', $quote->blocked_date_until)
                 ];
 
-            if ($quote->region->is_active_for_quotes) {
+            if ($quote->filial->is_active_for_quotes) {
                 $quoteInfo = [
                     'id' => $quote->id,
                     'to_save' => false,
+                    'filial_code' => $quote->filial->code,
                     'filial_name' => $quote->filial->name,
                     'region_name' => $quote->region->name,
                     'quote' => $quote->quote,

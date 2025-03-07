@@ -6,8 +6,6 @@ use App\Domain\DTO\HruFilialDTO;
 use App\Infrastructure\Imports\ApplicationImportCsv;
 use App\Infrastructure\Repositories\Hru\FilialRepository;
 use App\Infrastructure\Repositories\Hru\WarehouseRepository;
-use App\Infrastructure\Repositories\RegionRepository;
-use App\Models\Region;
 use Illuminate\Database\Seeder;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -40,7 +38,9 @@ class HruFilialsSeeder extends Seeder
                 );
 
                 $filial = $this->filialRepo->create($dto);
-                $filial->warehouses()->save($warehouse);
+                if (!$filial->warehouses()->where('warehouse_id', $warehouse->id)->first()) {
+                    $filial->warehouses()->save($warehouse);
+                }
             } else {
                 echo "Filial $filial[1] code: $filial[0] not found\n";
             }

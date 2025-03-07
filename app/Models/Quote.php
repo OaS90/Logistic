@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Hru\Filial;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Quote extends Model
 {
@@ -19,12 +20,12 @@ class Quote extends Model
         'delivery_hours' => 'array'
     ];
 
-    public function intervals(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function intervals(): HasMany
     {
         return $this->hasMany(IntervalQuote::class, 'quote_id', 'id');
     }
 
-    public function region(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function region(): HasOne
     {
         return $this->hasOne(Region::class, 'id', 'division_id');
     }

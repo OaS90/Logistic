@@ -3,15 +3,15 @@
 namespace App\Infrastructure\Repositories\Admin;
 
 use App\Domain\Admin\WarehouseTcDTO;
-use App\Models\TransportCompanyWarehouse;
+use App\Models\Hru\Warehouse;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class TransportCompanyWarehouseRepository
+class HruWarehouseRepository
 {
-    public function getById(int $id): TransportCompanyWarehouse
+    public function getById(int $id): Warehouse
     {
-        $warehouse = TransportCompanyWarehouse::where('id', $id)->first();
+        $warehouse = Warehouse::where('id', $id)->first();
 
         if (!$warehouse) {
             throw new ModelNotFoundException('Не найдены настройки транспортной компании');
@@ -20,7 +20,7 @@ class TransportCompanyWarehouseRepository
         return $warehouse;
     }
 
-    public function updateFieldsById(int $id, array $fields): TransportCompanyWarehouse
+    public function updateFieldsById(int $id, array $fields): Warehouse
     {
         $existsWarehouse = $this->getById($id);
         $existsWarehouse->update($fields);
@@ -30,22 +30,22 @@ class TransportCompanyWarehouseRepository
 
     public function getAllWithSetting(): array
     {
-        return TransportCompanyWarehouse::with(['region', 'tcSettings'])
+        return Warehouse::with(['region', 'tcSettings'])
             ->get()
             ->all();
     }
 
     public function getAll(): Collection
     {
-        return TransportCompanyWarehouse::all();
+        return Warehouse::all();
     }
 
     public function create(WarehouseTcDTO $dto)
     {
-        $existsWarehouse = TransportCompanyWarehouse::where('code', $dto->code)->first();
+        $existsWarehouse = Warehouse::where('code', $dto->code)->first();
 
         if (!$existsWarehouse) {
-            return TransportCompanyWarehouse::create([
+            return Warehouse::create([
                 'name' => $dto->name,
                 'code' => $dto->code,
                 'region_id' => $dto->regionId

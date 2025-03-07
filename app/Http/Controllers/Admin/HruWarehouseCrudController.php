@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\FilialRequest;
+use App\Http\Requests\TransportCompanyWarehouseRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use App\Models\Hru\Warehouse;
 
 /**
- * Class FilialCrudController
+ * Class TransportCompanyWarehouseCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class FilialCrudController extends CrudController
+class HruWarehouseCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -24,11 +25,11 @@ class FilialCrudController extends CrudController
      *
      * @return void
      */
-    public function setup()
+    public function setup(): void
     {
-        CRUD::setModel(\App\Models\Filial::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/filial');
-        CRUD::setEntityNameStrings('filial', 'filials');
+        CRUD::setModel(Warehouse::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/hru-warehouses');
+        CRUD::setEntityNameStrings('склад', 'склады');
     }
 
     /**
@@ -37,27 +38,17 @@ class FilialCrudController extends CrudController
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
-    protected function setupListOperation()
+    protected function setupListOperation(): void
     {
         CRUD::column('id');
-        CRUD::column('code')->label('Код');
-        CRUD::column('name')->label('Наименование');
-        CRUD::addColumn([
-            'name' => 'warehouse_code',
-            'label' => 'Код склада',
-            'type' => 'closure',
-            'function' => function($entry) {
-                return $entry->warehouse->code;
-            }
+        CRUD::addColumn([  // Select
+            'name'  => 'region_name',
+            'label' => 'Регион', // Table column heading
+            'type'  => 'model_function',
+            'function_name' => 'getRegionName', // the method in your Model
         ]);
-        CRUD::addColumn([
-            'name' => 'warehouse_id',
-            'label' => 'Наименование склада',
-            'type' => 'closure',
-            'function' => function($entry) {
-                return $entry->warehouse->name;
-            }
-        ]);
+        CRUD::column('name')->type('text')->label('Наименование склада');
+        CRUD::column('code')->type('text')->label('Код склада');
 
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -72,13 +63,19 @@ class FilialCrudController extends CrudController
      * @see https://backpackforlaravel.com/docs/crud-operation-create
      * @return void
      */
-    protected function setupCreateOperation()
+    protected function setupCreateOperation(): void
     {
-        CRUD::setValidation(FilialRequest::class);
-
-        CRUD::field('code');
-        CRUD::field('name');
-        CRUD::field('warehouse_id');
+        CRUD::setValidation(TransportCompanyWarehouseRequest::class);
+        CRUD::field('name')->type('text')->label('Наименование склада');
+        CRUD::field('code')->type('number')->label('Код склада');
+        CRUD::addField([  // Select
+            'label' => "Регион",
+            'type' => 'select',
+            'name' => 'region_id', // the db column for the foreign key
+            // optional - manually specify the related model and attribute
+            'model' => "App\Models\Region", // related model
+            'attribute' => 'name', // foreign key attribute that is shown to user
+        ]);
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:
@@ -93,7 +90,7 @@ class FilialCrudController extends CrudController
      * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */
-    protected function setupUpdateOperation()
+    protected function setupUpdateOperation(): void
     {
         $this->setupCreateOperation();
     }

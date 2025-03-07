@@ -11,9 +11,11 @@
             <table id="quotes" class="table-content">
                 <tbody ref="table">
                 <tr v-for="(item, id) in filteredRows" align="center" :key="`division-${id}`">
-                    <td class="choose"><input type="checkbox" v-model="item.to_save"
-                                              @change="quoteToSave(item, id)"></td>
-                    <td>{{ item.filial_name }}</td>
+                    <td class="choose">
+                        <input type="checkbox" v-model="item.to_save" @change="quoteToSave(item, id)">
+                    </td>
+                    <td>{{ item.filial_code }}</td>
+                    <td class="p-2">{{ item.filial_name }}</td>
                     <td class="p-2">{{ item.region_name }}</td>
                     <td v-if="showQuoteProperties"></td>
                     <td></td>
@@ -136,6 +138,7 @@
                 <thead>
                 <tr align="center">
                     <th class="choose-th">Выбрать</th>
+                    <th>Код филиала</th>
                     <th class="store">Филиал</th>
                     <th class="regions">Регион</th>
                     <th class="show-rows quote-settings" @click="showQutes()">Квоты <br> <i
@@ -166,6 +169,7 @@
                     <th v-if="showZonesProperties" colspan="7">Зона доставка C</th>
                 </tr>
                 <tr align="center">
+                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>

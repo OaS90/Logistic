@@ -20,8 +20,8 @@
                     <tr style="text-align:center">
                         <th class="choose-th" style="width: 50px">Выбрать</th>
                         <th style="width: 100px">Регион</th>
-                        <th style="width: 90px">Код Склада</th>
-                        <th style="width: 100px">Склад</th>
+                        <th style="width: 90px">Код филиала</th>
+                        <th style="width: 100px">Филиал</th>
                         <th style="width: 90px">Задержка дней</th>
                         <th style="width: 90px">Квота</th>
                         <th>Настройка ТК</th>
@@ -159,7 +159,7 @@ export default {
                 this.showModal = !this.showModal
                 this.modalText = 'Не выбрано ни одного склада для обновления'
             } else {
-                axios.post('save-tc-settings', {settings: this.warehousesToSave}).then(response => {
+                axios.post('save-tc-settings', this.warehousesToSave).then(response => {
                     this.showModal = !this.showModal
                     this.modalText = response.data.message
                 }).catch(errors => {
