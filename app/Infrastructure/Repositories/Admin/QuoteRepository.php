@@ -8,6 +8,24 @@ use Illuminate\Support\Collection;
 
 class QuoteRepository
 {
+    public function createByFilialId(int $filialId, int $regionId): Quote
+    {
+        $existsEntity = Quote::where('filial_id', $filialId)
+            ->where('division_id', $regionId)
+            ->first();
+
+        if (!$existsEntity) {
+            return Quote::create(['filial_id' => $filialId, 'division_id' => $regionId]);
+        }
+
+        return $existsEntity;
+    }
+
+    public function getById(int $id): ?Quote
+    {
+        return Quote::where('id', $id)->first();
+    }
+
     /**
      * @throws \Exception
      */
@@ -16,13 +34,13 @@ class QuoteRepository
         $updatedQuotes = [];
 
         foreach ($quotes as $quote) {
-            $quoteEntry = Quote::find($quote['id']);
+            $quoteEntity = $this->getById($quote['id']);
 
             if (isset($quote['tmp_quote']) && !isset($quote['tmp_date']))
                 throw new \Exception('Не задан период для временной квоты');
 
-            $quoteEntry->update([
-                'quote' => $quote['quote'],
+            $quoteEntity->update([
+                'quote' => (int) $quote['quote'],
                 'tmp_quote' => $quote['tmp_quote']  ?? null,
                 'available_from_date' => isset($quote['tmp_date'][0]) && $quote['tmp_date'][0] ? Carbon::parse($quote['tmp_date'][0])->format('Y-m-d') : null,
                 'available_until_date' => isset($quote['tmp_date'][1]) && $quote['tmp_date'][1] ? Carbon::parse($quote['tmp_date'][1])->format('Y-m-d') : null,
@@ -36,7 +54,7 @@ class QuoteRepository
                 'updater_id' => $userId
             ]);
 
-            $updatedQuotes[] = $quoteEntry;
+            $updatedQuotes[] = $quoteEntity;
         }
 
         return $updatedQuotes;

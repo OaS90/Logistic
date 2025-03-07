@@ -54,7 +54,6 @@ class QuotesController extends Controller
         $updatedQuotes = $this->repo->update($request->all(), backpack_user()->id);
         $message = 'Данные сохранены.';
         $quotes = $this->quoteService->prepareForMonolith();
-
         $responseFromMonolithIsSuccess = $this->krakenApi
             ->monolithRequest($this->krakenApi::MONOLITH_UPDATE_QUOTES_URI, $quotes, 'POST');
 

@@ -85,12 +85,6 @@ class RegionCrudController extends CrudController
             'label' => 'Id региона Monolith'
         ]);
 
-        $this->crud->addField([
-            'name' => 'is_active_for_quotes',
-            'label' => 'Вкл/Выкл в квотах',
-            'type' => 'checkbox'
-        ]);
-
         $this->crud->addField([  // Select
             'label'     => "Склад",
             'type'      => 'select_multiple',

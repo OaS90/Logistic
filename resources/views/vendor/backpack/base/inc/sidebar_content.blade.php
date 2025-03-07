@@ -23,11 +23,24 @@
     @if(!backpack_user()->hasRole('guest') && !backpack_user()->hasRole('transportation department'))
         <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-emails') }}'><i class="las la-mail-bulk"></i> Email уведомления по квотам</a></li>
         <li class='nav-item'><a class='nav-link' href='{{ backpack_url('regions') }}'><i class='nav-icon la la-map'></i> Регионы</a></li>
-        <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-warehouse') }}'><i class='nav-icon la la-store'></i> Склады по квотам</a></li>
+{{--        <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-warehouse') }}'><i class='nav-icon la la-store'></i> Склады по квотам</a></li>--}}
     @endif
 @endif
 <!-- Users, Roles, Permissions -->
-
+@if(backpack_user()->hasRole('Логисты') ||
+    backpack_user()->hasRole('admin') ||
+    backpack_user()->hasRole('transportation department') ||
+    backpack_user()->hasRole('support')
+    )
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('filial') }}">
+            <i class="nav-icon las la-store"></i>Филиалы</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ backpack_url('hru-warehouses') }}">
+            <i class="nav-icon las la-warehouse"></i> Склады
+        </a>
+    </li>
+@endif
 @if(backpack_user()->hasRole('quotes') || backpack_user()->hasRole('admin'))
     <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quotes') }}'><i class="las la-user-tie"></i> Квоты</a></li>
 @endif
@@ -48,11 +61,6 @@
         <li class="nav-item">
             <a class="nav-link" href="{{ backpack_url('transport-company') }}">
                 <i class="nav-icon la la-briefcase"></i> Компании
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ backpack_url('transport-company-warehouse') }}">
-                <i class="nav-icon la la-store-alt"></i> Склады
             </a>
         </li>
         <li class="nav-item">

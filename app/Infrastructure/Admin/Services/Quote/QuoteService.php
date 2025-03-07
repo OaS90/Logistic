@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Admin\Services\Quote;
 
 use App\Infrastructure\Repositories\Admin\QuoteRepository;
+use App\Models\Quote;
 use Illuminate\Support\Carbon;
 
 class QuoteService
@@ -13,7 +14,12 @@ class QuoteService
 
     public function prepareForVue(): array
     {
-        $quotes = $this->quoteRepo->getAllWithRelations(['intervals', 'region']);
+        $quotes = $this->quoteRepo->getAllWithRelations(['intervals', 'region'])
+            ->filter(function (Quote $quote) {
+                if ($quote->filial_id) {
+                    return $quote;
+                }
+            });
         $data = [];
 
         foreach ($quotes as $quote) {
@@ -33,12 +39,13 @@ class QuoteService
                     str_replace('-', ', ', $quote->blocked_date_until)
                 ];
 
-            if ($quote->region->is_active_for_quotes) {
+            if ($quote->filial->is_active_for_quotes) {
                 $quoteInfo = [
                     'id' => $quote->id,
                     'to_save' => false,
-                    'division' => $quote->region->name,
-                    'warehouse' => $quote->region->warehouse_name,
+                    'filial_code' => $quote->filial->code,
+                    'filial_name' => $quote->filial->name,
+                    'region_name' => $quote->region->name,
                     'quote' => $quote->quote,
                     'tmp_quote' => $quote->tmp_quote,
                     'tmp_date' => $tmpQuoteDate,
@@ -62,11 +69,22 @@ class QuoteService
             }
         }
 
-        return $data;
+        return collect($data)
+            ->sortBy('id')
+            ->values()
+            ->all();
     }
     public function prepareForMonolith(): array
     {
-        $quotes = $this->quoteRepo->getAll();
+        $quotes = $this->quoteRepo->getAll()
+            ->filter(function (Quote $quote) {
+                if ($quote->filial_id) {
+                    return $quote;
+                }
+
+                return false;
+            });
+
         $data = [];
 
         foreach ($quotes as $quote) {
@@ -93,8 +111,9 @@ class QuoteService
 
             if ($quote->quote) {
                 $mainQuote = [
-                    'id' => $quote->region->region_id,
+                    'id' => $quote->filial->region_id,
                     'limit' => $quote->quote,
+                    'filial_code' => $quote->filial->code,
                 ];
 
                 if (count($periods) > 0)
