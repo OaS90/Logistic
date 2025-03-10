@@ -41,13 +41,25 @@ class HruFilialCrudController extends CrudController
     {
         CRUD::column('id');
         CRUD::column('code')->label('Код');
-        CRUD::column('name')->label('Наименование');
+        CRUD::addColumn([
+            'name' => 'name',
+            'label' => 'Наименование',
+            'type' => 'text',
+            'searchLogic' => function ($query, $column, $searchTerm) {
+                $query->orWhere('name', 'ilike', "%$searchTerm%");
+            }
+        ]);
         CRUD::addColumn([
             'name' => 'warehouse_code',
             'label' => 'Код склада',
             'type' => 'closure',
             'function' => function($entry) {
                 return $entry->warehouses->first() ? $entry->warehouses->first()->code : '-';
+            },
+            'searchLogic' => function ($query, $column, $searchTerm) {
+                $query->orWhereHas('warehouses', function ($query) use ($searchTerm) {
+                    $query->where('code', 'ilike', "%$searchTerm%");
+                });
             }
         ]);
         CRUD::addColumn([
@@ -56,6 +68,11 @@ class HruFilialCrudController extends CrudController
             'type' => 'closure',
             'function' => function($entry) {
                 return $entry->warehouses->first() ? $entry->warehouses->first()->name : '-';
+            },
+            'searchLogic' => function ($query, $column, $searchTerm) {
+                $query->orWhereHas('warehouses', function ($query) use ($searchTerm) {
+                    $query->where('code', 'ilike', "%$searchTerm%");
+                });
             }
         ]);
         CRUD::column('is_active_for_quotes')->label('Вкл/Выкл в квотах')->type('check');

@@ -46,8 +46,21 @@ class HruWarehouseCrudController extends CrudController
             'label' => 'Регион', // Table column heading
             'type'  => 'model_function',
             'function_name' => 'getRegionName', // the method in your Model
+            'searchLogic' => function ($query, $column, $searchTerm) {
+                $query->orWhereHas('region', function ($query) use ($searchTerm) {
+                    $query->where('name', 'ilike', "%$searchTerm%");
+                });
+            }
         ]);
-        CRUD::column('name')->type('text')->label('Наименование склада');
+        CRUD::addColumn([
+            'name' => 'name',
+            'label' => 'Наименование склада',
+            'type' => 'text',
+            'searchLogic' => function ($query, $column, $searchTerm) {
+                $searchTerm = ucfirst($searchTerm);
+                $query->orWhere('name', 'like', "%$searchTerm%");
+            }
+        ]);
         CRUD::column('code')->type('text')->label('Код склада');
 
         /**
@@ -75,6 +88,13 @@ class HruWarehouseCrudController extends CrudController
             // optional - manually specify the related model and attribute
             'model' => "App\Models\Region", // related model
             'attribute' => 'name', // foreign key attribute that is shown to user
+        ]);
+        CRUD::addField([
+            'name' => 'filials',
+            'type' => 'select_multiple',
+            'label' => 'Филиалы',
+            'model' => "App\Models\Hru\Filial",
+            'attribute' => 'name',
         ]);
 
         /**
