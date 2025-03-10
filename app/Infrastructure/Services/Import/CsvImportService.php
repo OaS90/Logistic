@@ -96,6 +96,7 @@ class CsvImportService
             $date = is_int($columnsData[0]) ? Date::excelToDateTimeObject($columnsData[0]) : $columnsData[0];
             $columnsData[0] = Carbon::parse($date)->format('Y-m-d');
             $appWithDbColumns = array_combine($rows, $columnsData);
+
             if ($appWithDbColumns['orderNumber']) {
                 $orderList = explode(';', $appWithDbColumns['orderList']);
                 $products = [];

@@ -302,7 +302,12 @@ class ApplicationService implements ApplicationServiceInterface
                 $appDTO = $this->appFactory->makeApplicationDTOFor1c($app, $productDTOs, $addressInfo, $user->suffix);
             }
 
-            $apps[] = $appDTO;
+            if (count($appDTO->products) > 0) {
+                $apps[] = $appDTO;
+            } else {
+                $this->appRepo->updateByFields($app, ['status' => 'refusal']);
+                Log::error( "Send to 1c error. The order $appDTO->orderNumber hasn't products. Set status refund.");
+            }
 
             Log::info('Sent to 1c ' . json_encode($appDTO));
 
