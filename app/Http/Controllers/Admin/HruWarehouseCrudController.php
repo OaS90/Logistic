@@ -62,7 +62,20 @@ class HruWarehouseCrudController extends CrudController
             }
         ]);
         CRUD::column('code')->type('text')->label('Код склада');
+        CRUD::addColumn([
+            'name' => 'filials',
+            'label' => 'Филиалы',
+            'type'     => 'closure',
+            'function' => function($entry) {
+                $strFilial = '';
 
+                if ($entry->filials->count() > 0) {
+                    $strFilial = implode(', ', array_column($entry->filials->toArray(), 'name'));
+                }
+
+                return $strFilial;
+            }
+        ]);
         /**
          * Columns can be defined using the fluent syntax or array syntax:
          * - CRUD::column('price')->type('number');
