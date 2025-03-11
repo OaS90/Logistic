@@ -40,7 +40,7 @@ class YandexZonesService
                             $diffsRegions[$explodedDescription[0]] = $explodedDescription;
                             $zoneName = $explodedDescription[1] == 'allow_zone' ? '-' : $explodedDescription[2] . ' ' . $explodedDescription[3];
                             $regionName = $explodedDescription[1] == 'allow_zone' ? $explodedDescription[2] : $explodedDescription[4];
-                            $filialCode = $explodedDescription[1] == 'allow-zone' ? $explodedDescription[3] : $explodedDescription[6];
+                            $filialCode = $explodedDescription[1] == 'allow_zone' ? $explodedDescription[3] : $explodedDescription[5];
                             $changes[$polygon['properties']['description']] = [
                                 'zone_name' => $zoneName,
                                 'zone_code' => $explodedDescription[3] ?? null,
@@ -48,8 +48,6 @@ class YandexZonesService
                                 'points' => $newCoordinates,
                                 'region_id' => $explodedDescription[0],
                                 'type' => $explodedDescription[1],
-                                'erp_warehouse_id' => $explodedDescription[5] ?? null,
-                                'warehouse_alias' => $explodedDescription[6] ?? null,
                                 'filial_code' => $filialCode,
                                 'filial_id' => (int) $filialCode,
                                 'to_import' => false
