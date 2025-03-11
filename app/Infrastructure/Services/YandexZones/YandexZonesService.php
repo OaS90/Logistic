@@ -31,7 +31,7 @@ class YandexZonesService
 
                 foreach ($oldData['features'] as $polygon) {
                     $oldCoordinates = $polygon['geometry']['coordinates'][0];
-                    $explodedDescription = explode('-', $polygon['properties']['description']);
+                    $explodedDescription = explode('|', $polygon['properties']['description']);
 
                     if ($polygon['properties']['description'] == $newDescription) {
                         $diffs = $this->hasChanges($oldCoordinates, $newCoordinates);
@@ -189,7 +189,7 @@ class YandexZonesService
             }
 
             if ($type === 'allow-zones') {
-                $description = $regionId . '-allow_zone-' . $name . '-' . $filialCode;
+                $description = $regionId . '|allow_zone|' . $name . '|' . $filialCode;
                 $fill = '#e6761b';
                 $fillOpacity = 0.05;
                 $stroke = '#ed4543';
@@ -205,7 +205,7 @@ class YandexZonesService
                     $fill = 'ffd21e';
                 }
 
-                $description = $regionId . '-polygon-' . 'Зона-' . $polygon['code'] .  '-' . $name . '-' . $filialCode;
+                $description = $regionId . '|polygon|' . 'Зона|' . $polygon['code'] .  '|' . $name . '|' . $filialCode;
             }
 
             $uniquePoints = [];
