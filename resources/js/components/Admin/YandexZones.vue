@@ -21,6 +21,7 @@
                     <th>Тип полигона</th>
                     <th>Зона</th>
                     <th>Регион</th>
+                    <th>Код филала</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -32,6 +33,7 @@
                     <td>{{ zone.type }}</td>
                     <td>{{ zone.zone_name }}</td>
                     <td>{{ zone.region_name }}</td>
+                    <td>{{ zone.filial_code }}</td>
                 </tr>
                 </tbody>
 

@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Services\YandexZones;
 
+use App\Infrastructure\Repositories\Hru\FilialRepository;
 use App\Infrastructure\Services\Kraken\Api;
 use App\Models\Region;
 use Illuminate\Support\Facades\Storage;
@@ -10,7 +11,7 @@ class YandexZonesService
 {
     const FILE_NAME = 'zones.json';
     const UPDATED_FILE_NAME = 'updated_zones.json';
-    public function __construct(protected readonly Api $krakenApi) {}
+    public function __construct(private readonly Api $krakenApi, private readonly FilialRepository $filialRepo) {}
 
     /**
      * @throws \Exception
@@ -39,6 +40,7 @@ class YandexZonesService
                             $diffsRegions[$explodedDescription[0]] = $explodedDescription;
                             $zoneName = $explodedDescription[1] == 'allow_zone' ? '-' : $explodedDescription[2] . ' ' . $explodedDescription[3];
                             $regionName = $explodedDescription[1] == 'allow_zone' ? $explodedDescription[2] : $explodedDescription[4];
+                            $filialCode = $explodedDescription[1] == 'allow-zone' ? $explodedDescription[3] : $explodedDescription[6];
                             $changes[$polygon['properties']['description']] = [
                                 'zone_name' => $zoneName,
                                 'zone_code' => $explodedDescription[3] ?? null,
@@ -48,6 +50,8 @@ class YandexZonesService
                                 'type' => $explodedDescription[1],
                                 'erp_warehouse_id' => $explodedDescription[5] ?? null,
                                 'warehouse_alias' => $explodedDescription[6] ?? null,
+                                'filial_code' => $filialCode,
+                                'filial_id' => (int) $filialCode,
                                 'to_import' => false
                             ];
                         }
@@ -81,14 +85,14 @@ class YandexZonesService
 
         $allowZones = $this->krakenApi->deliveryServiceRequest('settings/allow-zones');
         $allowZonesCoordinates = $this->prepareCoordinates($allowZones, 'allow-zones');
-        $senderZones = $this->krakenApi->deliveryServiceRequest('settings/sender-zones');
-        $senderZonesCoordinates = $this->prepareCoordinates($senderZones, 'sender-zones');
+//        $senderZones = $this->krakenApi->deliveryServiceRequest('settings/sender-zones');
+//        $senderZonesCoordinates = $this->prepareCoordinates($senderZones, 'sender-zones');
         $data['type'] = 'FeatureCollection';
         $data['metadata'] = [
             'name' => 'maps',
             'creator' => 'BoF Holodilnik'
         ];
-        $data['features'] = array_merge($polygonsCoordinates, $allowZonesCoordinates, $senderZonesCoordinates);
+        $data['features'] = array_merge($polygonsCoordinates, $allowZonesCoordinates);
         $filename = 'zones.json';
         $jsonData = json_encode($data);
 
@@ -169,6 +173,8 @@ class YandexZonesService
         foreach ($polygons as $polygon) {
             $regionId = isset($polygon['region']) ? $polygon['region']['id'] : $polygon['region_id'];
             $region = Region::where('region_id', $regionId)->first();
+            $filialCode =  sprintf("%05d", $polygon['filial_id']);
+            $filial = $this->filialRepo->getByCode($filialCode);
             $name = '';
             $fillOpacity = 0.6;
             $stroke = '82cdff';
@@ -180,26 +186,17 @@ class YandexZonesService
                 $regionId = $region->region_id;
             }
 
+            if ($filial) {
+                $filialCode = $filial->code;
+            }
+
             if ($type === 'allow-zones') {
-                $description = $regionId . '-allow_zone-' . $name;
+                $description = $regionId . '-allow_zone-' . $name . '-' . $filialCode;
                 $fill = '#e6761b';
                 $fillOpacity = 0.05;
                 $stroke = '#ed4543';
                 $strokeOpacity = 0.2;
-            } elseif ($type == 'sender-zones') {
-                $description = $regionId  . '-sender_zone-' . 'Зона-' . $polygon['zone_code'] .
-                    '-' . trim($name) . '-' . $polygon['erp_warehouse_id'] . '-' . $polygon['warehouse_alias'];
-
-                if ($polygon['zone_code'] == 'A') {
-                    $fillOpacity = 0.3;
-                    $fill = 'ff931c';
-                } elseif ($polygon['zone_code'] == 'B') {
-                    $fillOpacity = 0.1;
-                    $fill = 'e6761e';
-                } else {
-                    $fill = 'ffd21e';
-                }
-            } else {
+            }  else {
                 if ($polygon['code_short'] == 'B') {
                     $fillOpacity = 0.4;
                     $fill = 'ff931e';
@@ -210,7 +207,7 @@ class YandexZonesService
                     $fill = 'ffd21e';
                 }
 
-                $description = $regionId . '-polygon-' . 'Зона-' . $polygon['code'] .  '-' . $name;
+                $description = $regionId . '-polygon-' . 'Зона-' . $polygon['code'] .  '-' . $name . '-' . $filialCode;
             }
 
             $uniquePoints = [];
