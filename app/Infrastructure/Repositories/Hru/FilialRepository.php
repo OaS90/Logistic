@@ -13,6 +13,11 @@ class FilialRepository
         return Filial::where('id', $id)->first();
     }
 
+    public function getByCode(string $code): ?Filial
+    {
+        return Filial::where('code', $code)->first();
+    }
+
     public function create(HruFilialDTO $dto): Filial
     {
         $existsEntity = Filial::where('code', $dto->code)
