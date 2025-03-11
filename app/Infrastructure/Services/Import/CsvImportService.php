@@ -87,12 +87,12 @@ class CsvImportService
     {
         $dataFromFile = Excel::toArray($entity, $file)[0];
         $rows = $this->fileObiTitlesToDbColumnsPrepare();
-        $data = array_slice($dataFromFile, 4);
 
-        foreach ($data as $row) {
+        foreach ($dataFromFile as $row) {
             // убираем номер строки из файла (№ п/п)
             unset($row[0]);
-            $columnsData = array_slice($row, 0, 25);
+
+            $columnsData = array_slice($row, 0, 26);
             $date = is_int($columnsData[0]) ? Date::excelToDateTimeObject($columnsData[0]) : $columnsData[0];
             $columnsData[0] = Carbon::parse($date)->format('Y-m-d');
             $appWithDbColumns = array_combine($rows, $columnsData);
@@ -337,6 +337,7 @@ class CsvImportService
             "Стоимость услуг подъёма, руб." => 'liftCost',
             "Стоимость услуг переноса, руб." => 'transferCost',
             "Общая стоимость услуг доставки, руб." => 'totalDeliveryCost',
+            'Перевозчик' => 'carrier',
             "Комментарий к заявке" => 'comment',
             "Состав заказа" => 'orderList'
         ];

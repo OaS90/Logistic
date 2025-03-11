@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Domain\Enum\ApplicationStatus;
 use App\Http\Requests\Admin\ApplicationRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -247,16 +248,15 @@ class ApplicationCrudController extends CrudController
             'tab' => 'Заявка',
             'fake' => true,
             'name'  => 'status',
-            'type'  => 'text',
-            'value' => $this->crud->getCurrentEntry()->getStatus($this->crud->getCurrentEntry()->status),
+            'type'  => 'select_from_array',
+            'options' => ApplicationStatus::ALL,
             'label' => 'Статус',
             'attributes' => [
                 'class' => 'form-control',
-                'readonly' => 'readonly',
             ],
             'wrapper' => [
                 'class' => 'form-group col-md-3'
-            ]
+            ],
         ]);
 
         CRUD::addField([   // CustomHTML
@@ -447,7 +447,7 @@ class ApplicationCrudController extends CrudController
                 $product = $this->productRepo->getById($productId);
 
                 if ($product->tnved != $tnved || $product->barcode != $barcode || $product->cost != $cost) {
-                    $this->appRepo->updateByFields($currentApp->order_number, ['doc_ver' => $currentApp->doc_ver + 1]);
+                    $this->appRepo->updateByFields($currentApp, ['doc_ver' => $currentApp->doc_ver + 1]);
                     $this->productRepo->updateByFields($productId, [
                         'tnved' => $tnved,
                         'barcode' => $barcode,
@@ -455,6 +455,8 @@ class ApplicationCrudController extends CrudController
                     ]);
                 }
             }
+
+            $this->appRepo->updateByFields($currentApp, ['status' => $request['status']]);
         }
 
         $this->setupCreateOperation();

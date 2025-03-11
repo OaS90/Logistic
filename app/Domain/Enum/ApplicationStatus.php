@@ -45,14 +45,14 @@ class ApplicationStatus
     const DEFECT = 'defect';
 
     const ALL = [
-        self::CREATED,
-        self::NEW,
-        self::IN_PROGRESS,
-        self::LOADED,
-        self::POSTPONED,
-        self::REFUSAL,
-        self::COMPLETED,
-        self::DEFECT
+        self::CREATED => 'Создан',
+        self::NEW => 'Новый',
+        self::IN_PROGRESS => 'В работе',
+        self::LOADED => 'Загружен',
+        self::POSTPONED => 'Отложен',
+        self::REFUSAL => 'Отменён',
+        self::COMPLETED => 'Выполнен',
+        self::DEFECT => 'Брак'
     ];
 
 }

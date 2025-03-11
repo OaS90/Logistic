@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Domain\Enum\ApplicationStatus;
 use App\Http\Requests\ApplicationObiRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -21,7 +22,7 @@ class ApplicationObiCrudController extends CrudController
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
-     * 
+     *
      * @return void
      */
     public function setup()
@@ -33,7 +34,7 @@ class ApplicationObiCrudController extends CrudController
 
     /**
      * Define what happens when the List operation is loaded.
-     * 
+     *
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
@@ -68,13 +69,13 @@ class ApplicationObiCrudController extends CrudController
         /**
          * Columns can be defined using the fluent syntax or array syntax:
          * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
+         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']);
          */
     }
 
     /**
      * Define what happens when the Create operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-create
      * @return void
      */
@@ -93,16 +94,15 @@ class ApplicationObiCrudController extends CrudController
             'tab' => 'Заявка',
             'fake' => true,
             'name'  => 'status',
-            'type'  => 'text',
-            'value' => $this->crud->getCurrentEntry()->getStatus($this->crud->getCurrentEntry()->status),
+            'type'  => 'select_from_array',
+            'options' => ApplicationStatus::ALL,
             'label' => 'Статус',
             'attributes' => [
                 'class' => 'form-control',
-                'readonly' => 'readonly',
             ],
             'wrapper' => [
                 'class' => 'form-group col-md-3'
-            ]
+            ],
         ]);
 
         CRUD::field('order_type')->label('Тип заказа')->wrapper([
@@ -255,18 +255,26 @@ class ApplicationObiCrudController extends CrudController
         /**
          * Fields can be defined using the fluent syntax or array syntax:
          * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
+         * - CRUD::addField(['name' => 'price', 'type' => 'number']));
          */
     }
 
     /**
      * Define what happens when the Update operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */
     protected function setupUpdateOperation()
     {
+        $request = $this->crud->getRequest()->all();
+
+        if ($request) {
+            $currentApp = $this->crud->getCurrentEntry();
+            $currentApp->update(['status' => $request['status']]);
+
+        }
+
         $this->setupCreateOperation();
     }
 }

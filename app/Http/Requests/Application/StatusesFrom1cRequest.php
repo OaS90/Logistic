@@ -30,7 +30,7 @@ class StatusesFrom1cRequest extends FormRequest
             '*.docVer' => 'integer|min:1',
             '*.statuses' => 'required|array|min:1',
             '*.statuses.*.dateTime' => 'required|date_format:Y-m-d H:i:s',
-            '*.statuses.*.status' => 'required|in:' . implode(',' ,ApplicationStatus::ALL),
+            '*.statuses.*.status' => 'required|in:' . implode(',', array_keys(ApplicationStatus::ALL)),
         ];
     }
 
