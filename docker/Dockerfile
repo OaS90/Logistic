@@ -1,6 +1,8 @@
 # Используем официальный образ PHP с FPM
 FROM php:8.2-fpm
 
+ARG GITLAB_PORT=22
+ARG GITLAB_HOST=gitlabhost.adeal.ru
 # Установим необходимые системные зависимости и PHP-расширения
 RUN apt-get update && apt-get install -y \
         nginx \
@@ -43,7 +45,19 @@ RUN chown -R www-data:www-data /var/www/storage \
 
 # Копируем конфигурацию Nginx
 COPY ../docker/nginx.conf /etc/nginx/sites-available/default
+COPY ../docker/ssh /home/git/.ssh
 
+#RUN if ! test -f /home/git/.ssh/dev_key; then \
+#            echo "ssh/config/dev_key not exists."; \
+#            exit 255; \
+#    fi \
+
+RUN chown -R www-data:www-data /home/git/.ssh
+RUN chmod 755 /home/git/.ssh
+RUN chmod -R 600 /home/git/.ssh/*
+RUN sed -i -e 's/\r$//' /home/git/.ssh/dev_key
+RUN sed -i s/{HOST}/$GITLAB_HOST/ /home/git/.ssh/config
+RUN sed -i s/{PORT}/$GITLAB_PORT/ /home/git/.ssh/config
 # Откроем порты
 EXPOSE 80
 

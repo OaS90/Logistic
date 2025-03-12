@@ -1,0 +1,6 @@
+host gitlab.adeal.ru
+  user git
+  port {PORT}
+  Hostname {HOST}
+  IdentityFile ~/.ssh/dev_key
+  StrictHostKeyChecking no
