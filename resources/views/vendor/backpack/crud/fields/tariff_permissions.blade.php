@@ -32,6 +32,9 @@
 @endpush
 
 {{-- CUSTOM JS --}}
+{{--@push('crud_fields_scripts')--}}
+{{--    @loadOnce('js/app.js')--}}
+{{--@endpush--}}
 @push('crud_fields_scripts')
-    @loadOnce('js/app.js')
+    @vite(['resources/js/app.js'])
 @endpush

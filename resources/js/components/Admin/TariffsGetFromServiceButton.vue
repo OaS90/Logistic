@@ -10,7 +10,7 @@
         <modal v-if="showModal" @close="showModal = false">
                 <span slot="body" v-if="loading">
                     {{ modalText }}
-                    <pulse-loader :loading="loading" :color="color" :size="size"></pulse-loader>
+                    <PulseLoader :loading="loading" :color="color" :size="size"/>
                 </span>
             <span slot="body" v-else>
                 {{ modalText }}
@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import Modal from "./Modal";
-import PulseLoader from "vue-spinner/src/PulseLoader"
+import Modal from "./Modal.vue";
+import { PulseLoader } from "vue3-spinner"
 
 export default {
     name: "TariffsGetFromServiceButton",

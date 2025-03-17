@@ -11,5 +11,5 @@
 
 @endsection
 @push('after_scripts')
-    <script src="{{ asset('js/app.js') }}" type="application/javascript"></script>
+    @vite(['resources/js/app.js'])
 @endpush

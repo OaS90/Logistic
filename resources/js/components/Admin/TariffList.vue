@@ -94,9 +94,9 @@
 
 <script>
 
-import TariffPermissionRequestButton from "./TariffPermissionRequestButton";
-import TariffsGetFromServiceButton from "./TariffsGetFromServiceButton";
-import Modal from "./Modal";
+import TariffPermissionRequestButton from "./TariffPermissionRequestButton.vue";
+import TariffsGetFromServiceButton from "./TariffsGetFromServiceButton.vue";
+import Modal from "./Modal.vue";
 
 export default {
     name: "TariffList",

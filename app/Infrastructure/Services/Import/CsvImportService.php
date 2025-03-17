@@ -87,9 +87,8 @@ class CsvImportService
     {
         $dataFromFile = Excel::toArray($entity, $file)[0];
         $rows = $this->fileObiTitlesToDbColumnsPrepare();
-        $data = array_slice($dataFromFile, 4);
 
-        foreach ($data as $row) {
+        foreach ($dataFromFile as $row) {
             // убираем номер строки из файла (№ п/п)
             unset($row[0]);
             $columnsData = array_slice($row, 0, 25);

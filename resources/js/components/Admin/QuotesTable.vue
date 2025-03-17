@@ -49,7 +49,7 @@
                                      type="time"
                                      name="delivery_till"
                                      value-type="H:mm"
-                                     :disabled="!item.inDay ? true : false"
+                                     :disabled="!item.inDay"
                                      :timePickerOptions="{
                                         start: '00:00',
                                         step: '01:00',
@@ -221,35 +221,31 @@
                 </thead>
             </table>
         </div>
-        <!--        <p>-->
-        <!--            <button type="button" class="btn btn-secondary" @click="prevPage">Предыдущая</button>-->
-        <!--            <button type="button" class="btn btn-secondary" @click="nextPage">Следующая</button>-->
-        <!--            <span style="padding-left: 5px">{{ currentPage }} из {{ totalPage }}</span>-->
-        <!--        </p>-->
 
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body" v-if="loading">
-                {{ modalText }}
-                <pulse-loader :loading="loading" :color="'#7c69ef'" :size="'15px'"></pulse-loader>
-            </span>
-            <span slot="body" v-else>
-                {{ modalText }}
-                <br>
-                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
-            </span>
-            <span slot="footer"></span>
+            <template #body>
+                <template v-if="loading">
+                    {{ modalText }}
+                    <PulseLoader :loading="loading" :color="'#7c69ef'"/>
+                </template>
+                <template v-else>
+                    {{ modalText }}
+                    <br>
+                    <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+                </template>
+            </template>
         </modal>
     </div>
 </template>
 
 <script>
-import DatePicker from "vue2-datepicker";
-import Modal from "./Modal";
-import Popup from "../Popup";
-import PulseLoader from "vue-spinner/src/PulseLoader"
+import { PulseLoader } from "vue3-spinner"
+import Modal from "./Modal.vue";
+import DatePicker from "vue-datepicker-next";
 
 export default {
     name: "QuotesTable",
+    components: {Modal, PulseLoader, DatePicker},
     props: ['quotes', 'guest'],
     data() {
         return {
@@ -394,12 +390,6 @@ export default {
             this.$refs.scroll.scrollTo(currentScrollPosition, 0)
         }
     },
-    components: {
-        Popup,
-        DatePicker,
-        Modal,
-        PulseLoader
-    }
 }
 </script>
 

@@ -2,7 +2,7 @@
 
 @section('content')
     <div id="admin-app">
-        <support-app-import></support-app-import>
+        <tariff-create></tariff-create>
     </div>
 @endsection
 

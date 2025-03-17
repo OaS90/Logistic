@@ -28,7 +28,7 @@
                 <div class="profile-section__wrapper">
                     <div class="profile-section__photo">
                         <div class="profile-section__photo-contaner">
-                            <img class="profile-photo" src="{{ asset('storage/' . $user->avatar) }}"
+                            <img class="profile-photo" src="{{ basset('storage/' . $user->avatar) }}"
                                  alt="{{ $user->full_name }}">
                         </div>
 

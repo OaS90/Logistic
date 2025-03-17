@@ -75,8 +75,8 @@
 </template>
 
 <script>
-import Modal from './Modal'
-import TcSettings from './TcSettings'
+import Modal from './Modal.vue'
+import TcSettings from './TcSettings.vue'
 
 export default {
     name: "TransportCompanySettings",

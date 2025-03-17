@@ -37,7 +37,6 @@
                                 </tbody>
                             </table>
                         </div>
-<!--                        <pagination align="center" :data="apps" :limit="10" @pagination-change-page="list"></pagination>-->
                         <p>
                             <button type="button" class="btn btn-secondary" @click="prevPage">Предыдущая</button>
                             <button type="button" class="btn btn-secondary" @click="nextPage">Следующая</button>
@@ -51,13 +50,8 @@
 </template>
 
 <script>
-import pagination from 'laravel-vue-pagination'
-
 export default {
     name: "SupportApps",
-    components: {
-        pagination
-    },
     data() {
         return {
             apps: [],

@@ -42,7 +42,7 @@
 
         <modal v-if="showModal" @close="showModal = false">
             <span slot="body" v-if="loading">
-                <pulse-loader :loading="loading" :color="'#7c69ef'" :size="'15px'"></pulse-loader>
+                <DotLoader :loading="loading" :color="'#7c69ef'" :size="'15px'"/>
             </span>
             <span slot="body" v-else>
                 {{ errorText }}
@@ -56,7 +56,7 @@
 
 <script>
 import Modal from "./Modal.vue";
-import PulseLoader from "vue-spinner/src/PulseLoader";
+import { DotLoader } from "vue3-spinner";
 export default {
     data() {
         return {
@@ -68,7 +68,7 @@ export default {
     },
     components: {
         Modal,
-        PulseLoader
+        DotLoader
     },
     methods: {
         selectAllZones(event) {

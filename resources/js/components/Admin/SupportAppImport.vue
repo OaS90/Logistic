@@ -36,23 +36,26 @@
 <!--            <span>Выбрано: {{ partnerWarehouse ? partnerWarehouse.id : '-' }}</span>-->
         </div>
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body" v-if="loading">
-                <pulse-loader :loading="loading" :color="color" :size="size"></pulse-loader>
-            </span>
-            <span slot="body" v-else>
-                {{ modalText }}
-                <br>
-                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
-            </span>
-            <span slot="footer"></span>
+            <template #body>
+                <template v-if="loading">
+                    {{ modalText }}
+                    <PulseLoader :loading="loading" :color="'#7c69ef'"/>
+                </template>
+                <template v-else>
+                    {{ modalText }}
+                    <br>
+                    <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+                </template>
+            </template>
         </modal>
 
     </div>
 </template>
 
 <script>
-import Modal from "./Modal";
-import PulseLoader from "vue-spinner/src/PulseLoader"
+import Modal from "./Modal.vue";
+import { PulseLoader } from "vue3-spinner"
+import axios from 'axios';
 
 export default {
     name: "SupportAppImport",
@@ -109,7 +112,7 @@ export default {
 
             axios.post('/admin/support/import-app', formData, {
                 headers: {
-                    accept: 'application/json', 'Content-Type': 'application/json'
+                    Accept: 'application/json'
                 }
             }).then((response) => {
                 this.loading = false

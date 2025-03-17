@@ -58,6 +58,9 @@ RUN chmod -R 600 /home/git/.ssh/*
 RUN sed -i -e 's/\r$//' /home/git/.ssh/dev_key
 RUN sed -i s/{HOST}/$GITLAB_HOST/ /home/git/.ssh/config
 RUN sed -i s/{PORT}/$GITLAB_PORT/ /home/git/.ssh/config
+RUN rm -rf /var/www/public/storage
+RUN php artisan storage:link
+RUN php artisan migrate
 # Откроем порты
 EXPOSE 80
 

@@ -35,8 +35,8 @@
         <div class="input-wrap">
 <!--            <input type="text" id="sms-mobile" class="text" name="mobile_phone"-->
 <!--                   placeholder="Мобильный телефон для SMS-оповещений" v-model="fields.mobile_phone">-->
-            <masked-input mask="\+7 (111) 111-11-11" class="text" placeholder="Мобильный телефон для SMS-оповещений"
-                          v-model="fields.mobile_phone"  autocomplete="tel-national"></masked-input>
+            <MaskInput mask="+7 (###) ###-##-##" class="text" placeholder="Мобильный телефон для SMS-оповещений"
+                          v-model="fields.mobile_phone"  autocomplete="tel-national"></MaskInput>
             <span class="error" v-if="errors.mobile_phone">{{ errors['mobile_phone'][0] }}</span>
         </div>
         <div class="input-wrap">
@@ -86,7 +86,7 @@
 
 <script>
 
-import MaskedInput from "vue-masked-input";
+import {MaskInput} from "vue-3-mask";
 
 export default {
     name: "RegisterForm",
@@ -114,7 +114,7 @@ export default {
         }
     },
     components: {
-        MaskedInput
+        MaskInput
     }
 }
 </script>

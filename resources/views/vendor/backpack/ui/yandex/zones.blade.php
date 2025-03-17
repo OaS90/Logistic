@@ -2,7 +2,9 @@
 
 @section('content')
     <div id="admin-app">
-        <support-app-import></support-app-import>
+        <h1>Настрока зон</h1>
+
+        <yandex-zones></yandex-zones>
     </div>
 @endsection
 

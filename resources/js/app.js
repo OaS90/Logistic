@@ -4,36 +4,33 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-require('./bootstrap');
-
-window.Vue = require('vue').default;
-// import vuetify from './vuetify';
-
-// import ExampleComponent from "./components/ExampleComponent";
-import ApplicationForm from "./components/ApplicationForm";
-import Popup from "./components/Popup";
-import RegisterForm from './components/RegisterForm'
-import DatePicker from "vue2-datepicker";
-import MaskedInput from "vue-masked-input";
-import ProfileForm from "./components/ProfileForm";
-import QuotesTable from "./components/Admin/QuotesTable";
-import QuoteEmailsTable from "./components/Admin/QuoteEmailsTable";
-import LoginForm from "./components/LoginForm";
-import TransportCompanySettings from "./components/Admin/TransportCompanySettings";
-import TcSettings from "./components/Admin/TcSettings";
-import SupportApps from "./components/Admin/SupportApps";
-import SupportAppImport from "./components/Admin/SupportAppImport";
-import PulseLoader from 'vue-spinner/src/DotLoader';
-import TariffRegionSettings from "./components/Admin/TariffRegionEdit";
-import TariffRegions from "./components/Admin/TariffRegions";
+import('./bootstrap');
+import { createApp } from 'vue'
+import ApplicationForm from "./components/ApplicationForm.vue";
+import Popup from "./components/Popup.vue";
+import RegisterForm from './components/RegisterForm.vue'
+import { MaskInput } from "vue-3-mask";
+import ProfileForm from "./components/ProfileForm.vue";
+import QuotesTable from "./components/Admin/QuotesTable.vue";
+import QuoteEmailsTable from "./components/Admin/QuoteEmailsTable.vue";
+import DatePicker from "vue-datepicker-next"
+import 'vue-datepicker-next/index.css';
+import LoginForm from "./components/LoginForm.vue";
+import TransportCompanySettings from "./components/Admin/TransportCompanySettings.vue";
+import TcSettings from "./components/Admin/TcSettings.vue";
+import SupportApps from "./components/Admin/SupportApps.vue";
+import SupportAppImport from "./components/Admin/SupportAppImport.vue";
+import { DotLoader } from 'vue3-spinner';
+import TariffRegionSettings from "./components/Admin/TariffRegionEdit.vue";
+import TariffRegions from "./components/Admin/TariffRegions.vue";
 import Multiselect from 'vue-multiselect';
-import TariffCreate from "./components/Admin/TariffCreate";
-import TariffsGetFromServiceButton from "./components/Admin/TariffsGetFromServiceButton";
-import TariffPermissionRequestButton from "./components/Admin/TariffPermissionRequestButton";
-import TariffList from "./components/Admin/TariffList";
-import UserTariffPermissions from "./components/Admin/UserTariffPermissions";
-import TariffNameAliasForm from "./components/Admin/TariffNameAliasForm";
-import YandexZones from "./components/Admin/YandexZones";
+import TariffCreate from "./components/Admin/TariffCreate.vue";
+import TariffsGetFromServiceButton from "./components/Admin/TariffsGetFromServiceButton.vue";
+import TariffPermissionRequestButton from "./components/Admin/TariffPermissionRequestButton.vue";
+import TariffList from "./components/Admin/TariffList.vue";
+import UserTariffPermissions from "./components/Admin/UserTariffPermissions.vue";
+import TariffNameAliasForm from "./components/Admin/TariffNameAliasForm.vue";
+import YandexZones from "./components/Admin/YandexZones.vue";
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -54,42 +51,44 @@ import YandexZones from "./components/Admin/YandexZones";
  */
 
 if (document.getElementById('app')) {
-    const app = new Vue({
-        el: '#app',
+    const app = createApp({
         components: {
-            ApplicationForm,
-            Popup,
-            DatePicker,
-            RegisterForm,
-            MaskedInput,
-            ProfileForm,
-            LoginForm
+            'application-form': ApplicationForm,
+            'popup': Popup,
+            'date-picker': DatePicker,
+            'register-form': RegisterForm,
+            'mask-input': MaskInput,
+            'profile-form': ProfileForm,
+            'login-form': LoginForm
         }
     });
+
+    app.mount('#app')
 }
 
 if (document.getElementById('admin-app')) {
-    const adminApp = new Vue({
-        el: '#admin-app',
+    const adminApp = createApp({
         components: {
-            QuotesTable,
-            DatePicker,
-            QuoteEmailsTable,
-            TransportCompanySettings,
-            TcSettings,
-            SupportApps,
-            SupportAppImport,
-            PulseLoader,
-            TariffRegionSettings,
-            TariffRegions,
-            Multiselect,
-            TariffCreate,
-            TariffsGetFromServiceButton,
-            TariffPermissionRequestButton,
-            TariffList,
-            UserTariffPermissions,
-            TariffNameAliasForm,
-            YandexZones
+            'quotes-table': QuotesTable,
+            'quote-emails-table': QuoteEmailsTable,
+            'date-picker': DatePicker,
+            'transport-company-settings': TransportCompanySettings,
+            'tc-settings': TcSettings,
+            'support-apps':SupportApps,
+            'support-app-import': SupportAppImport,
+            'spinner': DotLoader,
+            'tariff-region-settings': TariffRegionSettings,
+            'tariff-regions': TariffRegions,
+            'multiselect': Multiselect,
+            'tariff-create': TariffCreate,
+            'tariff-get-from-service-button': TariffsGetFromServiceButton,
+            'tariff-permission-request-button': TariffPermissionRequestButton,
+            'tariff-list': TariffList,
+            'user-tariff-permissions': UserTariffPermissions,
+            'tariff-name-alias-form': TariffNameAliasForm,
+            'yandex-zones': YandexZones
         }
     })
+
+    adminApp.mount('#admin-app')
 }

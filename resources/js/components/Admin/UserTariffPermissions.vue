@@ -18,7 +18,7 @@
 
 <script>
 import Multiselect from "vue-multiselect";
-import Modal from "./Modal";
+import Modal from "./Modal.vue";
 
 export default {
     name: "UserTariffPermissions",
