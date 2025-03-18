@@ -25,6 +25,13 @@ RUN apt-get update && apt-get install -y \
         sockets
 
 COPY ../docker/php.ini /usr/local/etc/php/conf.d/
+
+RUN git clone --depth 1 https://github.com/edenhill/librdkafka.git --branch v1.2.1 --single-branch \
+    && (cd librdkafka && ./configure && make && make install) \
+    && pecl install rdkafka \
+    && (cd .. && rm -rf librdkafka);
+COPY ../docker/rdkafka.ini /usr/local/etc/php/conf.d/rdkafka.ini
+
 # Установим Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
@@ -60,7 +67,6 @@ RUN sed -i s/{HOST}/$GITLAB_HOST/ /home/git/.ssh/config
 RUN sed -i s/{PORT}/$GITLAB_PORT/ /home/git/.ssh/config
 RUN rm -rf /var/www/public/storage
 RUN php artisan storage:link
-RUN php artisan migrate
 # Откроем порты
 EXPOSE 80
 

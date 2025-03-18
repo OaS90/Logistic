@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Services\YandexZones;
 
+use App\Infrastructure\Events\EventDispatcher;
 use App\Infrastructure\Repositories\Hru\FilialRepository;
 use App\Infrastructure\Services\Kraken\Api;
 use App\Models\Region;
@@ -11,7 +12,10 @@ class YandexZonesService
 {
     const FILE_NAME = 'zones.json';
     const UPDATED_FILE_NAME = 'updated_zones.json';
-    public function __construct(private readonly Api $krakenApi, private readonly FilialRepository $filialRepo) {}
+    public function __construct(private readonly Api $krakenApi,
+                                private readonly FilialRepository $filialRepo,
+                                private readonly EventDispatcher $eventDispatcher
+    ) {}
 
     /**
      * @throws \Exception
@@ -102,17 +106,18 @@ class YandexZonesService
 
         return $data;
     }
-
-
     public function importToService(array $zonesToUpdate): void
     {
         if ($zonesToUpdate) {
+            $codes = [];
 
             // Сначала изменяем координаты для всех зон
             foreach ($zonesToUpdate as &$zone) {
                 foreach ($zone['points'] as &$point) {
                     list($point[0], $point[1]) = [$point[1], $point[0]];
                 }
+
+                $codes[] = $zone['filial_code'];
             }
 
             $senderZones = array_filter($zonesToUpdate, function ($zone) {
@@ -158,6 +163,8 @@ class YandexZonesService
                     $this->krakenApi->deliveryServiceRequest('settings/allow-zones', $allowZone, 'PATCH');
                 }
             }
+
+            $this->eventDispatcher->filialZoneChanged($codes);
 
             Storage::disk('local')->delete(self::FILE_NAME);
             Storage::disk('local')->move(self::UPDATED_FILE_NAME, self::FILE_NAME);
