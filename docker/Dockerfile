@@ -2,7 +2,7 @@
 FROM php:8.2-fpm
 
 ARG GITLAB_PORT=22
-ARG GITLAB_HOST=gitlabhost.adeal.ru
+ARG GITLAB_HOST=gitlab.adeal.ru
 # Установим необходимые системные зависимости и PHP-расширения
 RUN apt-get update && apt-get install -y \
         nginx \
