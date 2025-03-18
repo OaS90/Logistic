@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6fb7e878d66c26b2cd4bf93e883730ef",
+    "content-hash": "ddbc5e6f17e75e625a6448f1905c64d0",
     "packages": [
         {
             "name": "backpack/basset",
@@ -2694,7 +2694,7 @@
             "version": "1.0.5",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.adeal.ru:hrulibs/events.git",
+                "url": "git@gitlabhost.adeal.ru:hrulibs/events.git",
                 "reference": "7db241986689cb7e8367dcf188f06678a1bed6dc"
             },
             "require": {

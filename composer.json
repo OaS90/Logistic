@@ -11,7 +11,7 @@
         {
             "name": "hrulibs/events",
             "type": "vcs",
-            "url": "git@gitlab.adeal.ru:hrulibs/events.git"
+            "url": "git@gitlabhost.adeal.ru:hrulibs/events.git"
         }
     ],
     "require": {
