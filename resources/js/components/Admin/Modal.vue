@@ -37,10 +37,9 @@ export default {
             this.btnClass = this.buttonClass
         }
     },
-
-    beforeDestroy() {
+    beforeUnmount() {
         $("body").removeClass("modal-open")
-    }
+    },
 }
 </script>
 
