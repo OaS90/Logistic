@@ -27,7 +27,7 @@
                     <td v-if="showQuoteProperties"><input type="text" class="form-control" v-model="item.tmp_quote"
                                                           @keypress="onlyNumber"></td>
                     <td v-if="showQuoteProperties">
-                        <date-picker range type="date" v-model="item.tmp_date" format="MM.DD.YYYY"></date-picker>
+                        <date-picker range type="date" v-model:value="item.tmp_date" format="MM.DD.YYYY"></date-picker>
                     </td>
                     <td v-if="showQuoteProperties"><input type="text" class="form-control"
                                                           v-model="item.periodTenTwo.percent"
@@ -45,7 +45,7 @@
                     <td v-if="showSiteProperties">
                         <date-picker format="H:mm"
                                      class="date-time"
-                                     v-model="item.in_day_limitation"
+                                     v-model:value="item.in_day_limitation"
                                      type="time"
                                      name="delivery_till"
                                      value-type="H:mm"
@@ -67,7 +67,7 @@
                     <td v-if="showSiteProperties">
                         <date-picker format="H:mm"
                                      class="date-time"
-                                     v-model="item.time_last"
+                                     v-model:value="item.time_last"
                                      type="time"
                                      name="delivery_till"
                                      value-type="H:mm"
@@ -84,7 +84,7 @@
                                      class="date-time"
                                      format="H:mm"
                                      value-type="H:mm"
-                                     v-model="item.delivery_hours['from']"
+                                     v-model:value="item.delivery_hours['from']"
                                      :timePickerOptions="{
                                         start: '00:00',
                                         step: '01:00',
@@ -94,7 +94,7 @@
                         <span>до :</span>
                         <date-picker type="time"
                                      class="date-time"
-                                     v-model="item.delivery_hours['till']"
+                                     v-model:value="item.delivery_hours['till']"
                                      format="H:mm"
                                      value-type="H:mm"
                                      :timePickerOptions="{
@@ -107,7 +107,7 @@
                     </td>
                     <td v-if="showSiteProperties">
                         <date-picker range type="date"
-                                     v-model="item.blocked_dates"
+                                     v-model:value="item.blocked_dates"
                                      format="MM.DD.YYYY"
                         >
                         </date-picker>

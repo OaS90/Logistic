@@ -63,7 +63,7 @@
                         <option selected="selected" value="0" hidden>Выберите адрес</option>
                         <option :value="warehouse.id" v-for="(warehouse, k) in warehouses" :key="k">{{ warehouse.address }}</option>
                     </select>
-                    <date-picker input-class="text" v-model="applicationFields.delivery_date"
+                    <date-picker input-class="text" v-model:value="applicationFields.delivery_date"
                                  valueType="YYYY-MM-DD"
                                  class="delivery-date"
                                  format="DD.MM.YYYY"
@@ -78,7 +78,7 @@
                                      class="date-time"
                                      input-class="text time-picker"
                                      type="time"
-                                     v-model="applicationFields.delivery_from"
+                                     v-model:value="applicationFields.delivery_from"
                                      name="delivery_from"
                                      value-type="H:mm"
                                      :timePickerOptions="{
@@ -92,7 +92,7 @@
                                      class="date-time"
                                      input-class="text time-picker"
                                      type="time"
-                                     v-model="applicationFields.delivery_till"
+                                     v-model:value="applicationFields.delivery_till"
                                      name="delivery_till"
                                      value-type="H:mm"
                                      :timePickerOptions="{
