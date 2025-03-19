@@ -13,17 +13,17 @@
                 <td>{{ setting.tc_name }}</td>
                 <td align="center"><input type="checkbox" :checked="setting.enabled" @change="toggleEnable(setting)"></td>
                 <td>
-<!--                    <date-picker type="time"-->
-<!--                                 class="last-time"-->
-<!--                                 v-model="setting.last_time"-->
-<!--                                 format="H:mm"-->
-<!--                                 value-type="H:mm"-->
-<!--                                 :timePickerOptions="{-->
-<!--                                            start: '01:00',-->
-<!--                                            step: '01:00',-->
-<!--                                            end: '23:00',-->
-<!--                                         }">-->
-<!--                    </date-picker>-->
+                    <date-picker type="time"
+                                 class="last-time"
+                                 v-model:value="setting.last_time"
+                                 format="H:mm"
+                                 value-type="H:mm"
+                                 :timePickerOptions="{
+                                            start: '01:00',
+                                            step: '01:00',
+                                            end: '23:00',
+                                         }">
+                    </date-picker>
                 </td>
                 <td>
                     <div class="days">
@@ -61,14 +61,14 @@
 </template>
 
 <script>
-// import DatePicker from "vue2-datepicker";
+import DatePicker from "vue-datepicker-next";
 
 export default {
     name: "TcSettings",
     props: ['settings'],
-    // components: {
-    //     DatePicker
-    // },
+    components: {
+        DatePicker
+    },
     data() {
         return {
             show: false

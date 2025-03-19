@@ -66,7 +66,7 @@ class TCSettingsService
                 'shipment' => $filialWithSettings
             ];
         }
-        dd($filialsWithSettings);
+
         if (config('app.enable_config_service_api_for_quotes')) {
             $this->krakenApi
                 ->configServiceRequest($this->krakenApi::CONFIG_UPDATE_TC_QUOTES_URI, $filialsWithSettings, 'PATCH');
