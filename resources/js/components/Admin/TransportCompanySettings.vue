@@ -64,12 +64,17 @@
             <span style="padding-left: 5px">{{ currentPage }} из {{ totalPage }}</span>
         </p>
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body">
-                {{ modalText }}
-                <br>
-                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
-            </span>
-            <span slot="footer"></span>
+            <template #body>
+                <template v-if="loading">
+                    {{ modalText }}
+                    <PulseLoader :loading="loading" :color="'#7c69ef'"/>
+                </template>
+                <template v-else>
+                    {{ modalText }}
+                    <br>
+                    <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+                </template>
+            </template>
         </modal>
     </div>
 </template>
@@ -77,11 +82,13 @@
 <script>
 import Modal from './Modal.vue'
 import TcSettings from './TcSettings.vue'
+import {PulseLoader} from "vue3-spinner";
 
 export default {
     name: "TransportCompanySettings",
     props: ['warehouses', 'guest'],
     components: {
+        PulseLoader,
         Modal,
         TcSettings
     },
