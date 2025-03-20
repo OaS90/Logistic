@@ -102,7 +102,7 @@ class YandexZonesService
             Storage::disk('local')->delete($filename);
         }
 
-        Storage::disk('local')->put($filename, $jsonData);
+        Storage::put($filename, $jsonData);
 
         return $data;
     }
@@ -166,8 +166,8 @@ class YandexZonesService
 
             $this->eventDispatcher->filialZoneChanged($codes);
 
-            Storage::disk('local')->delete(self::FILE_NAME);
-            Storage::disk('local')->move(self::UPDATED_FILE_NAME, self::FILE_NAME);
+            Storage::delete(self::FILE_NAME);
+            Storage::move(self::UPDATED_FILE_NAME, self::FILE_NAME);
         }
     }
 
