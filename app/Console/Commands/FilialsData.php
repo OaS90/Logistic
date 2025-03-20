@@ -4,13 +4,16 @@ namespace App\Console\Commands;
 
 use App\Domain\DTO\HruFilialDTO;
 use App\Infrastructure\Repositories\Hru\FilialRepository;
+use App\Infrastructure\Repositories\RegionRepository;
 use App\Infrastructure\Services\Kraken\Api;
-use App\Models\Hru\Filial;
 use Illuminate\Console\Command;
 
-class getFilialsData extends Command
+class FilialsData extends Command
 {
-    public function __construct(public readonly Api $krakenApi, public readonly FilialRepository $filialRepository)
+    public function __construct(public readonly Api $krakenApi,
+                                public readonly FilialRepository $filialRepository,
+                                public readonly RegionRepository $regionRepository
+    )
     {
         parent::__construct();
     }
@@ -39,25 +42,25 @@ class getFilialsData extends Command
         if (isset($filialsData['list'])) {
             foreach ($filialsData['list'] as $item) {
                 $existsFilial = $this->filialRepository->getByFilialId($item['id']);
-
+                $region = $this->regionRepository->getByHruId($item['region_id']);
                 if (!$existsFilial) {
                     $dto = new HruFilialDto(
                         filialId: $item['id'],
                         name: $item['name'],
                         warehouseId: $item['default_warehouse_id'],
-                        regionId: $item['region_id']
+                        regionId: $region->id
                     );
 
                     $this->filialRepository->create($dto);
                 } else {
                     $existsFilial->update([
-                        'region_id' => $item['region_id'],
+                        'region_id' => $region->id,
                         'name' => $item['name'],
                     ]);
                 }
             }
         } else {
-            $this->info('No results from config service');
+           $this->info('No results from config service');
         }
 
         $this->info('Done!');
