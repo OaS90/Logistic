@@ -14,7 +14,7 @@ class EventDispatcher
     {
         try {
             $this->getPublisher()
-                ->onTopic('filials')
+                ->onTopic('filials_changes')
                 ->withMessage(new Message(body: ['codes' => $codes]))
                 ->send();
         } catch (\Exception $e) {
