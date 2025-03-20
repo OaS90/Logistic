@@ -40,7 +40,7 @@ class HruFilialCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::column('id');
-        CRUD::column('code')->label('Код');
+        CRUD::column('filial_id')->label('Код');
         CRUD::addColumn([
             'name' => 'name',
             'label' => 'Наименование',
@@ -92,7 +92,7 @@ class HruFilialCrudController extends CrudController
     protected function setupCreateOperation(): void
     {
         CRUD::setValidation(FilialRequest::class);
-        CRUD::field('code');
+        CRUD::field('filial_id')->label('Код филиала');
         CRUD::field('name');
         $this->crud->addField([  // Select
             'label' => "Регион",
