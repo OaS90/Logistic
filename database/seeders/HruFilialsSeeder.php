@@ -31,7 +31,7 @@ class HruFilialsSeeder extends Seeder
 
             if ($warehouse) {
                 $dto = new HruFilialDto(
-                    code: $filial[0],
+                    filialId: (int) $filial[0],
                     name: $filial[1],
                     warehouseId: $warehouse->id,
                     regionId: $warehouse->region->id

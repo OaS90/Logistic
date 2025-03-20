@@ -13,14 +13,14 @@ class FilialRepository
         return Filial::where('id', $id)->first();
     }
 
-    public function getByCode(string $code): ?Filial
+    public function getByFilialId(string $filialId): ?Filial
     {
-        return Filial::where('code', $code)->first();
+        return Filial::where('filial_id', $filialId)->first();
     }
 
     public function create(HruFilialDTO $dto): Filial
     {
-        $existsEntity = Filial::where('code', $dto->code)
+        $existsEntity = Filial::where('filial_id', $dto->filialId)
             ->with(['warehouses' => function ($query) use ($dto) {
                 $query->where('warehouse_id', $dto->warehouseId);
             }])
@@ -28,7 +28,7 @@ class FilialRepository
 
         if (!$existsEntity) {
             return Filial::create([
-                'code' => $dto->code,
+                'filial_id' => $dto->filialId,
                 'name' => $dto->name,
                 'region_id' => $dto->regionId
             ]);

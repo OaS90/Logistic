@@ -65,7 +65,7 @@ class YandexZonesService
                 }
             }
 
-            Storage::disk('local')->put(self::UPDATED_FILE_NAME, json_encode($newData));
+            Storage::put(self::UPDATED_FILE_NAME, json_encode($newData));
         } else {
             throw new \Exception('Не найден файл с настройками из сервиса');
         }
@@ -99,7 +99,7 @@ class YandexZonesService
         $jsonData = json_encode($data);
 
         if (Storage::exists($filename)) {
-            Storage::disk('local')->delete($filename);
+            Storage::delete($filename);
         }
 
         Storage::put($filename, $jsonData);
@@ -178,8 +178,7 @@ class YandexZonesService
         foreach ($polygons as $polygon) {
             $regionId = isset($polygon['region']) ? $polygon['region']['id'] : $polygon['region_id'];
             $region = Region::where('region_id', $regionId)->first();
-            $filialCode =  sprintf("%05d", $polygon['filial_id']);
-            $filial = $this->filialRepo->getByCode($filialCode);
+            $filial = $this->filialRepo->getByFilialId($polygon['filial_id']);
             $name = '';
             $fillOpacity = 0.6;
             $stroke = '82cdff';
