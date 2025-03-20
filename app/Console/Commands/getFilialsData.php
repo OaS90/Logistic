@@ -56,6 +56,10 @@ class getFilialsData extends Command
                     ]);
                 }
             }
+        } else {
+            $this->info('No results from config service');
         }
+
+        $this->info('Done!');
     }
 }
