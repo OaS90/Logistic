@@ -8,16 +8,17 @@
             </div>
         </div>
         <modal v-if="showModal" @close="showModal = false">
-                <span slot="body" v-if="loading">
+            <template #body>
+                <template v-if="loading">
                     {{ modalText }}
-                    <PulseLoader :loading="loading" :color="color" :size="size"/>
-                </span>
-            <span slot="body" v-else>
-                {{ modalText }}
-                <br>
-                <button :class="btnClass" @click="showModal = !showModal">{{ btnText }}</button>
-            </span>
-            <span slot="footer"></span>
+                    <PulseLoader :loading="loading" :color="'#7c69ef'"/>
+                </template>
+                <template v-else>
+                    {{ modalText }}
+                    <br>
+                    <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+                </template>
+            </template>
         </modal>
     </div>
 </template>

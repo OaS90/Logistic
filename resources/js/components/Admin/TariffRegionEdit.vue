@@ -102,22 +102,20 @@
 
 
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body">
+            <template #body>
                 {{ modalText }}
                 <br>
                 <button :class="btnClass" @click="showModal = !showModal">{{ btnText }}</button>
-            </span>
-            <span slot="footer"></span>
+            </template>
         </modal>
 
         <modal v-if="deleteModal">
-            <span slot="body">
+            <template #body>
                 Удалить зону с ценами ?
                 <br>
                 <button class="btn btn-danger" @click="deleteZone">Удалить</button>
                 <button class="btn btn-secondary" @click="cancelZoneDelete()">Отмена</button>
-            </span>
-            <span slot="footer"></span>
+            </template>
         </modal>
     </div>
 </template>

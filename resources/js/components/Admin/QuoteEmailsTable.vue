@@ -34,16 +34,19 @@
                 </tr>
             </tbody>
         </table>
-
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body">{{ modalText }}</span>
-            <span slot="footer"></span>
+            <template #body>
+                {{ modalText }}
+                <br>
+                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+            </template>
         </modal>
     </div>
 </template>
 
 <script>
 import Modal from "./Modal.vue";
+import {PulseLoader} from "vue3-spinner";
 
 export default {
     name: "QuoteEmailsTable",
@@ -114,6 +117,7 @@ export default {
         }
     },
     components: {
+        PulseLoader,
         Modal
     }
 }

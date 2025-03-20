@@ -41,22 +41,23 @@
         </div>
 
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body" v-if="loading">
-                <DotLoader :loading="loading" :color="'#7c69ef'" :size="'15px'"/>
-            </span>
-            <span slot="body" v-else>
-                {{ errorText }}
-                <br>
-                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
-            </span>
-            <span slot="footer"></span>
+            <template #body>
+                <template v-if="loading">
+                    <PulseLoader :loading="loading" :color="'#7c69ef'"/>
+                </template>
+                <template v-else>
+                    {{ errorText }}
+                    <br>
+                    <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+                </template>
+            </template>
         </modal>
     </div>
 </template>
 
 <script>
 import Modal from "./Modal.vue";
-import { DotLoader } from "vue3-spinner";
+import {DotLoader, PulseLoader} from "vue3-spinner";
 export default {
     data() {
         return {
@@ -67,6 +68,7 @@ export default {
         }
     },
     components: {
+        PulseLoader,
         Modal,
         DotLoader
     },

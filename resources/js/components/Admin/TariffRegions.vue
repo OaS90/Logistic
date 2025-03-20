@@ -25,12 +25,11 @@
                @click="setRegionForDeleting(region.id, index)"></i>
         </div>
         <modal v-if="showDeleteRegionModal">
-            <span slot="body">
+            <template #body>
                 {{ modalText }}
                 <br>
                 <button :class="btnClass" @click="deleteRegion(regionForDeleting.id, regionForDeleting.index)">{{ btnText }}</button>
-            </span>
-            <span slot="footer"></span>
+            </template>
         </modal>
     </div>
 </template>

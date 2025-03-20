@@ -3,12 +3,11 @@
         <a href="#" @click="sendRequest" class="btn btn-sm btn-link"><i class="la la-mail-reply"></i> Запрос доступов</a>
 
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body">
+            <template #body>
                 Запрос отправлен
                 <br>
                 <button class="btn btn-success" @click="showModal = !showModal">OK</button>
-            </span>
-            <span slot="footer"></span>
+            </template>
         </modal>
     </span>
 </template>
