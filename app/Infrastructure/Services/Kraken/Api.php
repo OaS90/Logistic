@@ -16,7 +16,7 @@ class Api
     public const MONOLITH_UPDATE_QUOTES_URI = 'config-old/update-interval-quotas-config';
     public const DELIVERY_TARIFFS_URI = 'settings/calculation/courier-delivery-price-tariffs';
     public const DELIVERY_COURIER_PRICES_URI = 'settings/calculation/group/courier-delivery-prices';
-    public const CONFIG_FILIALS_URI = 'filials';
+    public const CONFIG_FILIALS_URI = 'config/filials';
 
 
     public function __construct(private readonly Client $client)
