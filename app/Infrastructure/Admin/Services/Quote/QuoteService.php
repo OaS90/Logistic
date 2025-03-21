@@ -43,7 +43,7 @@ class QuoteService
                 $quoteInfo = [
                     'id' => $quote->id,
                     'to_save' => false,
-                    'filial_code' => $quote->filial->code,
+                    'filial_code' => sprintf('%05d', $quote->filial->filial_id),
                     'filial_name' => $quote->filial->name,
                     'region_name' => $quote->region->name,
                     'quote' => $quote->quote,

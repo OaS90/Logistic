@@ -304,13 +304,13 @@ class ApplicationService implements ApplicationServiceInterface
 
             $apps[] = $appDTO;
 
-            Log::info('Sent to 1c ' . json_encode($appDTO));
-
             if ($isObiPartner) {
                 $this->appObiRepo->updateByFields($appDTO->orderNumber, ['old_doc_ver' => $appDTO->docVer]);
             } else {
                 $this->appRepo->updateByFields($app, ['old_doc_ver' => $appDTO->docVer]);
             }
+
+            Log::info('Sent to 1c ' . json_encode($appDTO));
         }
 
         return $apps;

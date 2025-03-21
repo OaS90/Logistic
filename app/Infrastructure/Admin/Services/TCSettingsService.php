@@ -108,7 +108,7 @@ class TCSettingsService
             $data[] = [
                 'id' => $filial->id,
                 'name' => $filial->name,
-                'code' => $filial->code,
+                'code' => sprintf('%05d', $filial->filial_id),
                 'quote' => $setting->quote ?? 0,
                 'region' => $filial->region ?->name,
                 'region_id' => $filial->region_id,

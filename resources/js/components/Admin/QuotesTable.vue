@@ -275,10 +275,14 @@ export default {
             return this.dataQuotes.filter((quote, index) => {
                 const filialName = quote.filial_name.toLowerCase();
                 const searchTerm = this.filter.toLowerCase();
+                const filialCode = quote.filial_code
+                const regionName = quote.region_name.toLowerCase()
                 // let start = (this.currentPage - 1) * this.pageSize;
                 // let end = this.currentPage * this.pageSize;
 
-                if (this.filter !== '') return filialName.includes(searchTerm)
+                if (this.filter !== '') {
+                    return filialName.includes(searchTerm) || filialCode.includes(searchTerm) || regionName.includes(searchTerm)
+                }
                 // if (index >= start && index < end)
                 return true
             });
