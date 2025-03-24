@@ -87,8 +87,6 @@ class YandexZonesService
 
         $allowZones = $this->krakenApi->deliveryServiceRequest('settings/allow-zones');
         $allowZonesCoordinates = $this->prepareCoordinates($allowZones, 'allow-zones');
-//        $senderZones = $this->krakenApi->deliveryServiceRequest('settings/sender-zones');
-//        $senderZonesCoordinates = $this->prepareCoordinates($senderZones, 'sender-zones');
         $data['type'] = 'FeatureCollection';
         $data['metadata'] = [
             'name' => 'maps',
@@ -120,14 +118,6 @@ class YandexZonesService
                 $codes[] = $zone['filial_code'];
             }
 
-            $senderZones = array_filter($zonesToUpdate, function ($zone) {
-                if ($zone['type'] == 'sender_zone') {
-                    return true;
-                }
-
-                return false;
-            });
-
             $deliveryZones = array_filter($zonesToUpdate, function ($zone) {
                 if ($zone['type'] == 'polygon') {
                     return true;
@@ -143,12 +133,6 @@ class YandexZonesService
 
                 return false;
             });
-
-            if ($senderZones) {
-                foreach ($senderZones as $senderZone) {
-                    $this->krakenApi->deliveryServiceRequest('settings/sender-zones', $senderZone, 'PATCH');
-                }
-            }
 
             if ($deliveryZones) {
                 foreach ($deliveryZones as $deliveryZone) {
