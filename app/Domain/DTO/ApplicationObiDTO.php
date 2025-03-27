@@ -13,7 +13,7 @@ class ApplicationObiDTO
                                 public readonly string $orderType,
                                 public readonly string $clientName,
                                 public readonly string $phones,
-                                public readonly string $deliveryType,
+                                public readonly ?string $deliveryType,
                                 public readonly string $deliveryZone,
                                 public readonly array $orderList,
                                 public readonly float $orderWeight,

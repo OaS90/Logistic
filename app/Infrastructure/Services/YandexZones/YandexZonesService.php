@@ -175,7 +175,9 @@ class YandexZonesService
             }
 
             if ($filial) {
-                $filialCode = $filial->code;
+                $filialCode = $filial->filial_id;
+            } else {
+                $filialCode = $polygon['filial_id'];
             }
 
             if ($type === 'allow-zones') {
