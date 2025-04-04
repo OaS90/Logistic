@@ -46,13 +46,14 @@ class YandexZonesService
                             $regionName = $explodedDescription[1] == 'allow_zone' ? $explodedDescription[2] : $explodedDescription[4];
                             $filialCode = $explodedDescription[1] == 'allow_zone' ? $explodedDescription[3] : $explodedDescription[5];
                             $changes[$polygon['properties']['description']] = [
+                                'id' => $polygon['id'],
                                 'zone_name' => $zoneName,
                                 'zone_code' => $explodedDescription[3] ?? null,
                                 'region_name' => $regionName,
                                 'points' => $newCoordinates,
                                 'region_id' => $explodedDescription[0],
                                 'type' => $explodedDescription[1],
-                                'filial_code' => $filialCode,
+                                'filial_code' => sprintf('%50d', $filialCode),
                                 'filial_id' => (int) $filialCode,
                                 'to_import' => false
                             ];
@@ -87,27 +88,29 @@ class YandexZonesService
 
         $allowZones = $this->krakenApi->deliveryServiceRequest('settings/allow-zones');
         $allowZonesCoordinates = $this->prepareCoordinates($allowZones, 'allow-zones');
-        $data['type'] = 'FeatureCollection';
-        $data['metadata'] = [
-            'name' => 'maps',
-            'creator' => 'BoF Holodilnik'
-        ];
-        $data['features'] = array_merge($polygonsCoordinates, $allowZonesCoordinates);
-        $filename = 'zones.json';
-        $jsonData = json_encode($data);
+        $polygons = array_merge($polygonsCoordinates, $allowZonesCoordinates);
+        $jsonData = json_encode($this->prepareDataForImportToFile($polygons));
 
-        if (Storage::exists($filename)) {
-            Storage::delete($filename);
+        if (Storage::exists(self::FILE_NAME)) {
+            Storage::delete(self::FILE_NAME);
         }
 
-        Storage::put($filename, $jsonData);
+        Storage::put(self::FILE_NAME, $jsonData);
 
-        return $data;
+        return $polygons;
     }
-    public function importToService(array $zonesToUpdate): void
+    public function importToService(array $zonesToUpdate, array $changedZones): void
     {
         if ($zonesToUpdate) {
-            $codes = [];
+//            $codes = [];
+
+            // берём зоны, которые не отметили для отправки в сервис
+            $filialIdsToUpdate = array_column($zonesToUpdate, 'filial_id');
+            $filialIdsChangedZones = array_column($changedZones, 'filial_id');
+            $notSelectedZoneCodes = array_diff($filialIdsChangedZones, $filialIdsToUpdate);
+            $notSelectedZones = array_filter($changedZones, function ($zone) use ($notSelectedZoneCodes) {
+                return in_array($zone['filial_id'], $notSelectedZoneCodes);
+            });
 
             // Сначала изменяем координаты для всех зон
             foreach ($zonesToUpdate as &$zone) {
@@ -115,7 +118,7 @@ class YandexZonesService
                     list($point[0], $point[1]) = [$point[1], $point[0]];
                 }
 
-                $codes[] = $zone['filial_code'];
+//                $codes[] = $zone['filial_code'];
             }
 
             $deliveryZones = array_filter($zonesToUpdate, function ($zone) {
@@ -148,10 +151,43 @@ class YandexZonesService
                 }
             }
 
-            $this->eventDispatcher->filialZoneChanged($codes);
+            if ($notSelectedZones) {
+                $notSelectedAllowZones = array_filter($changedZones, function ($zone) use ($notSelectedZoneCodes) {
+                    if (in_array($zone['filial_id'], $notSelectedZoneCodes) && $zone['type'] == 'allow_zone') {
+                        return true;
+                    }
 
-            Storage::delete(self::FILE_NAME);
-            Storage::move(self::UPDATED_FILE_NAME, self::FILE_NAME);
+                    return false;
+                });
+
+                $notSelectedDeliveryZones = array_filter($changedZones, function ($zone) use ($notSelectedZoneCodes) {
+                    if (in_array($zone['filial_id'], $notSelectedZoneCodes) && $zone['type'] == 'polygon') {
+                        return true;
+                    }
+
+                    return false;
+                });
+
+                $preparedNotSelectedAllowZones = $this->prepareCoordinates($notSelectedAllowZones, 'allow-zones');
+                $preparedNotSelectedDeliveryZones = $this->prepareCoordinates($notSelectedDeliveryZones);
+                $preparedNotSelectedZones = array_merge($preparedNotSelectedDeliveryZones, $preparedNotSelectedAllowZones);
+                $jsonData = json_encode($this->prepareDataForImportToFile($preparedNotSelectedZones));
+
+                if (Storage::exists(self::FILE_NAME)) {
+                    Storage::delete(self::FILE_NAME);
+                }
+
+                if (Storage::exists(self::UPDATED_FILE_NAME)) {
+                    Storage::delete(self::UPDATED_FILE_NAME);
+                }
+
+                Storage::put(self::FILE_NAME, $jsonData);
+            } else {
+                Storage::delete(self::FILE_NAME);
+                Storage::move(self::UPDATED_FILE_NAME, self::FILE_NAME);
+            }
+//            отпрака в кафу. Пока отложено.
+//            $this->eventDispatcher->filialZoneChanged($codes);
         }
     }
 
@@ -264,5 +300,17 @@ class YandexZonesService
         }
 
         return false; // Нет изменений
+    }
+
+    private function prepareDataForImportToFile(array $polygonsData): array
+    {
+        $data['type'] = 'FeatureCollection';
+        $data['metadata'] = [
+            'name' => 'maps',
+            'creator' => 'BoF Holodilnik'
+        ];
+        $data['features'] = $polygonsData;
+
+        return $data;
     }
 }

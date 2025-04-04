@@ -23,6 +23,7 @@ class YandexZonesController extends Controller
             $exportData = json_decode($fileContent, true);
             $result = $service->importFromDelivery($exportData);
         } catch (\Throwable $e) {
+            dd($e->getMessage());
             Log::error('Preparing zones for sending to service error ' . $e->getMessage());
 
             return response()->json(['success' => false], Response::HTTP_BAD_REQUEST);
@@ -53,8 +54,9 @@ class YandexZonesController extends Controller
     public function importToService(YandexZonesService $service, Request $request): Response
     {
         try {
-            $data = $request->get('zones');
-            $service->importToService($data);
+            $zonesToImport = $request->get('zonesToImport');
+            $changedZones = $request->get('zones');
+            $service->importToService($zonesToImport, $changedZones);
         } catch (\Throwable $e) {
             Log::error('Importing zones to service error ' . $e->getMessage());
 

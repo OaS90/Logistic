@@ -121,7 +121,7 @@ export default {
             this.showModal = true
             this.loading = true
 
-            axios.post('/admin/yandex-zones/import-to-service', {zones: zonesToImport})
+            axios.post('/admin/yandex-zones/import-to-service', {zonesToImport: zonesToImport, zones: this.changedZones})
                 .then(response => {
                     this.showModal = false;
                     this.loading = false
