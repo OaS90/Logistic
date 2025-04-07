@@ -89,7 +89,8 @@ class YandexZonesService
         $allowZones = $this->krakenApi->deliveryServiceRequest('settings/allow-zones');
         $allowZonesCoordinates = $this->prepareCoordinates($allowZones, 'allow-zones');
         $polygons = array_merge($polygonsCoordinates, $allowZonesCoordinates);
-        $jsonData = json_encode($this->prepareDataForImportToFile($polygons));
+        $polygonsData = $this->prepareDataForImportToFile($polygons);
+        $jsonData = json_encode($polygonsData);
 
         if (Storage::exists(self::FILE_NAME)) {
             Storage::delete(self::FILE_NAME);
@@ -97,7 +98,7 @@ class YandexZonesService
 
         Storage::put(self::FILE_NAME, $jsonData);
 
-        return $polygons;
+        return $polygonsData;
     }
     public function importToService(array $zonesToUpdate, array $changedZones): void
     {
