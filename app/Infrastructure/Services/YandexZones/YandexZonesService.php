@@ -42,10 +42,21 @@ class YandexZonesService
 
                         if ($diffs) {
                             $diffsRegions[$explodedDescription[0]] = $explodedDescription;
-                            $zoneName = $explodedDescription[1] == 'allow_zone' ? '-' : $explodedDescription[2] . ' ' . $explodedDescription[3];
-                            $regionName = $explodedDescription[1] == 'allow_zone' ? $explodedDescription[2] : $explodedDescription[4];
-                            $filialCode = $explodedDescription[1] == 'allow_zone' ? $explodedDescription[3] : $explodedDescription[5];
-                            $zoneCodeShort = $explodedDescription[1] != 'allow_zone' ? explode('_', $explodedDescription[3])[1] : null;
+
+                            if ($explodedDescription[1] == 'allow_zone') {
+                                $zoneName = '-';
+                                $regionName = $explodedDescription[2];
+                                $filialCode = $explodedDescription[3];
+                                $zoneCodeShort = null;
+                                $zoneCode = null;
+                            } else {
+                                $zoneName = $explodedDescription[2] . ' ' . $explodedDescription[3];
+                                $regionName = $explodedDescription[4];
+                                $filialCode = $explodedDescription[5];
+                                $zoneCode = $explodedDescription[3];
+                                $zoneCodeShort = explode('_', $zoneCode)[1];
+                            }
+
                             $changes[$polygon['properties']['description']] = [
                                 'id' => $polygon['id'],
                                 'zone_name' => $zoneName,
@@ -57,6 +68,7 @@ class YandexZonesService
                                 'filial_code' => sprintf('%50d', $filialCode),
                                 'filial_id' => (int) $filialCode,
                                 'code_short' => $zoneCodeShort,
+                                'code' => $zoneCode,
                                 'to_import' => false
                             ];
                         }
@@ -172,7 +184,7 @@ class YandexZonesService
                 });
 
                 $preparedNotSelectedAllowZones = $this->prepareCoordinates($notSelectedAllowZones, 'allow-zones');
-                $preparedNotSelectedDeliveryZones = $this->prepareCoordinates($notSelectedDeliveryZones, true);
+                $preparedNotSelectedDeliveryZones = $this->prepareCoordinates($notSelectedDeliveryZones);
                 $preparedNotSelectedZones = array_merge($preparedNotSelectedDeliveryZones, $preparedNotSelectedAllowZones);
                 $jsonData = json_encode($this->prepareDataForImportToFile($preparedNotSelectedZones));
 
