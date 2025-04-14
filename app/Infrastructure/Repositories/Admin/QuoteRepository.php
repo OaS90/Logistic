@@ -15,7 +15,15 @@ class QuoteRepository
             ->first();
 
         if (!$existsEntity) {
-            return Quote::create(['filial_id' => $filialId, 'division_id' => $regionId]);
+            $existsWithoutFilialId = Quote::where('division_id', $regionId)->first();
+
+            if (!$existsWithoutFilialId) {
+                return Quote::create(['filial_id' => $filialId, 'division_id' => $regionId]);
+            } else {
+                $existsWithoutFilialId->update(['filial_id' => $filialId]);
+
+                return $existsWithoutFilialId;
+            }
         }
 
         return $existsEntity;

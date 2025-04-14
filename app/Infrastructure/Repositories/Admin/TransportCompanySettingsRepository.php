@@ -22,11 +22,21 @@ class TransportCompanySettingsRepository
             ->first();
 
         if (!$existsSetting) {
-            return TransportCompanySettings::create([
-                'tc_id' => $dto->tcId,
-                'tc_warehouse_id' => $dto->warehouseId,
-                'filial_id' => $dto->filialId
-            ]);
+            $existsSettingWithoutFilialId = TransportCompanySettings::where('tc_id', $dto->tcId)
+                ->where('tc_warehouse_id', $dto->warehouseId)
+                ->first();
+
+            if (!$existsSettingWithoutFilialId) {
+                return TransportCompanySettings::create([
+                    'tc_id' => $dto->tcId,
+                    'tc_warehouse_id' => $dto->warehouseId,
+                    'filial_id' => $dto->filialId
+                ]);
+            } else {
+                $existsSettingWithoutFilialId->update(['filial_id' => $dto->filialId]);
+
+                return $existsSettingWithoutFilialId;
+            }
         }
 
         return $existsSetting;
