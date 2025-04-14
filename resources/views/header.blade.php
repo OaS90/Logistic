@@ -1,6 +1,6 @@
 <header class="navbar-header">
     <div class="navbar-logo">
-        <a href="/"><img src="{{ basset('images/logo.png') }}" alt="Транспорт Логистика"></a>
+        <a href="/"><img src="{{ asset('images/logo.png') }}" alt="Транспорт Логистика"></a>
     </div>
     <div class="navbar-personal">
 {{--        <div class="personal__help" title="Помощь">--}}
