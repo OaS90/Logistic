@@ -11,10 +11,12 @@
             <table id="quotes" class="table-content">
                 <tbody ref="table">
                 <tr v-for="(item, id) in filteredRows" align="center" :key="`division-${id}`">
-                    <td class="choose"><input type="checkbox" v-model="item.to_save"
-                                              @change="quoteToSave(item, id)"></td>
-                    <td>{{ item.warehouse }}</td>
-                    <td>{{ item.division }}</td>
+                    <td class="choose">
+                        <input type="checkbox" v-model="item.to_save" @change="quoteToSave(item, id)">
+                    </td>
+                    <td>{{ item.filial_code }}</td>
+                    <td class="p-2">{{ item.filial_name }}</td>
+                    <td class="p-2">{{ item.region_name }}</td>
                     <td v-if="showQuoteProperties"></td>
                     <td></td>
                     <td></td>
@@ -25,7 +27,7 @@
                     <td v-if="showQuoteProperties"><input type="text" class="form-control" v-model="item.tmp_quote"
                                                           @keypress="onlyNumber"></td>
                     <td v-if="showQuoteProperties">
-                        <date-picker range type="date" v-model="item.tmp_date" format="MM.DD.YYYY"></date-picker>
+                        <date-picker range type="date" v-model:value="item.tmp_date" format="MM.DD.YYYY"></date-picker>
                     </td>
                     <td v-if="showQuoteProperties"><input type="text" class="form-control"
                                                           v-model="item.periodTenTwo.percent"
@@ -43,11 +45,11 @@
                     <td v-if="showSiteProperties">
                         <date-picker format="H:mm"
                                      class="date-time"
-                                     v-model="item.in_day_limitation"
+                                     v-model:value="item.in_day_limitation"
                                      type="time"
                                      name="delivery_till"
                                      value-type="H:mm"
-                                     :disabled="!item.inDay ? true : false"
+                                     :disabled="!item.inDay"
                                      :timePickerOptions="{
                                         start: '00:00',
                                         step: '01:00',
@@ -65,7 +67,7 @@
                     <td v-if="showSiteProperties">
                         <date-picker format="H:mm"
                                      class="date-time"
-                                     v-model="item.time_last"
+                                     v-model:value="item.time_last"
                                      type="time"
                                      name="delivery_till"
                                      value-type="H:mm"
@@ -82,7 +84,7 @@
                                      class="date-time"
                                      format="H:mm"
                                      value-type="H:mm"
-                                     v-model="item.delivery_hours['from']"
+                                     v-model:value="item.delivery_hours['from']"
                                      :timePickerOptions="{
                                         start: '00:00',
                                         step: '01:00',
@@ -92,7 +94,7 @@
                         <span>до :</span>
                         <date-picker type="time"
                                      class="date-time"
-                                     v-model="item.delivery_hours['till']"
+                                     v-model:value="item.delivery_hours['till']"
                                      format="H:mm"
                                      value-type="H:mm"
                                      :timePickerOptions="{
@@ -105,7 +107,7 @@
                     </td>
                     <td v-if="showSiteProperties">
                         <date-picker range type="date"
-                                     v-model="item.blocked_dates"
+                                     v-model:value="item.blocked_dates"
                                      format="MM.DD.YYYY"
                         >
                         </date-picker>
@@ -136,8 +138,9 @@
                 <thead>
                 <tr align="center">
                     <th class="choose-th">Выбрать</th>
-                    <th class="store">Склад</th>
-                    <th class="regions">Регионы России</th>
+                    <th>Код филиала</th>
+                    <th class="store">Филиал</th>
+                    <th class="regions">Регион</th>
                     <th class="show-rows quote-settings" @click="showQutes()">Квоты <br> <i
                         :class="[showQuoteProperties ? 'la-angle-up' : 'la-angle-down', 'las']"></i></th>
                     <th class="show-rows site-settings" @click="showSite()">Настройки для сайта <br> <i
@@ -166,6 +169,7 @@
                     <th v-if="showZonesProperties" colspan="7">Зона доставка C</th>
                 </tr>
                 <tr align="center">
+                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -217,35 +221,31 @@
                 </thead>
             </table>
         </div>
-        <!--        <p>-->
-        <!--            <button type="button" class="btn btn-secondary" @click="prevPage">Предыдущая</button>-->
-        <!--            <button type="button" class="btn btn-secondary" @click="nextPage">Следующая</button>-->
-        <!--            <span style="padding-left: 5px">{{ currentPage }} из {{ totalPage }}</span>-->
-        <!--        </p>-->
 
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body" v-if="loading">
-                {{ modalText }}
-                <pulse-loader :loading="loading" :color="'#7c69ef'" :size="'15px'"></pulse-loader>
-            </span>
-            <span slot="body" v-else>
-                {{ modalText }}
-                <br>
-                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
-            </span>
-            <span slot="footer"></span>
+            <template #body>
+                <template v-if="loading">
+                    {{ modalText }}
+                    <PulseLoader :loading="loading" :color="'#7c69ef'"/>
+                </template>
+                <template v-else>
+                    {{ modalText }}
+                    <br>
+                    <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+                </template>
+            </template>
         </modal>
     </div>
 </template>
 
 <script>
-import DatePicker from "vue2-datepicker";
-import Modal from "./Modal";
-import Popup from "../Popup";
-import PulseLoader from "vue-spinner/src/PulseLoader"
+import { PulseLoader } from "vue3-spinner"
+import Modal from "./Modal.vue";
+import DatePicker from "vue-datepicker-next";
 
 export default {
     name: "QuotesTable",
+    components: {Modal, PulseLoader, DatePicker},
     props: ['quotes', 'guest'],
     data() {
         return {
@@ -273,12 +273,16 @@ export default {
     computed: {
         filteredRows() {
             return this.dataQuotes.filter((quote, index) => {
-                const division = quote.warehouse.toLowerCase();
+                const filialName = quote.filial_name.toLowerCase();
                 const searchTerm = this.filter.toLowerCase();
+                const filialCode = quote.filial_code
+                const regionName = quote.region_name.toLowerCase()
                 // let start = (this.currentPage - 1) * this.pageSize;
                 // let end = this.currentPage * this.pageSize;
 
-                if (this.filter !== '') return division.includes(searchTerm)
+                if (this.filter !== '') {
+                    return filialName.includes(searchTerm) || filialCode.includes(searchTerm) || regionName.includes(searchTerm)
+                }
                 // if (index >= start && index < end)
                 return true
             });
@@ -390,12 +394,6 @@ export default {
             this.$refs.scroll.scrollTo(currentScrollPosition, 0)
         }
     },
-    components: {
-        Popup,
-        DatePicker,
-        Modal,
-        PulseLoader
-    }
 }
 </script>
 

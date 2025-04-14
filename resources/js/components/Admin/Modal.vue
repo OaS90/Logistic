@@ -5,9 +5,9 @@
                 <div class="modal-container">
                     <div class="modal-body">
                         <slot name="body">
-                            default body
-                            <br>
-                            <button :class="btnClass" @click="$emit('close')">{{ btnText }}</button>
+<!--                            default body-->
+<!--                            <br>-->
+<!--                            <button :class="btnClass" @click="$emit('close')">{{ btnText }}</button>-->
                         </slot>
                     </div>
                 </div>
@@ -37,10 +37,9 @@ export default {
             this.btnClass = this.buttonClass
         }
     },
-
-    beforeDestroy() {
+    beforeUnmount() {
         $("body").removeClass("modal-open")
-    }
+    },
 }
 </script>
 

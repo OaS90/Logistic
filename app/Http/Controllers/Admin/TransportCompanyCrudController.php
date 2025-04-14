@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\TransportCompanyRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-use App\Infrastructure\Repositories\Admin\TransportCompanyWarehouseRepository;
+use App\Infrastructure\Repositories\Admin\HruWarehouseRepository;
 use App\Infrastructure\Repositories\Admin\TransportCompanySettingsRepository;
 use App\Domain\Admin\TCSettingDTO;
 
@@ -16,10 +16,10 @@ use App\Domain\Admin\TCSettingDTO;
  */
 class TransportCompanyCrudController extends CrudController
 {
-    protected TransportCompanyWarehouseRepository $tcWarehouseRepo;
+    protected HruWarehouseRepository $tcWarehouseRepo;
     protected TransportCompanySettingsRepository $tcSettingsRepo;
 
-    public function __construct(TransportCompanyWarehouseRepository $tcWarehouseRepo,
+    public function __construct(HruWarehouseRepository             $tcWarehouseRepo,
                                 TransportCompanySettingsRepository $tcSettingsRepo
     )
     {
@@ -35,7 +35,7 @@ class TransportCompanyCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
-     * 
+     *
      * @return void
      */
     public function setup()
@@ -47,7 +47,7 @@ class TransportCompanyCrudController extends CrudController
 
     /**
      * Define what happens when the List operation is loaded.
-     * 
+     *
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
@@ -58,13 +58,13 @@ class TransportCompanyCrudController extends CrudController
         /**
          * Columns can be defined using the fluent syntax or array syntax:
          * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
+         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']);
          */
     }
 
     /**
      * Define what happens when the Create operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-create
      * @return void
      */
@@ -77,13 +77,13 @@ class TransportCompanyCrudController extends CrudController
         /**
          * Fields can be defined using the fluent syntax or array syntax:
          * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
+         * - CRUD::addField(['name' => 'price', 'type' => 'number']));
          */
     }
 
     /**
      * Define what happens when the Update operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */

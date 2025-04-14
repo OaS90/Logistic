@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Hru\Warehouse;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class TransportCompanySettings extends Model
 {
@@ -25,14 +27,14 @@ class TransportCompanySettings extends Model
         6 => 'Сб',
         7 => 'Вс'
     ];
-    public function tc(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function tc(): HasOne
     {
         return $this->hasOne(TransportCompany::class, 'id', 'tc_id');
     }
 
-    public function warehouse(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function warehouse(): BelongsTo
     {
-        return $this->hasOne(TransportCompanyWarehouse::class, 'tc_warehouse_id', 'id');
+        return $this->belongsTo(Warehouse::class, 'tc_warehouse_id', 'id');
     }
 
     public function getDaysNameAttribute(): string
@@ -50,5 +52,10 @@ class TransportCompanySettings extends Model
         }
 
         return '';
+    }
+
+    public function filial()
+    {
+        return $this->belongsTo(Filial::class, 'filial_id', 'id');
     }
 }

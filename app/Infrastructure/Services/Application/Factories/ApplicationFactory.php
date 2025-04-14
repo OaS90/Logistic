@@ -45,7 +45,7 @@ class ApplicationFactory
             clientName: $data['clientName'],
             phones: $data['phones'],
             deliveryType: $data['deliveryType'],
-            deliveryZone: $data['deliveryZone'],
+            deliveryZone: $data['deliveryZone'] ?? '',
             orderList: $data['orderList'],
             orderWeight: $data['orderWeight'],
             deliveryAddress: $data['deliveryAddress'],
@@ -61,7 +61,7 @@ class ApplicationFactory
             liftCost: $data['liftCost'] ?? null,
             transferCost: $data['transferCost'] ?? null,
             totalDeliveryCost: $data['totalDeliveryCost'] ?? null,
-            comment: $data['comment']
+            comment: $data['comment'] ?? ''
         );
     }
 

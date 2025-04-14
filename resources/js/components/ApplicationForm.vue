@@ -63,7 +63,7 @@
                         <option selected="selected" value="0" hidden>Выберите адрес</option>
                         <option :value="warehouse.id" v-for="(warehouse, k) in warehouses" :key="k">{{ warehouse.address }}</option>
                     </select>
-                    <date-picker input-class="text" v-model="applicationFields.delivery_date"
+                    <date-picker input-class="text" v-model:value="applicationFields.delivery_date"
                                  valueType="YYYY-MM-DD"
                                  class="delivery-date"
                                  format="DD.MM.YYYY"
@@ -78,7 +78,7 @@
                                      class="date-time"
                                      input-class="text time-picker"
                                      type="time"
-                                     v-model="applicationFields.delivery_from"
+                                     v-model:value="applicationFields.delivery_from"
                                      name="delivery_from"
                                      value-type="H:mm"
                                      :timePickerOptions="{
@@ -92,7 +92,7 @@
                                      class="date-time"
                                      input-class="text time-picker"
                                      type="time"
-                                     v-model="applicationFields.delivery_till"
+                                     v-model:value="applicationFields.delivery_till"
                                      name="delivery_till"
                                      value-type="H:mm"
                                      :timePickerOptions="{
@@ -135,8 +135,8 @@
                            v-model="applicationFields.client_name">
 <!--                    <input type="text" value="" id="phone" class="text" placeholder="Телефон покупателя" name="client_phone"-->
 <!--                           v-model="applicationFields.client_phone">-->
-                    <masked-input mask="\+7 (111) 111-11-11" class="text" placeholder="Телефон покупателя"
-                                  v-model="applicationFields.client_phone"  autocomplete="tel-national"></masked-input>
+                    <MaskInput mask="+7 (###) ###-##-##" class="text" placeholder="Телефон покупателя"
+                                  v-model="applicationFields.client_phone"  autocomplete="tel-national"></MaskInput>
                 </form>
             </div>
         </div>
@@ -174,11 +174,11 @@
 </template>
 
 <script>
-import Popup from "./Popup";
-import DatePicker from 'vue2-datepicker'
-import MaskedInput from 'vue-masked-input'
-import 'vue2-datepicker/index.css';
-import 'vue2-datepicker/locale/ru';
+import Popup from "./Popup.vue";
+import DatePicker from 'vue-datepicker-next'
+import { MaskInput } from 'vue-3-mask';
+// import 'vue2-datepicker/index.css';
+// import 'vue2-datepicker/locale/ru';
 
 
 export default {
@@ -270,8 +270,8 @@ export default {
     },
     components: {
         Popup,
-        DatePicker,
-        MaskedInput
+        MaskInput,
+        DatePicker
     }
 }
 </script>

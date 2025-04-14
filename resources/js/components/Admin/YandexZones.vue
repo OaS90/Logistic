@@ -21,6 +21,7 @@
                     <th>Тип полигона</th>
                     <th>Зона</th>
                     <th>Регион</th>
+                    <th>Код филала</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -32,6 +33,7 @@
                     <td>{{ zone.type }}</td>
                     <td>{{ zone.zone_name }}</td>
                     <td>{{ zone.region_name }}</td>
+                    <td>{{ zone.filial_code }}</td>
                 </tr>
                 </tbody>
 
@@ -39,22 +41,23 @@
         </div>
 
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body" v-if="loading">
-                <pulse-loader :loading="loading" :color="'#7c69ef'" :size="'15px'"></pulse-loader>
-            </span>
-            <span slot="body" v-else>
-                {{ errorText }}
-                <br>
-                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
-            </span>
-            <span slot="footer"></span>
+            <template #body>
+                <template v-if="loading">
+                    <PulseLoader :loading="loading" :color="'#7c69ef'"/>
+                </template>
+                <template v-else>
+                    {{ errorText }}
+                    <br>
+                    <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+                </template>
+            </template>
         </modal>
     </div>
 </template>
 
 <script>
 import Modal from "./Modal.vue";
-import PulseLoader from "vue-spinner/src/PulseLoader";
+import {DotLoader, PulseLoader} from "vue3-spinner";
 export default {
     data() {
         return {
@@ -65,8 +68,9 @@ export default {
         }
     },
     components: {
+        PulseLoader,
         Modal,
-        PulseLoader
+        DotLoader
     },
     methods: {
         selectAllZones(event) {
@@ -114,9 +118,10 @@ export default {
                 return point.to_import === true
             })
 
-            this.showModal = true;
+            this.showModal = true
+            this.loading = true
 
-            axios.post('/admin/yandex-zones/import-to-service', {zones: zonesToImport})
+            axios.post('/admin/yandex-zones/import-to-service', {zonesToImport: zonesToImport, zones: this.changedZones})
                 .then(response => {
                     this.showModal = false;
                     this.loading = false

@@ -28,13 +28,13 @@
                         <input type="text" v-model="user.position" id="position" name="position" class="text" placeholder="Должность">
                         <div class="field-group">
                             <input type="text" v-model="user.work_phone" id="wphone" name="work_phone" class="text text--middle"
-                                   placeholder="Рабочий телефон">
+                                   placeholder="Рабочий телефон" pattern="[0-9]*" title="Допускаются только числа">
                             <input type="text" v-model="user.additional_number" id="dob" name="additional_number" class="text text--small" placeholder="доб.">
                         </div>
                         <input type="text" v-model="user.timezone" id="timezone" name="timezone" class="text" placeholder="Часовой пояс">
-                        <masked-input mask="\+1 (111) 111-11-11" class="text" placeholder="Мобильный телефон для SMS-оповещений"
+                        <MaskInput mask="+7 (###) ###-##-##" class="text" placeholder="Мобильный телефон для SMS-оповещений"
                                       v-model="formPhone"
-                        ></masked-input>
+                        ></MaskInput>
                         <input type="text" v-model="user.email" id="email" class="text" placeholder="E-mail" name="email">
                         <input type="text" v-model="user.company" id="company1" class="text" placeholder="Компания" name="company">
                         <input type="text" v-model="user.inn" id="inn" class="text" placeholder="ИНН" name="inn">
@@ -50,7 +50,7 @@
 
 <script>
 
-import MaskedInput from "vue-masked-input"
+import {MaskInput} from "vue-3-mask"
 
 export default {
     name: "Profile",
@@ -80,7 +80,7 @@ export default {
         }
     },
     components: {
-        MaskedInput
+        MaskInput
     }
 }
 </script>

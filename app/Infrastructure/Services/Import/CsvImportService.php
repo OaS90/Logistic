@@ -230,6 +230,7 @@ class CsvImportService
     public function extensionHandler(string $extension, bool $isObiUser): ApplicationImportXlsx|ApplicationImportCsv|ApplicationObiImport
     {
         switch ($extension) {
+            case ('xls'):
             case ('xlsx'):
                 if ($isObiUser) {
                     return new ApplicationObiImport();

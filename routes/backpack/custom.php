@@ -48,7 +48,7 @@ Route::group([
     Route::crud('regions', 'RegionCrudController');
     Route::crud('quote-warehouse', 'QuoteWarehouseCrudController');
     Route::crud('transport-company', 'TransportCompanyCrudController');
-    Route::crud('transport-company-warehouse', 'TransportCompanyWarehouseCrudController');
+    Route::crud('hru-warehouses', 'HruWarehouseCrudController');
     Route::get('transport-company-settings', [TransportCompanySettingsController::class, 'show']);
     Route::post('save-tc-settings', [TransportCompanySettingsController::class, 'save']);
     Route::get('export', [TransportCompanySettingsController::class, 'export']);
@@ -86,4 +86,5 @@ Route::group([
     Route::post('yandex-zones/prepare-import', [\App\Http\Controllers\Admin\YandexZonesController::class, 'prepareImport']);
     Route::post('yandex-zones/import-to-service', [\App\Http\Controllers\Admin\YandexZonesController::class, 'importToService']);
     Route::get('yandex-zones/export', [\App\Http\Controllers\Admin\YandexZonesController::class, 'export']);
+    Route::crud('filial', 'HruFilialCrudController');
 }); // this should be the absolute last line of this file

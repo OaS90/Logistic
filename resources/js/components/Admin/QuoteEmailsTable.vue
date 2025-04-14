@@ -7,40 +7,46 @@
         </div>
 
         <table class="table table-bordered w-50 ml-5" style="text-align: center">
-            <tr>
-                <td>Email</td>
-                <td>Активность</td>
-                <td></td>
-            </tr>
-
-            <tr v-if="newRows.length > 0" v-for="(row, index) in newRows" :id="index">
-                <td class="email">
-                    <input class="form-control" type="text" v-model="newRows[index].email">
-                </td>
-                <td class="active"><input type="checkbox" v-model="newRows[index].active" @click="activeEmail(index, 'new')"></td>
-                <td><button class="btn btn-outline-danger ml-3" @click="deleteNewRow(index)">Удалить</button></td>
-            </tr>
-            <tr v-for="(email, index) in emailsArr" :key="index" :id="index">
-                <td class="email">{{ email.email }}</td>
-                <td class="active">
-                    <input type="checkbox"
-                           v-model="selected.length > 0 ? selected : email.active"
-                           :value="email.id"
-                           @click="activeEmail(index)">
-                </td>
-                <td><button class="btn btn-danger" @click="deleteEmail(email.id, index)">Удалить</button></td>
-            </tr>
+            <thead>
+                <tr>
+                    <td>Email</td>
+                    <td>Активность</td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-if="newRows.length > 0" v-for="(row, index) in newRows" :id="index">
+                    <td class="email">
+                        <input class="form-control" type="text" v-model="newRows[index].email">
+                    </td>
+                    <td class="active"><input type="checkbox" v-model="newRows[index].active" @click="activeEmail(index, 'new')"></td>
+                    <td><button class="btn btn-outline-danger ml-3" @click="deleteNewRow(index)">Удалить</button></td>
+                </tr>
+                <tr v-for="(email, index) in emailsArr" :key="index" :id="index">
+                    <td class="email">{{ email.email }}</td>
+                    <td class="active">
+                        <input type="checkbox"
+                               v-model="email.active"
+                               :value="email.id"
+                               @click="activeEmail(index)">
+                    </td>
+                    <td><button class="btn btn-danger" @click="deleteEmail(email.id, index)">Удалить</button></td>
+                </tr>
+            </tbody>
         </table>
-
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body">{{ modalText }}</span>
-            <span slot="footer"></span>
+            <template #body>
+                {{ modalText }}
+                <br>
+                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+            </template>
         </modal>
     </div>
 </template>
 
 <script>
-import Modal from "./Modal";
+import Modal from "./Modal.vue";
+import {PulseLoader} from "vue3-spinner";
 
 export default {
     name: "QuoteEmailsTable",
@@ -111,6 +117,7 @@ export default {
         }
     },
     components: {
+        PulseLoader,
         Modal
     }
 }

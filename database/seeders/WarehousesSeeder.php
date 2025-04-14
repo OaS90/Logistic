@@ -7,20 +7,20 @@ use App\Domain\Admin\WarehouseTcDTO;
 use App\Infrastructure\Repositories\Admin\RegionRepository;
 use App\Infrastructure\Repositories\Admin\TransportCompanyRepository;
 use App\Infrastructure\Repositories\Admin\TransportCompanySettingsRepository;
-use App\Infrastructure\Repositories\Admin\TransportCompanyWarehouseRepository;
+use App\Infrastructure\Repositories\Admin\HruWarehouseRepository;
 use Illuminate\Database\Seeder;
 
 class WarehousesSeeder extends Seeder
 {
     private TransportCompanyRepository $tcRepo;
     private TransportCompanySettingsRepository $tcSettingsRepo;
-    private TransportCompanyWarehouseRepository $tcWarehouseRepo;
+    private HruWarehouseRepository $tcWarehouseRepo;
     private RegionRepository $regionRepo;
 
-    public function __construct(TransportCompanyRepository $tcRepo,
+    public function __construct(TransportCompanyRepository         $tcRepo,
                                 TransportCompanySettingsRepository $tcSettingsRepo,
-                                TransportCompanyWarehouseRepository $tcWarehouseRepo,
-                                RegionRepository $regionRepo
+                                HruWarehouseRepository             $tcWarehouseRepo,
+                                RegionRepository                   $regionRepo
     )
     {
         $this->tcRepo = $tcRepo;

@@ -39,12 +39,14 @@
         </style>
     @endLoadOnce
 @endpush
-
-{{-- CUSTOM JS --}}
 @push('crud_fields_scripts')
+    @vite(['resources/js/app.js'])
+@endpush
+{{-- CUSTOM JS --}}
+{{--@push('crud_fields_scripts')--}}
     {{-- How to load a JS file? --}}
 {{--    @loadOnce('tariff-regionsFieldScript.js')--}}
-    @loadOnce('js/app.js')
+{{--    @loadOnce('js/app.js')--}}
     {{-- How to add some JS to the field? --}}
 {{--    @loadOnce('bpFieldInitDummyFieldElement')--}}
 {{--    <script>--}}
@@ -57,4 +59,4 @@
 {{--        }--}}
 {{--    </script>--}}
 {{--    @endLoadOnce--}}
-@endpush
+{{--@endpush--}}

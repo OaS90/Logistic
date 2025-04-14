@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilialTCSaveRequest;
 use App\Infrastructure\Admin\Services\TCSettingsService;
-use App\Infrastructure\Admin\Services\TCWarehouseService;
 use App\Infrastructure\Exports\Admin\TCSettingsExport;
-use App\Infrastructure\Repositories\Admin\TransportCompanyWarehouseRepository;
+use App\Infrastructure\Repositories\Admin\HruWarehouseRepository;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,29 +15,24 @@ use Illuminate\Http\Request;
 
 class TransportCompanySettingsController extends Controller
 {
-    private TransportCompanyWarehouseRepository $repo;
-    private TCWarehouseService $service;
-    private ExcelExportService $exportService;
 
-    public function __construct(TransportCompanyWarehouseRepository $repo,
-                                TCWarehouseService $service,
-                                ExcelExportService $exportService
+    public function __construct(private readonly HruWarehouseRepository $repo,
+                                private readonly TCSettingsService $service,
+                                private readonly ExcelExportService $exportService
     )
     {
-        $this->repo = $repo;
-        $this->service = $service;
-        $this->exportService = $exportService;
     }
 
     public function show(): View
     {
         try {
-            $warehouses = $this->repo->getAllWithSetting();
+//            $warehouses = $this->repo->getAllWithSetting();
             $isGuest = (bool) backpack_user()->hasRole('guest');
-            $warehousesArray = $this->service->prepareForVue($warehouses);
+//            $warehousesArray = $this->service->prepareForVue($warehouses);
+            $data = $this->service->prepareForVue();
 
             return view('vendor.backpack.transport_company_settings', [
-                'warehouses' => collect($warehousesArray)->values(), 'guest' => $isGuest
+                'warehouses' => collect($data)->values(), 'guest' => $isGuest
             ]);
         } catch (\Throwable $e) {
             Log::error('Settings view error ' . $e->getMessage());
@@ -46,12 +41,13 @@ class TransportCompanySettingsController extends Controller
         }
     }
 
-    public function save(Request $request, TCSettingsService $service): Response
+    public function save(FilialTCSaveRequest $request, TCSettingsService $service): Response
     {
         $message = 'Данные сохранены. ';
 
         try {
-            $result = $service->save($request->get('settings'));
+            $filials = $request->getDTOsArray();
+            $result = $service->save($filials);
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
             return response(['message' => 'Ошибка сохранения данных.' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);

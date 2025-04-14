@@ -20,8 +20,8 @@
                     <tr style="text-align:center">
                         <th class="choose-th" style="width: 50px">Выбрать</th>
                         <th style="width: 100px">Регион</th>
-                        <th style="width: 90px">Код Склада</th>
-                        <th style="width: 100px">Склад</th>
+                        <th style="width: 90px">Код филиала</th>
+                        <th style="width: 100px">Филиал</th>
                         <th style="width: 90px">Задержка дней</th>
                         <th style="width: 90px">Квота</th>
                         <th>Настройка ТК</th>
@@ -64,24 +64,31 @@
             <span style="padding-left: 5px">{{ currentPage }} из {{ totalPage }}</span>
         </p>
         <modal v-if="showModal" @close="showModal = false">
-            <span slot="body">
-                {{ modalText }}
-                <br>
-                <button class="btn btn-secondary" @click="showModal = false">ОК</button>
-            </span>
-            <span slot="footer"></span>
+            <template #body>
+                <template v-if="loading">
+                    {{ modalText }}
+                    <PulseLoader :loading="loading" :color="'#7c69ef'"/>
+                </template>
+                <template v-else>
+                    {{ modalText }}
+                    <br>
+                    <button class="btn btn-secondary" @click="showModal = false">ОК</button>
+                </template>
+            </template>
         </modal>
     </div>
 </template>
 
 <script>
-import Modal from './Modal'
-import TcSettings from './TcSettings'
+import Modal from './Modal.vue'
+import TcSettings from './TcSettings.vue'
+import {PulseLoader} from "vue3-spinner";
 
 export default {
     name: "TransportCompanySettings",
     props: ['warehouses', 'guest'],
     components: {
+        PulseLoader,
         Modal,
         TcSettings
     },
@@ -159,7 +166,7 @@ export default {
                 this.showModal = !this.showModal
                 this.modalText = 'Не выбрано ни одного склада для обновления'
             } else {
-                axios.post('save-tc-settings', {settings: this.warehousesToSave}).then(response => {
+                axios.post('save-tc-settings', this.warehousesToSave).then(response => {
                     this.showModal = !this.showModal
                     this.modalText = response.data.message
                 }).catch(errors => {

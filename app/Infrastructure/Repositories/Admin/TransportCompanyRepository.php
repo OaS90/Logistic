@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Repositories\Admin;
 
 use App\Models\TransportCompany;
+use Illuminate\Support\Collection;
 
 class TransportCompanyRepository
 {
@@ -18,5 +19,10 @@ class TransportCompanyRepository
         }
 
         return $existsCompany;
+    }
+
+    public function getAll(): Collection
+    {
+       return TransportCompany::get();
     }
 }

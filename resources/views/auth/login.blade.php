@@ -7,7 +7,7 @@
     <div class="main-wrapper">
         <header class="main-header">
             <div class="logo">
-                <a href="/"><img src="{{ asset('images/logo.png') }}" alt="Транспорт Логистика"></a>
+                <a href="/"><img src="{{ basset('images/logo.png') }}" alt="Транспорт Логистика"></a>
             </div>
             <div class="contacts">
                 <span class="contacts__text">Служба поддержки клиентов:</span>
@@ -17,7 +17,7 @@
                 <a href="{{ route('register') }}" class="no-underline">Регистрация</a>
             </div>
         </header>
-        <section class="login-section">
+        <section class="login-section" id="app">
             <login-form></login-form>
         </section>
 {{--        <section class="advantage-section">--}}

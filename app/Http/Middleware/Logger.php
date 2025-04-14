@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Logger
 {
@@ -21,7 +22,7 @@ class Logger
         /** @var JsonResponse $response */
         $response = $next($request);
 
-        if ($response instanceof View) {
+        if ($response instanceof View || $response instanceof StreamedResponse) {
             return $response;
         }
 

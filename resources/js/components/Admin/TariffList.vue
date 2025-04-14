@@ -79,24 +79,23 @@
             <button type="button" class="btn btn-secondary" @click="nextPage">Следующая</button>
             <span style="padding-left: 5px">{{ currentPage }} из {{ totalPage }}</span>
         </p>
-
-        <modal v-if="showModal">
-            <div slot="body">
-                <p>{{ modalText }}</p>
-
+        <modal v-if="showModal" @close="showModal = false">
+            <template #body>
+                {{ modalText }}
+                <br>
                 <button class="btn btn-danger" @click="deleteTariff" :disabled="disableBtn">Удалить</button>
                 <button class="btn btn-secondary" @click="cancelDelete">Отмена</button>
-            </div>
-            <span slot="footer"></span>
+            </template>
         </modal>
     </div>
 </template>
 
 <script>
 
-import TariffPermissionRequestButton from "./TariffPermissionRequestButton";
-import TariffsGetFromServiceButton from "./TariffsGetFromServiceButton";
-import Modal from "./Modal";
+import TariffPermissionRequestButton from "./TariffPermissionRequestButton.vue";
+import TariffsGetFromServiceButton from "./TariffsGetFromServiceButton.vue";
+import Modal from "./Modal.vue";
+import {PulseLoader} from "vue3-spinner";
 
 export default {
     name: "TariffList",
@@ -112,6 +111,7 @@ export default {
         }
     },
     components: {
+        PulseLoader,
         TariffsGetFromServiceButton,
         TariffPermissionRequestButton,
         Modal
