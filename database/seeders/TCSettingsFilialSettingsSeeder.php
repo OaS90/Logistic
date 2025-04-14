@@ -29,13 +29,15 @@ class TCSettingsFilialSettingsSeeder extends Seeder
 
         foreach ($tcs as $tc) {
             foreach ($filials as $filial) {
-                $dto = new TCSettingDTO(
-                    tcId: $tc->id,
-                    warehouseId: $filial->warehouses->first()->id,
-                    filialId: $filial->id,
-                );
+                if ($filial->warehouses->first()) {
+                    $dto = new TCSettingDTO(
+                        tcId: $tc->id,
+                        warehouseId: $filial->warehouses->first()->id,
+                        filialId: $filial->id,
+                    );
 
-                $this->tcSettingsRepository->create($dto);
+                    $this->tcSettingsRepository->create($dto);
+                }
             }
         }
 
