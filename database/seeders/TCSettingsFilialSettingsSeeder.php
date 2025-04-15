@@ -6,6 +6,7 @@ use App\Domain\Admin\TCSettingDTO;
 use App\Infrastructure\Repositories\Admin\TransportCompanyRepository;
 use App\Infrastructure\Repositories\Admin\TransportCompanySettingsRepository;
 use App\Infrastructure\Repositories\Hru\FilialRepository;
+use App\Models\TransportCompanyWarehouse;
 use Illuminate\Database\Seeder;
 
 class TCSettingsFilialSettingsSeeder extends Seeder
@@ -30,10 +31,14 @@ class TCSettingsFilialSettingsSeeder extends Seeder
         foreach ($tcs as $tc) {
             foreach ($filials as $filial) {
                 if ($filial->warehouses->first()) {
+                    $warehouse = $filial->warehouses->first();
+                    $tcWarehouse = TransportCompanyWarehouse::where('code', $warehouse->code)->first();
                     $dto = new TCSettingDTO(
                         tcId: $tc->id,
                         warehouseId: $filial->warehouses->first()->id,
                         filialId: $filial->id,
+                        quote: $tcWarehouse ? $tcWarehouse->quote : null,
+                        delayDays: $tcWarehouse ? $tcWarehouse->delay_days : null,
                     );
 
                     $this->tcSettingsRepository->create($dto);

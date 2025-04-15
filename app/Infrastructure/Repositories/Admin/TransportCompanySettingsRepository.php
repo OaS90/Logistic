@@ -16,27 +16,39 @@ class TransportCompanySettingsRepository
 
     public function create(TCSettingDTO $dto)
     {
+        $days = [];
+        $lastTime = null;
         $existsSetting = TransportCompanySettings::where('tc_id', $dto->tcId)
             ->where('tc_warehouse_id', $dto->warehouseId)
             ->where('filial_id', $dto->filialId)
             ->first();
 
+        $existsSettingWithoutFilialId = TransportCompanySettings::where('tc_id', $dto->tcId)
+            ->where('tc_warehouse_id', $dto->warehouseId)
+            ->first();
+
+        if ($existsSettingWithoutFilialId) {
+            $days = $existsSettingWithoutFilialId->days;
+            $lastTime = $existsSettingWithoutFilialId->last_time;
+        }
+
         if (!$existsSetting) {
-            $existsSettingWithoutFilialId = TransportCompanySettings::where('tc_id', $dto->tcId)
-                ->where('tc_warehouse_id', $dto->warehouseId)
-                ->first();
-
-            if (!$existsSettingWithoutFilialId) {
-                return TransportCompanySettings::create([
-                    'tc_id' => $dto->tcId,
-                    'tc_warehouse_id' => $dto->warehouseId,
-                    'filial_id' => $dto->filialId
-                ]);
-            } else {
-                $existsSettingWithoutFilialId->update(['filial_id' => $dto->filialId]);
-
-                return $existsSettingWithoutFilialId;
-            }
+            return TransportCompanySettings::create([
+                'tc_id' => $dto->tcId,
+                'tc_warehouse_id' => $dto->warehouseId,
+                'filial_id' => $dto->filialId,
+                'quote' => $dto->quote ?? null,
+                'delay_days' => $dto->delayDays ?? null,
+                'last_time' => $lastTime ?? null,
+                'days' => $days ?? null,
+            ]);
+        } else {
+            $existsSetting->update([
+                'quote' => $dto->quote ?? null,
+                'delay_days' => $dto->delayDays ?? null,
+                'last_time' => $lastTime ?? null,
+                'days' => $days ?? null,
+            ]);
         }
 
         return $existsSetting;
