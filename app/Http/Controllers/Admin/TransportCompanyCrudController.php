@@ -104,8 +104,17 @@ class TransportCompanyCrudController extends CrudController
         $warehouses = $this->tcWarehouseRepo->getAll();
 
         foreach ($warehouses as $warehouse) {
-            $dto = new TCSettingDTO($tcId, $warehouse->id);
-            $this->tcSettingsRepo->create($dto);
+            $filials = $warehouse->filials;
+
+            if ($filials->isNotEmpty()) {
+                foreach ($filials as $filial) {
+                    $dto = new TCSettingDTO($tcId, $warehouse->id, $filial->id);
+                    $this->tcSettingsRepo->create($dto);
+                }
+            } else {
+                $dto = new TCSettingDTO($tcId, $warehouse->id);
+                $this->tcSettingsRepo->create($dto);
+            }
         }
 
         return $response;

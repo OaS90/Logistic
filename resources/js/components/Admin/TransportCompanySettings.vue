@@ -22,6 +22,7 @@
                         <th style="width: 100px">Регион</th>
                         <th style="width: 90px">Код филиала</th>
                         <th style="width: 100px">Филиал</th>
+                        <th style="width: 100px">Код склада</th>
                         <th style="width: 90px">Задержка дней</th>
                         <th style="width: 90px">Квота</th>
                         <th>Настройка ТК</th>
@@ -31,6 +32,7 @@
                         <th>{{ warehouse.region}}</th>
                         <td>{{ warehouse.code }}</td>
                         <td>{{ warehouse.name }}</td>
+                        <td>{{ warehouse.warehouse_code }}</td>
                         <td>
                             <input type="number" min="0" max="9999" class="form-control wrhs-input"
                                    v-model="warehouse.delay_days"
