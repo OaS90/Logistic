@@ -8,25 +8,15 @@ use Illuminate\Support\Collection;
 
 class QuoteRepository
 {
-    public function createByFilialId(int $filialId, int $regionId): Quote
+    public function getByFields(array $fields): ?Quote
     {
-        $existsEntity = Quote::where('filial_id', $filialId)
-            ->where('division_id', $regionId)
-            ->first();
+        $query = Quote::query();
 
-        if (!$existsEntity) {
-            $existsWithoutFilialId = Quote::where('division_id', $regionId)->first();
-
-            if (!$existsWithoutFilialId) {
-                return Quote::create(['filial_id' => $filialId, 'division_id' => $regionId]);
-            } else {
-                $existsWithoutFilialId->update(['filial_id' => $filialId]);
-
-                return $existsWithoutFilialId;
-            }
+        foreach ($fields as $field => $value) {
+            $query->where($field, $value);
         }
 
-        return $existsEntity;
+        return $query->first();
     }
 
     public function getById(int $id): ?Quote
