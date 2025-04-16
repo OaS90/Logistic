@@ -42,6 +42,7 @@ class QuoteService
             if ($quote->filial->is_active_for_quotes) {
                 $quoteInfo = [
                     'id' => $quote->id,
+                    'filial_id' => $quote->filial->filial_id,
                     'to_save' => false,
                     'filial_code' => sprintf('%05d', $quote->filial->filial_id),
                     'filial_name' => $quote->filial->name,
@@ -70,7 +71,7 @@ class QuoteService
         }
 
         return collect($data)
-            ->sortBy('id')
+            ->sortBy('filial_id')
             ->values()
             ->all();
     }
