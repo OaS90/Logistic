@@ -1,6 +1,6 @@
 <template>
     <div>
-        <label for="file-upload" class="btn btn-primary" data-modal="modal-request1" style="margin-bottom: 0" id="button">
+        <label for="file-upload" class="btn btn-primary" data-modal="modal-request1" style="margin-bottom: 0; margin-right: 5px" id="button">
             <span>Импорт c выводом изменений</span>
         </label>
         <input type="file" hidden id="file-upload" @change="beforeImport" ref="fileUpload">
