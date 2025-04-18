@@ -76,6 +76,7 @@ class HruFilialCrudController extends CrudController
             }
         ]);
         CRUD::column('is_active_for_quotes')->label('Вкл/Выкл в квотах')->type('check');
+        CRUD::column('is_active_for_tk')->label('Вкл/Выкл для ТК')->type('check');
         /**
          * Columns can be defined using the fluent syntax or array syntax:
          * - CRUD::column('price')->type('number');
@@ -106,7 +107,18 @@ class HruFilialCrudController extends CrudController
         $this->crud->addField([
             'name' => 'is_active_for_quotes',
             'label' => 'Вкл/Выкл в квотах',
-            'type' => 'checkbox'
+            'type' => 'checkbox',
+            'wrapper' => [
+                'class' => 'form-group col-md-3'
+            ]
+        ]);
+        $this->crud->addField([
+            'name' => 'is_active_for_tk',
+            'label' => 'Вкл/Выкл для ТК',
+            'type' => 'checkbox',
+            'wrapper' => [
+                'class' => 'form-group col-md-3'
+            ]
         ]);
         $this->crud->addField([  // Select
             'label'  => "Склад",

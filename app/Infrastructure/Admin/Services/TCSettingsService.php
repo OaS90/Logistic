@@ -82,6 +82,10 @@ class TCSettingsService
         $filials = $this->filialRepo->getAll();
 
         foreach ($filials as $filial) {
+            if (!$filial->is_active_for_tk) {
+                continue;
+            }
+
             $settings = [];
             $tcSettings = $filial->tcSettings;
 
@@ -107,6 +111,7 @@ class TCSettingsService
 
             $data[] = [
                 'id' => $filial->id,
+                'filial_id' => $filial->filial_id,
                 'name' => $filial->name,
                 'warehouse_code' => $filial->warehouses->first() ? $filial->warehouses->first()->code : '',
                 'code' => sprintf('%05d', $filial->filial_id),
@@ -120,6 +125,9 @@ class TCSettingsService
             ];
         }
 
-        return $data;
+        return collect($data)
+            ->sortBy('filial_id')
+            ->values()
+            ->all();
     }
 }
