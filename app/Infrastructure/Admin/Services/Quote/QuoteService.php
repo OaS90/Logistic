@@ -114,7 +114,7 @@ class QuoteService
                 $mainQuote = [
                     'id' => $quote->filial->region_id,
                     'limit' => $quote->quote,
-                    'filial_code' => $quote->filial->code,
+                    'filial_code' => $quote->filial->filial_id,
                 ];
 
                 if (count($periods) > 0)
