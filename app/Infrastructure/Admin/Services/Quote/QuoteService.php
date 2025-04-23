@@ -79,7 +79,7 @@ class QuoteService
     {
         $quotes = $this->quoteRepo->getAll()
             ->filter(function (Quote $quote) {
-                if ($quote->filial_id) {
+                if ($quote->filial_id && $quote->filial->is_active_for_quotes) {
                     return $quote;
                 }
 
@@ -112,7 +112,7 @@ class QuoteService
 
             if ($quote->quote) {
                 $mainQuote = [
-                    'id' => $quote->filial->region_id,
+                    'id' => $quote->filial->region->region_id,
                     'limit' => $quote->quote,
                     'filial_code' => $quote->filial->filial_id,
                 ];
