@@ -35,6 +35,10 @@ use App\Infrastructure\Services\Kraken\Api as KrakenApi;
 class ApplicationService implements ApplicationServiceInterface
 {
     private int $obiUser;
+    // TODO убрать после добавления доступа по токену
+    private array $disabledPartners = [
+        '000000014',
+    ];
 
     public function __construct(private readonly ApplicationRepository $appRepo,
                                 private readonly ApplicationObiRepository $appObiRepo,
@@ -131,6 +135,10 @@ class ApplicationService implements ApplicationServiceInterface
         foreach ($DTOs as $appCreateDTO) {
             $user = $this->userRepo->getBy1cId($appCreateDTO->partnerId);
             $appDTO = $appCreateDTO->app;
+
+            if (in_array($appCreateDTO->partnerId, $this->disabledPartners)) {
+                throw new \Exception('Access denied');
+            }
 
             if (!$user) {
                 throw new UserNotFoundException($appCreateDTO->partnerId);

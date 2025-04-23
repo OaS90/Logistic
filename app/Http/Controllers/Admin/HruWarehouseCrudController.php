@@ -102,13 +102,19 @@ class HruWarehouseCrudController extends CrudController
             'model' => "App\Models\Region", // related model
             'attribute' => 'name', // foreign key attribute that is shown to user
         ]);
-        CRUD::addField([
-            'name' => 'filials',
-            'type' => 'select_multiple',
-            'label' => 'Филиалы',
-            'model' => "App\Models\Hru\Filial",
-            'attribute' => 'name',
+        $this->crud->addField([
+            'name' => 'separator',
+            'type' => 'custom_html',
+            'value' => '<hr> <b>Филиалы: </b>'
         ]);
+
+        foreach ($this->crud->getCurrentEntry()->filials as $filial) {
+            $this->crud->addField([
+                'type' => 'custom_html',
+                'name' => 'filial_' . $filial->id,
+                'value' => '- ' . $filial->name . ' (' . sprintf('%05d', $filial->filial_id) . ')'
+            ]);
+        }
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:

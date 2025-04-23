@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\FilialRequest;
+use App\Models\Hru\Warehouse;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -14,8 +15,8 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 class HruFilialCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation { store as traitStore; }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation { update as traitUpdate; }
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
@@ -94,7 +95,7 @@ class HruFilialCrudController extends CrudController
     {
         CRUD::setValidation(FilialRequest::class);
         CRUD::field('filial_id')->label('Код филиала');
-        CRUD::field('name');
+        CRUD::field('name')->label('Наименование');
         $this->crud->addField([  // Select
             'label' => "Регион",
             'type' => 'select',
@@ -120,15 +121,20 @@ class HruFilialCrudController extends CrudController
                 'class' => 'form-group col-md-3'
             ]
         ]);
-        $this->crud->addField([  // Select
-            'label'  => "Склад",
-            'type' => 'select_multiple',
-            'name' => 'warehouses', // the db column for the foreign key
-            'entity'=> 'warehouses',
-            // optional - manually specify the related model and attribute
-            'model' => "App\Models\Hru\Warehouse", // related model
-            'attribute' => 'name', // foreign key attribute that is shown to user
+
+        $this->crud->addField([
+            'name' => 'separator',
+            'type' => 'custom_html',
+            'value' => '<hr> <b>Склады:</b>'
         ]);
+
+        foreach ($this->crud->getCurrentEntry()->warehouses as $warehouse) {
+            $this->crud->addField([
+                'type' => 'custom_html',
+                'name' => 'filial_' . $warehouse->id,
+                'value' => '- ' . $warehouse->name . ' (' . $warehouse->code . ')'
+            ]);
+        }
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:

@@ -46,7 +46,6 @@ Route::group([
     Route::post('delete-quote-email/{id}', [QuoteEmailsController::class, 'delete']);
     Route::get('download-excel', [QuotesController::class, 'download']);
     Route::crud('regions', 'RegionCrudController');
-    Route::crud('quote-warehouse', 'QuoteWarehouseCrudController');
     Route::crud('transport-company', 'TransportCompanyCrudController');
     Route::crud('hru-warehouses', 'HruWarehouseCrudController');
     Route::get('transport-company-settings', [TransportCompanySettingsController::class, 'show']);

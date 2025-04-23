@@ -2,31 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Region extends Model
 {
     use \Backpack\CRUD\app\Models\Traits\CrudTrait;
+
     protected $table = 'regions';
     protected $fillable = ['name', 'region_id', 'is_active_for_quotes'];
     public $timestamps = false;
 
-    public function warehouse(): BelongsToMany
+    public function warehouses(): HasMany
     {
-        return $this->BelongsToMany(QuoteWarehouse::class, 'quote_warehouse_region', 'region_id', 'quote_warehouse_id');
-    }
-
-    public function getWarehouseNameAttribute(): string
-    {
-        if (count($this->warehouse) > 0) {
-            return $this->warehouse->first()->warehouse_name;
-        }
-
-        return '';
+        return $this->hasMany(\App\Models\Hru\Warehouse::class, 'region_id', 'id');
     }
 
     public function tariffCategories(): BelongsToMany
