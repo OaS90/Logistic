@@ -47,12 +47,14 @@ class TCSettingsService
                     'enabled' => $setting->enabled,
                     'last_time' => $setting->lastTime,
                     'quote' => $filialDTO->quote,
-                    'delay_days' => $filialDTO->delayDays
+                    'delay_days' => $filialDTO->delayDays,
+                    'departure_terminal_id' => $setting->departureTerminalId
                 ]);
 
                 if ($setting->enabled) {
                     $filialWithSettings[] = [
                         'tk' => $tcSettings->tc->code,
+                        'departure_terminal_id' => $setting->departureTerminalId,
                         'weekdays' => $setting->days,
                         'last_time' => $setting->lastTime ?? null
                     ];
@@ -62,6 +64,7 @@ class TCSettingsService
             $warehouse = $filial->warehouses->first();
             $filialsWithSettings[$warehouse->code] = [
                 'quote' => $filialDTO->quote,
+                'branch_office_id' => $filial->filial_id,
                 'delay_days' => $filialDTO->delayDays,
                 'shipment' => $filialWithSettings
             ];
@@ -104,7 +107,8 @@ class TCSettingsService
                                 6 => false,
                                 7 => false,
                             ],
-                        'enabled' => $setting->enabled
+                        'enabled' => $setting->enabled,
+                        'departure_id' => $setting->departure_terminal_id
                     ];
                 }
             }

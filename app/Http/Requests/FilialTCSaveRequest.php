@@ -39,6 +39,7 @@ class FilialTCSaveRequest extends FormRequest
             '*.settings.*.last_time' => 'string|min:1|nullable',
             '*.settings.*.enabled' => 'required|bool',
             '*.settings.*.days' => 'required|array',
+            '*.settings.*.departure_id' => 'string|min:1|nullable',
         ];
     }
 
@@ -56,7 +57,8 @@ class FilialTCSaveRequest extends FormRequest
                     settingId: $setting['id'],
                     lastTime: $setting['last_time'],
                     days: $setting['days'],
-                    enabled: $setting['enabled']
+                    enabled: $setting['enabled'],
+                    departureTerminalId: $setting['departure_id'],
                 );
             }
 
