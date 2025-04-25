@@ -8,7 +8,8 @@ class TCSettingsDTO
                                 public readonly int $settingId,
                                 public readonly ?string $lastTime,
                                 public readonly array $days = [],
-                                public readonly bool $enabled = false
+                                public readonly bool $enabled = false,
+                                public readonly ?string $departureTerminalId = null,
     )
     {
     }

@@ -41,7 +41,7 @@
     <tbody>
     @foreach($quotes as $quote)
         <tr>
-            <td>{{ $quote->region->warehouse->warehouse_name }}</td>
+            <td>{{ $quote->filial->name }}</td>
             <td>{{ $quote->region->name }}</td>
             <td>{{ $quote->quote }}</td>
             <td>{{ $quote->tmp_quote }}</td>

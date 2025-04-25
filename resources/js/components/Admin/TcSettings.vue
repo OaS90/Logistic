@@ -6,6 +6,7 @@
                 <th>Вкл./Выкл</th>
                 <th style="width: 150px">Ограничение по времени</th>
                 <th style="width: 300px">Дни отгрузки</th>
+                <th>Номер терминала</th>
             </tr>
         </thead>
         <tbody>
@@ -54,6 +55,9 @@
                         <label for="Sun">Вс</label>
                         <input type="checkbox" :checked="setting.days[7]" name="Sun" @change="addDay(setting, 7)">
                     </div>
+                </td>
+                <td>
+                    <input type="text" class="form-control" v-model="setting.departure_id">
                 </td>
             </tr>
         </tbody>

@@ -23,7 +23,6 @@
     @if(!backpack_user()->hasRole('guest') && !backpack_user()->hasRole('transportation department'))
         <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-emails') }}'><i class="las la-mail-bulk"></i> Email уведомления по квотам</a></li>
         <li class='nav-item'><a class='nav-link' href='{{ backpack_url('regions') }}'><i class='nav-icon la la-map'></i> Регионы</a></li>
-{{--        <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quote-warehouse') }}'><i class='nav-icon la la-store'></i> Склады по квотам</a></li>--}}
     @endif
 @endif
 <!-- Users, Roles, Permissions -->

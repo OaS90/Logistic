@@ -49,14 +49,6 @@ class RegionCrudController extends CrudController
         CRUD::column('id');
         CRUD::column('name')->label('Название региона');
         CRUD::column('region_id')->label('Регион Monolith');
-        $this->crud->addColumn([
-            'name'  => 'warehouse',
-            'label' => 'Склад', // Table column heading
-            'type'  => 'model_function',
-            'function_name' => 'getWarehouseNameAttribute'
-        ]);
-
-        CRUD::column('is_active_for_quotes')->label('Вкл/Выкл в квотах')->type('check');
 
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -83,16 +75,6 @@ class RegionCrudController extends CrudController
         $this->crud->addField([
             'name' => 'region_id',
             'label' => 'Id региона Monolith'
-        ]);
-
-        $this->crud->addField([  // Select
-            'label'     => "Склад",
-            'type'      => 'select_multiple',
-            'name'      => 'warehouse', // the db column for the foreign key
-            'entity'    => 'warehouse',
-            // optional - manually specify the related model and attribute
-            'model'     => "App\Models\QuoteWarehouse", // related model
-            'attribute' => 'warehouse_name', // foreign key attribute that is shown to user
         ]);
 
         /**
