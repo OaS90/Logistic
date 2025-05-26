@@ -5,7 +5,7 @@
         </label>
         <input type="file" hidden id="file-upload" @change="beforeImport" ref="fileUpload">
         <button class="btn btn-primary"  @click="exportSettings">Экспорт</button>
-
+        <a target="_blank" href="https://yandex.ru/map-constructor/" class="btn btn-success ml-1">Конструктор карт</a>
         <hr>
 
         <div v-if="changedZones">
