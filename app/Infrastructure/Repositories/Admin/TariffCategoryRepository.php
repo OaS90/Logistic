@@ -5,7 +5,6 @@ namespace App\Infrastructure\Repositories\Admin;
 use App\Models\TariffCategories;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use phpseclib3\Math\BigInteger\Engines\PHP\Reductions\Barrett;
 
 class TariffCategoryRepository
 {
@@ -72,19 +71,23 @@ class TariffCategoryRepository
         return TariffCategories::where('result_category_id', $id)->first();
     }
 
-    public function deletePricesByTariffId(TariffCategories $category, int $tariffId)
+    public function deletePricesByTariffId(TariffCategories $category, int $tariffId): void
     {
-        return $category->prices()->where('tariff_id', $tariffId)->delete();
+        $category->prices()->where('tariff_id', $tariffId)->delete();
     }
 
     public function createPrice(TariffCategories $category, int $tariffId, int $regionId, int $zoneId): void
     {
-        $category->prices()->create([
-            'tariff_id' => $tariffId,
-            'region_id' => $regionId,
-            'zone_id' => $zoneId,
-            'price' => 0,
-            'second_price' => 0
-        ]);
+        $existsPrices = $this->getPrices($category, $tariffId, $regionId, $zoneId);
+
+        if (!$existsPrices) {
+            $category->prices()->create([
+                'tariff_id' => $tariffId,
+                'region_id' => $regionId,
+                'zone_id' => $zoneId,
+                'price' => 0,
+                'second_price' => 0
+            ]);
+        }
     }
 }

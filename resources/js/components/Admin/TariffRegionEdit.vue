@@ -20,25 +20,6 @@
                         <th>Вкл/Выкл</th>
                         <th v-for="(details, index) in headers" class="th-title">
                             {{ details.title }}
-                            <i class="la la-window-close-o" @click="beforeDeleteZone(index, details.zoneName, details.zone)"></i>
-                        </th>
-                        <th>
-                            <label for="zones">Добавить зону <i class="la la-plus-circle"></i></label>
-                            <select name="zones"
-                                    id="zones"
-                                    v-model="selectedZone"
-                                    @change="addColumn($event)"
-                                    class="form-control col-md-12"
-                            >
-                                <option value="none" selected disabled hidden>Выберите зону</option>
-                                <option v-for="(zone, index) in zones"
-                                        :value="zone.name + '_' + index"
-                                        :disabled="zone.enabled"
-                                >
-                                    Зона {{ zone.name }}
-                                </option>
-                            </select>
-
                         </th>
                     </tr>
                 </thead>
@@ -62,7 +43,6 @@
                                    @focusout="checkIsEmpty($event, details, 'secondPrice')"
                             >
                         </td>
-                        <td></td>
                     </tr>
                 </tbody>
             </table>
@@ -94,7 +74,6 @@
                         <span class="extra-label">Стоимость второй единицы</span>
                         <span class="form-control col-md-12">{{ details.secondPrice }}</span>
                     </td>
-                    <td></td>
                 </tr>
                 </tbody>
             </table>
