@@ -181,7 +181,7 @@ export default {
                     for (let i = 0; i <  this.newPolygons.length; i++) {
                         this.newPolygonsData[i] = {
                             region: { name: null },
-                            polygon_type: null,
+                            type: null,
                             zone: null,
                             filial: null,
                             polygon_data: this.newPolygons[i],
