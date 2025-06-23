@@ -4,6 +4,7 @@ namespace App\Infrastructure\Services\YandexZones;
 
 use App\Http\Controllers\Api\Exceptions\DeletedZoneImportException;
 use App\Http\Controllers\Api\Exceptions\NewZoneImportException;
+use App\Infrastructure\Admin\Services\Tariff\TariffService;
 use App\Infrastructure\Events\EventDispatcher;
 use App\Infrastructure\Repositories\Admin\RegionRepository;
 use App\Infrastructure\Repositories\Admin\TariffCategoryRepository;
@@ -12,11 +13,14 @@ use App\Infrastructure\Repositories\Admin\ZoneRepository;
 use App\Infrastructure\Repositories\Hru\FilialRepository;
 use App\Infrastructure\Services\Kraken\Api;
 use App\Models\Region;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class YandexZonesService
 {
     const FILE_NAME = 'zones.json';
+
+    const HISTORY_PATH = 'history/';
     const NEW_ZONES_FILE_NAME = 'new.json';
     const UPDATED_NEW_ZONES_FILE_NAME = 'updated_new.json';
     const UPDATED_FILE_NAME = 'updated_zones.json';
@@ -26,6 +30,7 @@ class YandexZonesService
                                 private readonly TariffCategoryRepository $tariffCategoryRepo,
                                 private readonly RegionRepository $regionRepo,
                                 private readonly ZoneRepository $zoneRepo,
+                                private readonly TariffService $tariffService,
                                 private readonly EventDispatcher $eventDispatcher
     ) {}
 
@@ -41,6 +46,14 @@ class YandexZonesService
         foreach ($allRegions as $region) {
             $polygons = $this->krakenApi
                 ->deliveryServiceRequest('settings/delivery-zones/find-all-by-hru-region-id', ['region_id' => $region->region_id]);
+
+            // временный костыль. Когда не находит регион (тут 48 - Новокуйбышевск), возвращается пустой массив
+            // а в апи у меня на этот случай подставляется status => true
+            // когда делается импорт в сервис, для подтверждения
+            if (isset($polygons['status']) && count($polygons) == 1) {
+                continue;
+            }
+
             $polygonsCoordinatesByRegion = $this->prepareCoordinates($polygons);
             $polygonsCoordinates = array_merge($polygonsCoordinatesByRegion, $polygonsCoordinates);
         }
@@ -49,7 +62,7 @@ class YandexZonesService
         $allowZonesCoordinates = $this->prepareCoordinates($allowZones, 'allow-zones');
         $polygonPaths = $this->krakenApi->deliveryServiceRequest('settings/polygon-paths');
         $polygonPathsCoordinates = $this->prepareCoordinates($polygonPaths, 'polygon-paths');
-        $polygons = array_merge($polygonsCoordinates, $allowZonesCoordinates, $polygonPathsCoordinates);
+        $polygons = array_merge($allowZonesCoordinates, $polygonPathsCoordinates, $polygonsCoordinates);
         $polygonsData = $this->prepareDataForImportToFile($polygons);
         $jsonData = json_encode($polygonsData);
 
@@ -57,7 +70,9 @@ class YandexZonesService
             Storage::delete(self::FILE_NAME);
         }
 
+        $historyFileName = 'history_' . Carbon::now()->format('Y-m-d_H-i');
         Storage::put(self::FILE_NAME, $jsonData);
+        Storage::put(self::HISTORY_PATH . $historyFileName, $jsonData);
 
         return $polygonsData;
     }
@@ -153,9 +168,11 @@ class YandexZonesService
      * =====================================
      * Все зоны
      * @param array $allZones
-     * @throws NewZoneImportException|DeletedZoneImportException
+     * @return int
+     * @throws DeletedZoneImportException
+     * @throws NewZoneImportException
      */
-    public function importToService(array $zonesToUpdate, array $allZones): void
+    public function importToService(array $zonesToUpdate, array $allZones): int
     {
         if ($zonesToUpdate['changed']) {
             $this->importZonesForChange($zonesToUpdate['changed'], $allZones['changed']);
@@ -168,6 +185,11 @@ class YandexZonesService
         if ($zonesToUpdate['deleted']) {
             $this->importZonesForDelete($zonesToUpdate['deleted']);
         }
+
+        // делаем првоерку на пустые цены в во всех тарифах (у которых price или second_price = null)
+        // если такие есть, то редиректим на страницу валидации тарифов
+
+        return count($this->tariffService->getEmptyPrices());
         //отпрака в кафку. Пока отложено.
         //  $this->eventDispatcher->filialZoneChanged($codes);
     }
@@ -198,7 +220,7 @@ class YandexZonesService
         });
 
         $allowZones = array_filter($zonesToImport, function ($zone) {
-            if ($zone['type'] == 'allow_zones') {
+            if ($zone['type'] == 'allow-zones') {
                 return true;
             }
 
@@ -221,7 +243,7 @@ class YandexZonesService
 
         if ($notSelectedZones) {
             $notSelectedAllowZones = array_filter($allowZones, function ($zone) use ($notSelectedZoneCodes) {
-                if (in_array($zone['filial_id'], $notSelectedZoneCodes) && $zone['type'] == 'allow_zone') {
+                if (in_array($zone['filial_id'], $notSelectedZoneCodes) && $zone['type'] == 'allow-zones') {
                     return true;
                 }
 
@@ -229,7 +251,15 @@ class YandexZonesService
             });
 
             $notSelectedDeliveryZones = array_filter($allowZones, function ($zone) use ($notSelectedZoneCodes) {
-                if (in_array($zone['filial_id'], $notSelectedZoneCodes) && $zone['type'] == 'polygon') {
+                if (in_array($zone['filial_id'], $notSelectedZoneCodes) && $zone['type'] == 'delivery-zones') {
+                    return true;
+                }
+
+                return false;
+            });
+
+            $notSelectedPolygonPaths = array_filter($allowZones, function ($zone) use ($notSelectedZoneCodes) {
+                if (in_array($zone['filial_id'], $notSelectedZoneCodes) && $zone['type'] == 'polygon-paths') {
                     return true;
                 }
 
@@ -238,7 +268,8 @@ class YandexZonesService
 
             $preparedNotSelectedAllowZones = $this->prepareCoordinates($notSelectedAllowZones, 'allow-zones');
             $preparedNotSelectedDeliveryZones = $this->prepareCoordinates($notSelectedDeliveryZones);
-            $preparedNotSelectedZones = array_merge($preparedNotSelectedDeliveryZones, $preparedNotSelectedAllowZones);
+            $preparedNotSelectedPolygonPaths = $this->prepareCoordinates($notSelectedPolygonPaths, 'polygon-paths');
+            $preparedNotSelectedZones = array_merge($preparedNotSelectedDeliveryZones, $preparedNotSelectedAllowZones, $preparedNotSelectedPolygonPaths);
             $jsonData = json_encode($this->prepareDataForImportToFile($preparedNotSelectedZones));
 
             // Если есть файл, который выгружали из сервиса вначале, то удаляем его
@@ -264,26 +295,27 @@ class YandexZonesService
      */
     private function importNewZones(array $zones): void
     {
-        foreach ($zones as $zone) {
+        foreach ($zones as $newZone) {
             $coordinates = [];
 
-            foreach ($zone['polygon_data']['geometry']['coordinates'][0] as &$point) {
+            foreach ($newZone['polygon_data']['geometry']['coordinates'][0] as &$point) {
                 list($point[0], $point[1]) = [$point[1], $point[0]];
                 $coordinates[] = $point;
             }
 
             $newZoneDataForService = [
-                'region_id' => $zone['region']['region_id'],
-                'filial_id' => $zone['filial']['filial_id'],
+                'region_id' => $newZone['region']['region_id'],
+                'filial_id' => $newZone['filial']['filial_id'],
                 'points' => $coordinates,
-                'zone' => $zone['zone']
+                'zone_code' => $newZone['zone'],
+                'polygon_name' => $newZone['region']['name'] . ' zone_' . $newZone['zone']
             ];
 
-            if ($zone['type'] == 'delivery-zones') {
+            if ($newZone['type'] == 'delivery-zones') {
                 $tariffs = $this->tariffRepo->getAll();
                 $categories = $this->tariffCategoryRepo->getAll();
                 $regions = $this->regionRepo->getAll();
-                $zone = $this->zoneRepo->getByCode($zone['zone']);
+                $zone = $this->zoneRepo->getByCode($newZone['zone']);
 
                 foreach ($tariffs as $tariff) {
                     foreach ($regions as $region) {
@@ -296,7 +328,7 @@ class YandexZonesService
             }
 
             $creatingResponse = $this->krakenApi
-                ->deliveryServiceRequest('settings/' . $zone['type'], $newZoneDataForService, 'POST');
+                ->deliveryServiceRequest('settings/' . $newZone['type'], $newZoneDataForService, 'POST');
 
             if (!$creatingResponse) {
                 throw new NewZoneImportException($newZoneDataForService);
@@ -317,7 +349,7 @@ class YandexZonesService
                 throw new DeletedZoneImportException($zone);
             }
 
-            if ($successDelete['status'] == 'success') {
+            if (isset($successDelete['status']) && $successDelete['status']) {
                 if ($zone['type'] == 'delivery-zones') {
                     $tariffs = $this->tariffRepo->getAll();
                     $categories = $this->tariffCategoryRepo->getAll();
@@ -416,10 +448,10 @@ class YandexZonesService
             }
 
             $polygon['points'] = array_values($uniquePoints);
-
-            $data[] = [
+            $data[$description] = [
                 'type' => 'Feature',
                 'id' => $polygon['id'],
+                'zone' => $polygon['code_short'] ?? null,
                 'properties' => [
                     'description' => trim($description),
                     'fill' => $fill,
@@ -435,7 +467,21 @@ class YandexZonesService
             ];
         }
 
-        return array_values($data);
+        $result = array_values($data);
+
+        // Для зон доставки меняем приоритет зон, чтобы их было проще выбрать
+        // Хотя это особо не помогает
+        if ($type == 'delivery-zones') {
+            usort($result, function ($a, $b) {
+                $order = ['C', 'B', 'A'];
+                $codeA = $a['zone'];
+                $codeB = $b['zone'];
+
+                return array_search($codeA, $order) <=> array_search($codeB, $order);
+            });
+        }
+
+        return $result;
     }
 
     // Функция для проверки наличия изменений
@@ -487,7 +533,7 @@ class YandexZonesService
      */
     private function makePolygonData(array $polygon, array $description, array $newCoordinates = []): array
     {
-        if ($description[1] == 'allow_zones') {
+        if ($description[1] == 'allow-zones') {
             $zoneName = '-';
             $regionName = $description[2];
             $filialId = $description[3];

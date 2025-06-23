@@ -73,6 +73,7 @@ Route::group([
     Route::post('tariffs/{tariffId}/request', [TariffController::class, 'permissionsRequest']);
     Route::get('tariffs/show', [TariffController::class, 'show']);
     Route::post('tariffs/create', [TariffController::class, 'create']);
+    Route::get('tariffs/validation', [TariffController::class, 'validateTariffs'])->name('tariffs-validation');
     Route::delete('tariffs/{tariffId}/delete', [TariffController::class, 'delete']);
     Route::post('tariffs/{tariffId}/update-name-or-alias', [TariffController::class, 'updateNameOrAlias']);
     Route::crud('tariff-categories', 'TariffCategoriesCrudController');
@@ -86,4 +87,5 @@ Route::group([
     Route::post('yandex-zones/import-to-service', [\App\Http\Controllers\Admin\YandexZonesController::class, 'importToService']);
     Route::get('yandex-zones/export', [\App\Http\Controllers\Admin\YandexZonesController::class, 'export']);
     Route::crud('filial', 'HruFilialCrudController');
+    Route::get('yandex-zones/export/history/{fileName}/download', [\App\Http\Controllers\Admin\YandexZonesController::class, 'downloadExportFile']);
 }); // this should be the absolute last line of this file

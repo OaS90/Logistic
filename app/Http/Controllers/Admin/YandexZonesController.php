@@ -12,8 +12,11 @@ use App\Infrastructure\Repositories\RegionRepository;
 use App\Infrastructure\Services\YandexZones\YandexZonesService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Response as FResponse;
 
 class YandexZonesController extends Controller
 {
@@ -26,12 +29,14 @@ class YandexZonesController extends Controller
         $polygonTypes = ZoneType::ALL;
         $zones = $zoneRepo->getAll()->pluck('code');
         $filials = $filialRepo->getAll();
+        $exportsHistory = array_map('basename', Storage::files('history'));
 
         return view(backpack_view('yandex.zones'), [
             'regions' => $regions,
             'polygon_types' => $polygonTypes,
             'filials' => $filials,
-            'zones' => $zones
+            'zones' => $zones,
+            'exports_history_files' => $exportsHistory
         ]);
     }
 
@@ -79,7 +84,7 @@ class YandexZonesController extends Controller
         try {
             $zonesToImport = $request->get('zonesToImport');
             $allZones = $request->get('zones');
-            $service->importToService($zonesToImport, $allZones);
+            $hasEmptyPrices = $service->importToService($zonesToImport, $allZones);
         } catch (NewZoneImportException $e) {
             return $e->render();
         } catch (DeletedZoneImportException $e) {
@@ -90,6 +95,16 @@ class YandexZonesController extends Controller
             return response()->json(['success' => false], Response::HTTP_BAD_REQUEST);
         }
 
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true, 'has_empty_prices' => $hasEmptyPrices]);
+    }
+
+    public function downloadExportFile(string $fileName): Response|BinaryFileResponse
+    {
+        $isFileExists = Storage::exists('history/' . $fileName . '.json');
+
+        if ($isFileExists) {
+            return FResponse::download(storage_path('app/public/history/' . $fileName . '.json'));
+        }
+        return Storage::download('history/' . $fileName);
     }
 }

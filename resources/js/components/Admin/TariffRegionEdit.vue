@@ -31,12 +31,13 @@
                             <span class="extra-label">Стоимость первой единицы</span>
                             <input type="number" min="0" max="9999" class="form-control col-md-12"
                                    v-model="details.price"
+                                   :class="{'error': details.price === null }"
                                    @keydown="checkInputNumbers($event, details.price)"
                                    @keyup="checkFewZeros($event, details, 'price')"
                                    @focusout="checkIsEmpty($event, details, 'price')"
                             >
                             <span class="extra-label">Стоимость второй единицы</span>
-                            <input type="number" min="0" max="9999" class="form-control col-md-12"
+                            <input :class="{'error': details.secondPrice === null }" type="number" min="0" max="9999" class="form-control col-md-12"
                                    v-model="details.secondPrice"
                                    @keydown="checkInputNumbers($event, details.secondPrice)"
                                    @keyup="checkFewZeros($event, details, 'secondPrice')"
@@ -258,5 +259,8 @@ export default {
 }
 table th,td {
     border: 1px solid #ddd
+}
+.error {
+    border: 1px solid red;
 }
 </style>

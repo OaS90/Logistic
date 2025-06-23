@@ -17,9 +17,15 @@ class NewZoneImportException extends Exception
         $status = Response::HTTP_INTERNAL_SERVER_ERROR;
         $message = 'Не удалось сохранить новую зону в сервисе. Данные зоны: ';
 
+        $zoneData = [
+            'region_id' => $this->zoneInfo['region_id'],
+            'zone' => $this->zoneInfo['zone'],
+            'filial_id' => $this->zoneInfo['filial_id'],
+        ];
+
         return response()
             ->json(
-                ['message' => $message . implode(', ', $this->zoneInfo), 'success' => false], $status,
+                ['message' => $message . implode(', ', $zoneData), 'success' => false], $status,
                 ['Content-type' => 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE
             );
     }

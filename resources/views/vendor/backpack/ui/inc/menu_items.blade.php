@@ -53,6 +53,9 @@
         <li class="nav-item">
             <a class="nav-link" href="{{ backpack_url('tariff-categories') }}"><i class="nav-icon la la-list-ul"></i> Категории</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ backpack_url('tariffs/validation') }}"><i class="las la-list-alt"></i> Валидация тарифов</a>
+        </li>
         @if(backpack_user()->email == 'oas90@bk.ru')
             <li class="nav-item">
                 <a class="nav-link" href="{{ backpack_url('tariff-zones') }}"><i class="nav-icon la la-map-marked"></i> Зоны</a>

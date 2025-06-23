@@ -6,7 +6,7 @@
         <input type="file" hidden id="file-upload" @change="beforeImport" ref="fileUpload">
         <button class="btn btn-primary"  @click="exportSettings">Экспорт</button>
         <a target="_blank" href="https://yandex.ru/map-constructor/" class="btn btn-success ml-1">Конструктор карт</a>
-
+        <a @click="showHistory" class="btn btn-secondary ml-1">История выгрузок</a>
         <hr>
 
         <div v-if="changedZones">
@@ -73,7 +73,7 @@
                         </td>
 
                     <td>
-                        <select class="form-control" v-model="newZone.polygon_type">
+                        <select class="form-control" v-model="newZone.type">
                             <option :value="polygon"
                                     v-for="(polygon, index) in polygonTypes"
                             >
@@ -121,6 +121,20 @@
                 </template>
             </template>
         </modal>
+
+        <modal v-if="showHistoryModal" @close="showHistoryModal = false">
+            <template #body>
+                <div style="max-height: 340px; overflow-y: auto">
+                    <ul style="list-style: none; overflow-y: auto">
+                        <li v-for="file in exportsHistory">
+                            <a @click="showHistoryModal = false" :href="'/admin/yandex-zones/export/history/' + file + '/download'">{{ file }}</a>
+                        </li>
+                    </ul>
+                </div>
+                <br>
+                <button class="btn btn-secondary" @click="showHistoryModal = false">ОК</button>
+            </template>
+        </modal>
     </div>
 </template>
 
@@ -129,7 +143,7 @@ import Modal from "./Modal.vue";
 import Multiselect from "vue-multiselect";
 import {DotLoader, PulseLoader} from "vue3-spinner";
 export default {
-    props: ['zones', 'regions', 'polygonTypes', 'filials'],
+    props: ['zones', 'regions', 'polygonTypes', 'filials', 'exportsHistory'],
     data() {
         return {
             changedZones: null,
@@ -139,7 +153,8 @@ export default {
             errorText: '',
             newPolygonsData: [],
             deletedPolygons: [],
-            newPolygonsErrors: []
+            newPolygonsErrors: [],
+            showHistoryModal: false
         }
     },
     components: {
@@ -149,6 +164,9 @@ export default {
         Multiselect
     },
     methods: {
+        showHistory() {
+            this.showHistoryModal = !this.showHistoryModal
+        },
         disableZoneInput(zone) {
             if (zone.polygon_type === 'allow-zones' || zone.polygon_type === 'polygon-paths') {
                 zone.zone = null
@@ -237,9 +255,9 @@ export default {
             })
 
             zonesToImport.new.forEach((item, index) => {
-                if (!item.region || !item.filial || !item.polygon_type) {
+                if (!item.region || !item.filial || !item.type) {
                     this.newPolygonsErrors.push(index)
-                } else if (!item.zone && item.polygon_type === 'delivery-zones') {
+                } else if (!item.zone && item.type === 'delivery-zones') {
                     this.newPolygonsErrors.push(index + '_polygon-type')
                 }
             })
@@ -261,6 +279,10 @@ export default {
                 this.loading = false
                 this.changedZones = null
                 this.newPolygons = null
+
+                if (response.status < 300 && response.data.has_empty_prices) {
+                    window.location.href = '/admin/tariffs/validation'
+                }
             }).catch(errors => {
                 this.loading = false
                 this.errorText = 'Ошибка импорта в сервис.'

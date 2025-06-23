@@ -85,8 +85,8 @@ class TariffCategoryRepository
                 'tariff_id' => $tariffId,
                 'region_id' => $regionId,
                 'zone_id' => $zoneId,
-                'price' => 0,
-                'second_price' => 0
+                'price' => null,
+                'second_price' => null
             ]);
         }
     }

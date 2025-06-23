@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Admin\Services\Tariff;
 
 use App\Domain\DTO\Requests\Tariff\TariffRegionCategoriesPricesDTO;
+use App\Infrastructure\Repositories\Admin\TariffCategoryRegionPricesRepository;
 use App\Infrastructure\Repositories\Admin\TariffCategoryRepository;
 use App\Infrastructure\Repositories\Admin\TariffCategorySettingsRepository;
 use App\Infrastructure\Repositories\Admin\TariffRepository;
@@ -30,7 +31,8 @@ class TariffService
                                 TariffCategorySettingsRepository $categorySettingsRepo,
                                 ZoneRepository $zoneRepo,
                                 UserTariffPermissionRepository $permissionRepo,
-                                KrakenApi $krakenApi
+                                KrakenApi $krakenApi,
+                                private TariffCategoryRegionPricesRepository $tariffCategoryRegionPricesRepo,
     )
     {
         $this->tariffRepo = $tariffRepo;
@@ -357,5 +359,47 @@ class TariffService
             ->deliveryServiceRequest($this->krakenApi::DELIVERY_TARIFFS_URI . '/' . $tariff->delivery_service_tariff_id,
                 $data, 'PATCH');
 
+    }
+
+    /**
+     * Получаем незаполненные цены для всех тарифов (регион, категория, зона),
+     */
+    public function getEmptyPrices(): array
+    {
+        $tariffs = $this->tariffRepo->getAll();
+        $regions = $this->regionRepo->getAll();
+        $categories = $this->categoryRepo->getAll();
+        $zones = $this->zoneRepo->getAll();
+        $emptyPrices = [];
+
+        foreach ($tariffs as $tariff) {
+            $prices = $this->tariffCategoryRegionPricesRepo->getByTariffId($tariff->id);
+
+            $emptyPrices = array_merge($emptyPrices, $prices->filter(function ($tariffPrice) {
+                return is_null($tariffPrice->price) || is_null($tariffPrice->second_price);
+            })->toArray());
+        }
+
+        $data = [];
+
+        if ($emptyPrices) {
+            foreach ($emptyPrices as $emptyPrice) {
+                $tariff = $tariffs->where('id', $emptyPrice['tariff_id'])->first();
+                $region = $regions->where('id', $emptyPrice['region_id'])->first();
+                $category = $categories->where('id', $emptyPrice['category_id'])->first();
+                $index = $tariff->id . '_' . $region->id;
+
+                if (!isset($data[$index])) {
+                    $data[$index] = [
+                        'tariff_name' => $tariff->name,
+                        'region_name' => $region->name,
+                        'category_name' => $category->name,
+                        'uri' => '/admin/tariffs/' . $tariff->id . '/edit/regions/' . $region->id . '/edit'
+                    ];
+                }
+            }
+        }
+
+        return $data;
     }
 }

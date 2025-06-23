@@ -118,7 +118,12 @@ class Api
                         'message' => 'Prices created or updated.'
                     ];
                 } else {
-                    $result = json_decode($contents, true) ?: ['status' => true];
+                    // При удалении зоны
+                    if ($method == 'DELETE') {
+                        $result = ['status' => true];
+                    } else {
+                        $result = json_decode($contents, true) ?: ['status' => true];
+                    }
                 }
             }
         } catch (ClientException $e) {

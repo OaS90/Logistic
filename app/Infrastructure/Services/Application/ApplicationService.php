@@ -313,7 +313,12 @@ class ApplicationService implements ApplicationServiceInterface
             if (count($appDTO->products) > 0) {
                 $apps[] = $appDTO;
             } else {
-                $this->appRepo->updateByFields($app, ['status' => 'refusal']);
+                if ($isObiPartner) {
+                    $this->appObiRepo->updateByFields($appDTO->orderNumber, ['status' => 'refusal']);
+                } else {
+                    $this->appRepo->updateByFields($app, ['status' => 'refusal']);
+                }
+
                 Log::error( "Send to 1c error. The order $appDTO->orderNumber hasn't products. Set status refund.");
             }
 
