@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Traits\LogsActivity;
 
 class TariffCategories extends Model
 {
-    use CrudTrait;
-    use HasFactory;
+    use CrudTrait, HasFactory, LogsActivity;
 
     /*
     |--------------------------------------------------------------------------

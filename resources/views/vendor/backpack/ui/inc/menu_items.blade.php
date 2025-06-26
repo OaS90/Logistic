@@ -131,3 +131,6 @@
     </ul>
 </li>
 @endif
+@if(backpack_user()->hasRole('admin'))
+    <x-backpack::menu-item title="Логи изменений" icon="la la-stream" :link="backpack_url('activity-log')" />
+@endif

@@ -328,6 +328,13 @@ class ApplicationService implements ApplicationServiceInterface
                 $this->appRepo->updateByFields($app, ['old_doc_ver' => $appDTO->docVer]);
             }
 
+            Log::withContext([
+                'partnerId' => $partnerId,
+                'userId' => $user->id,
+                'user1cId' => $user->id_1c,
+                'userSuffix' => $user->suffix
+            ]);
+
             Log::info('Sent to 1c ' . json_encode($appDTO));
         }
 

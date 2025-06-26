@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Traits\LogsActivity;
 
 class Region extends Model
 {
-    use \Backpack\CRUD\app\Models\Traits\CrudTrait;
+    use \Backpack\CRUD\app\Models\Traits\CrudTrait, LogsActivity;
 
     protected $table = 'regions';
-    protected $fillable = ['name', 'region_id', 'is_active_for_quotes'];
+    protected $guarded = ['id'];
     public $timestamps = false;
 
     public function warehouses(): HasMany

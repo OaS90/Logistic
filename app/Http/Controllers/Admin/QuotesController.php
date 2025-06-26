@@ -53,32 +53,32 @@ class QuotesController extends Controller
         $this->intervalRepo->update($request->all());
         $updatedQuotes = $this->repo->update($request->all(), backpack_user()->id);
         $message = 'Данные сохранены.';
-        $quotes = $this->quoteService->prepareForMonolith();
-        $responseFromMonolithIsSuccess = $this->krakenApi
-            ->monolithRequest($this->krakenApi::MONOLITH_UPDATE_QUOTES_URI, $quotes, 'POST');
-
-        if ($responseFromMonolithIsSuccess && $responseFromMonolithIsSuccess['status']) {
-            $message .= ' Квоты отправлены на сайт HRU.';
-
-            if (env('APP_ENV') === 'production') {
-                foreach ($updatedQuotes as $quote) {
-                    Mail::to($this->emailQuoteRepo->getAllActiveEmails())->send(new QuotesChange($quote));
-                }
-            }
-        } else {
-            $message .= ' Ошибка отправки на сайт HRU!';
-        }
-
-        if (config('app.enable_config_service_api_for_quotes')) {
-            $sentToConfigService = $this->krakenApi
-                ->configServiceRequest($this->krakenApi::CONFIG_UPDATE_QUOTES_URI, $quotes, 'PATCH');
-
-            if ($sentToConfigService) {
-                $message .= ' Квоты отправлены в сервис Config';
-            } else {
-                $message .= ' Ошибка отправки квот в сервис Config!';
-            }
-        }
+//        $quotes = $this->quoteService->prepareForMonolith();
+//        $responseFromMonolithIsSuccess = $this->krakenApi
+//            ->monolithRequest($this->krakenApi::MONOLITH_UPDATE_QUOTES_URI, $quotes, 'POST');
+//
+//        if ($responseFromMonolithIsSuccess && $responseFromMonolithIsSuccess['status']) {
+//            $message .= ' Квоты отправлены на сайт HRU.';
+//
+//            if (env('APP_ENV') === 'production') {
+//                foreach ($updatedQuotes as $quote) {
+//                    Mail::to($this->emailQuoteRepo->getAllActiveEmails())->send(new QuotesChange($quote));
+//                }
+//            }
+//        } else {
+//            $message .= ' Ошибка отправки на сайт HRU!';
+//        }
+//
+//        if (config('app.enable_config_service_api_for_quotes')) {
+//            $sentToConfigService = $this->krakenApi
+//                ->configServiceRequest($this->krakenApi::CONFIG_UPDATE_QUOTES_URI, $quotes, 'PATCH');
+//
+//            if ($sentToConfigService) {
+//                $message .= ' Квоты отправлены в сервис Config';
+//            } else {
+//                $message .= ' Ошибка отправки квот в сервис Config!';
+//            }
+//        }
 
         return response(['message' => $message]);
     }

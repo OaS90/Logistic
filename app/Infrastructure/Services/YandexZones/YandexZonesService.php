@@ -190,12 +190,11 @@ class YandexZonesService
         // если такие есть, то редиректим на страницу валидации тарифов
 
         return count($this->tariffService->getEmptyPrices());
-        //отпрака в кафку. Пока отложено.
-        //  $this->eventDispatcher->filialZoneChanged($codes);
     }
 
     private function importZonesForChange(array $zonesToImport, array $allZones): void
     {
+        $branchOfficeCodes = [];
         // берём зоны, которые не отметили для отправки в сервис
         $filialIdsToUpdate = array_column($zonesToImport['changed'], 'filial_id');
         $filialIdsChangedZones = array_column($allZones['changed'], 'filial_id');
@@ -209,6 +208,8 @@ class YandexZonesService
             foreach ($zone['points'] as &$point) {
                 list($point[0], $point[1]) = [$point[1], $point[0]];
             }
+
+            $branchOfficeCodes[] = $zone['filial_code'];
         }
 
         $deliveryZones = array_filter($zonesToImport, function ($zone) {
@@ -288,6 +289,9 @@ class YandexZonesService
             Storage::delete(self::FILE_NAME);
             Storage::move(self::UPDATED_FILE_NAME, self::FILE_NAME);
         }
+
+        //отпрака в кафку.
+        $this->eventDispatcher->filialZoneChanged($branchOfficeCodes);
     }
 
     /**
@@ -295,6 +299,8 @@ class YandexZonesService
      */
     private function importNewZones(array $zones): void
     {
+        $newBranchOfficeZones = [];
+
         foreach ($zones as $newZone) {
             $coordinates = [];
 
@@ -310,6 +316,8 @@ class YandexZonesService
                 'zone_code' => $newZone['zone'],
                 'polygon_name' => $newZone['region']['name'] . ' zone_' . $newZone['zone']
             ];
+
+            $newBranchOfficeZones[] = $newZoneDataForService;
 
             if ($newZone['type'] == 'delivery-zones') {
                 $tariffs = $this->tariffRepo->getAll();
@@ -334,6 +342,9 @@ class YandexZonesService
                 throw new NewZoneImportException($newZoneDataForService);
             }
         }
+
+        //отпрака в кафку
+        $this->eventDispatcher->filialZoneCreated($newBranchOfficeZones);
     }
 
     /**
@@ -341,6 +352,8 @@ class YandexZonesService
      */
     private function importZonesForDelete(array $zonesToImport): void
     {
+        $deletedBranchOfficeZones = [];
+
         foreach ($zonesToImport as $zone) {
             $successDelete = $this->krakenApi
                     ->deliveryServiceRequest('settings/' . $zone['type'] . '/' . $zone['id'], [],'DELETE');
@@ -366,7 +379,12 @@ class YandexZonesService
                     }
                 }
             }
+
+            $deletedBranchOfficeZones[] = $zone;
         }
+
+        //отпрака в кафку
+        $this->eventDispatcher->filialZoneDeleted($deletedBranchOfficeZones);
     }
 
     /**

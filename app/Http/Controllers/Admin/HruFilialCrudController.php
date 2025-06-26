@@ -128,12 +128,14 @@ class HruFilialCrudController extends CrudController
             'value' => '<hr> <b>Склады:</b>'
         ]);
 
-        foreach ($this->crud->getCurrentEntry()->warehouses as $warehouse) {
-            $this->crud->addField([
-                'type' => 'custom_html',
-                'name' => 'filial_' . $warehouse->id,
-                'value' => '- ' . $warehouse->name . ' (' . $warehouse->code . ')'
-            ]);
+        if ($this->crud->getCurrentEntry()) {
+            foreach ($this->crud->getCurrentEntry()->warehouses as $warehouse) {
+                $this->crud->addField([
+                    'type' => 'custom_html',
+                    'name' => 'filial_' . $warehouse->id,
+                    'value' => '- ' . $warehouse->name . ' (' . $warehouse->code . ')'
+                ]);
+            }
         }
 
         /**
