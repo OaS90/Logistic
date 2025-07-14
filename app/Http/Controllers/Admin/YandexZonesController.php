@@ -84,7 +84,7 @@ class YandexZonesController extends Controller
         try {
             $zonesToImport = $request->get('zonesToImport');
             $allZones = $request->get('zones');
-            $hasEmptyPrices = $service->importToService($zonesToImport, $allZones);
+            $result = $service->importToService($zonesToImport, $allZones);
         } catch (NewZoneImportException $e) {
             return $e->render();
         } catch (DeletedZoneImportException $e) {
@@ -95,7 +95,7 @@ class YandexZonesController extends Controller
             return response()->json(['success' => false], Response::HTTP_BAD_REQUEST);
         }
 
-        return response()->json(['success' => true, 'has_empty_prices' => $hasEmptyPrices]);
+        return response()->json(['success' => true, 'result' => $result]);
     }
 
     public function downloadExportFile(string $fileName): Response|BinaryFileResponse

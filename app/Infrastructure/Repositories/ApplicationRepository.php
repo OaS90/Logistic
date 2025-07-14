@@ -50,14 +50,14 @@ class ApplicationRepository
             [
                 'user_id' => $userId,
                 'order_number' => $dto->orderNumber,
-                'payment_type' => $dto->paymentType,
+                'payment_type' => parse_string_symbols($dto->paymentType),
                 'delivery_date' => Carbon::parse($dto->deliveryDate)->format('Y-m-d'),
                 'delivery_cost' => $dto->deliveryCost ?? 0,
                 'delivery_time' => $dto->deliveryTime,
                 'delivery_address' => $addressId,
                 'warehouse_id' => $warehouseId,
-                'comment' => $dto->comment,
-                'client_name' => $dto->clientFullName,
+                'comment' => parse_string_symbols($dto->comment),
+                'client_name' => parse_string_symbols($dto->clientFullName),
                 'client_phone' => parse_phone($dto->clientPhone), // переписать в класс парсер
                 'status' => ApplicationStatus::CREATED,
         ]);

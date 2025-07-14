@@ -5,6 +5,7 @@ namespace App\Infrastructure\Repositories\Admin;
 use App\Models\TariffCategories;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class TariffCategoryRepository
 {
@@ -54,11 +55,17 @@ class TariffCategoryRepository
                                                    int $zoneId
     ): bool
     {
-        return $category->prices()
-            ->where('tariff_id', $tariffId)
-            ->where('region_id', $regionId)
-            ->where('zone_id', $zoneId)
-            ->delete();
+        try {
+            return $category->prices()
+                ->where('tariff_id', $tariffId)
+                ->where('region_id', $regionId)
+                ->where('zone_id', $zoneId)
+                ->delete();
+        } catch (\Throwable $e) {
+            Log::error('delete prices error .' . $e->getMessage());
+        }
+
+        return false;
     }
 
     public function getByCategoryServiceIdAndProductCategoryId(int $tariffCategory): ?TariffCategories

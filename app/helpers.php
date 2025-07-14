@@ -14,6 +14,18 @@ function parse_to_float($value): ?float
     return (float) str_replace(',', '.', $removedSpaces);
 }
 
+function parse_string_symbols(?string $value): ?string
+{
+    if (!$value) {
+        return $value;
+    }
+
+    $value = str_replace("\xC2\xA0", ' ', $value);
+    $value = preg_replace('/[\x00-\x1F\x7F]/u', '', $value);
+
+    return trim($value);
+}
+
 
 
 

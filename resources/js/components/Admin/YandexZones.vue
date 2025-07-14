@@ -7,6 +7,7 @@
         <button class="btn btn-primary"  @click="exportSettings">Экспорт</button>
         <a target="_blank" href="https://yandex.ru/map-constructor/" class="btn btn-success ml-1">Конструктор карт</a>
         <a @click="showHistory" class="btn btn-secondary ml-1">История выгрузок</a>
+        <a v-if="hasEmptyPrices" href="/admin/tariffs/validation" class="btn btn-danger ml-1">Незаполненные цены для категорий</a>
         <hr>
 
         <div v-if="changedZones">
@@ -135,6 +136,31 @@
                 <button class="btn btn-secondary" @click="showHistoryModal = false">ОК</button>
             </template>
         </modal>
+
+        <modal v-if="showModalZonesWithErrors" @close="showModalZonesWithErrors = false">
+            <template #body>
+                <h3>Зоны загруженные с ошибками</h3>
+                <table class="table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="p-2">Регион</th>
+                            <th class="p-2">Филиал</th>
+                            <th class="p-2">Тип</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="zone in zonesWithErrors">
+                            <td class="p-2">{{zone.region_name}}</td>
+                            <td class="p-2">{{zone.filial_id}}</td>
+                            <td class="p-2">{{zone.type}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                    <br>
+                    <button class="btn btn-secondary" @click="showModalZonesWithErrors = false">ОК</button>
+            </template>
+        </modal>
     </div>
 </template>
 
@@ -146,6 +172,8 @@ export default {
     props: ['zones', 'regions', 'polygonTypes', 'filials', 'exportsHistory'],
     data() {
         return {
+            showModalZonesWithErrors: false,
+            zonesWithErrors: [],
             changedZones: null,
             newPolygons: null,
             showModal: false,
@@ -154,7 +182,8 @@ export default {
             newPolygonsData: [],
             deletedPolygons: [],
             newPolygonsErrors: [],
-            showHistoryModal: false
+            showHistoryModal: false,
+            hasEmptyPrices: false
         }
     },
     components: {
@@ -280,8 +309,16 @@ export default {
                 this.changedZones = null
                 this.newPolygons = null
 
-                if (response.status < 300 && response.data.has_empty_prices) {
-                    window.location.href = '/admin/tariffs/validation'
+                if (response.status < 300) {
+                    if (response.data.result.zones_errors.length > 0) {
+                        this.showModalZonesWithErrors = true
+                        this.zonesWithErrors = response.data.result.zones_errors
+
+                    }
+
+                    if (response.data.result.has_empty_prices) {
+                        this.hasEmptyPrices = true
+                    }
                 }
             }).catch(errors => {
                 this.loading = false

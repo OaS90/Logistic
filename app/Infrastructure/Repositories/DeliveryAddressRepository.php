@@ -21,10 +21,10 @@ class DeliveryAddressRepository
         }
 
         return DeliveryAddress::create([
-            'city_name' => $dto->cityName ?? null,
-            'region_name' => $dto->regionName ?? null,
+            'city_name' => $dto->cityName ? parse_string_symbols($dto->cityName) : null,
+            'region_name' => $dto->regionName ? parse_string_symbols($dto->regionName) : null,
             'city_fias' => $dto->cityFias,
-            'street' => $dto->street ?? null,
+            'street' => $dto->street ? parse_string_symbols($dto->street) : null,
             'street_fias' => $dto->streetFias,
             'building' => $building,
             'floor' => $dto->floor,

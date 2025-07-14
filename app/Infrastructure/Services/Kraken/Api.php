@@ -111,19 +111,11 @@ class Api
 
             Log::info('Delivery service response: ' . $contents);
 
-            if ($response->getStatusCode() === 204 || $response->getStatusCode() == 200) {
-                if (in_array($uri, [self::DELIVERY_TARIFFS_URI, self::DELIVERY_COURIER_PRICES_URI])) {
-                    $result = [
-                        'status' => true,
-                        'message' => 'Prices created or updated.'
-                    ];
-                } else {
-                    // При удалении зоны
-                    if ($method == 'DELETE') {
-                        $result = ['status' => true];
-                    } else {
-                        $result = json_decode($contents, true) ?: ['status' => true];
-                    }
+            if ($response->getStatusCode() < 300) {
+                $result = json_decode($contents, true);
+
+                if (!$result) {
+                    $result = ['status' => true];
                 }
             }
         } catch (ClientException $e) {
