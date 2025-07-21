@@ -347,7 +347,7 @@ class YandexZonesService
                 'region_id' => $newZone['region']['region_id'],
                 'filial_id' => $newZone['filial']['filial_id'],
                 'points' => $coordinates,
-                'zone_code' => $newZone['code_short'],
+                'zone_code' => $newZone['zone'],
                 'polygon_name' => $newZone['region']['name'] . ' zone_' . $newZone['zone']
             ];
 

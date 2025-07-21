@@ -197,7 +197,7 @@ export default {
             this.showHistoryModal = !this.showHistoryModal
         },
         disableZoneInput(zone) {
-            if (zone.polygon_type === 'allow-zones' || zone.polygon_type === 'polygon-paths') {
+            if (zone.type === 'allow-zones' || zone.type === 'polygon-paths') {
                 zone.zone = null
                 return true
             }
@@ -224,7 +224,6 @@ export default {
                     this.changedZones = response.data.changes
                     this.newPolygons = response.data.new_polygons
                     this.deletedPolygons = response.data.deleted_polygons
-
                     for (let i = 0; i <  this.newPolygons.length; i++) {
                         this.newPolygonsData[i] = {
                             region: { name: null },
