@@ -6,6 +6,7 @@ use App\Domain\Enum\ZoneType;
 use App\Http\Controllers\Api\Exceptions\DeletedZoneImportException;
 use App\Http\Controllers\Api\Exceptions\NewZoneImportException;
 use App\Http\Controllers\Controller;
+use App\Http\Exceptions\Admin\PolygonWithoutDescriptionException;
 use App\Infrastructure\Repositories\Admin\ZoneRepository;
 use App\Infrastructure\Repositories\Hru\FilialRepository;
 use App\Infrastructure\Repositories\RegionRepository;
@@ -48,8 +49,13 @@ class YandexZonesController extends Controller
             $result = $service->handleBeforeImportToService($exportData);
         } catch (\Throwable $e) {
             Log::error('Preparing zones for sending to service error ' . $e->getMessage());
+            $message = '';
 
-            return response()->json(['success' => false], Response::HTTP_BAD_REQUEST);
+            if ($e instanceof PolygonWithoutDescriptionException) {
+                $message = $e->getMessage();
+            }
+
+            return response()->json(['success' => false, 'message' => $message], Response::HTTP_BAD_REQUEST);
         }
 
         return response()->json([

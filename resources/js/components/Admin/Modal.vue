@@ -58,5 +58,6 @@ export default {
     }
     .modal-body {
         overflow-y: auto;
+        max-height: 50vh;
     }
 </style>

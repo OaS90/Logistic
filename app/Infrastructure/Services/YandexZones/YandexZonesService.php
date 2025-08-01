@@ -4,6 +4,7 @@ namespace App\Infrastructure\Services\YandexZones;
 
 use App\Http\Controllers\Api\Exceptions\DeletedZoneImportException;
 use App\Http\Controllers\Api\Exceptions\NewZoneImportException;
+use App\Http\Exceptions\Admin\PolygonWithoutDescriptionException;
 use App\Infrastructure\Admin\Services\Tariff\TariffService;
 use App\Infrastructure\Events\EventDispatcher;
 use App\Infrastructure\Repositories\Admin\RegionRepository;
@@ -93,12 +94,16 @@ class YandexZonesService
             $newDataDescriptions = [];
 
             foreach ($newData['features'] as $newPolygon) {
+                if (!isset($newPolygon['properties']['description'])) {
+                    throw new PolygonWithoutDescriptionException();
+                }
+
                 $newCoordinates = $newPolygon['geometry']['coordinates'][0];
                 $newDescription = trim($newPolygon['properties']['description']);
                 $zonesDescriptions = [];
 
                 // записываем описание полигонов из яндекс карт
-                $newDataDescriptions[trim($newPolygon['properties']['description'])] = trim($newPolygon['properties']['description']);
+                $newDataDescriptions[$newDescription] = trim($newPolygon['properties']['description']);
 
                 foreach ($oldData['features'] as $oldIndex => $polygon) {
                     $oldCoordinates = $polygon['geometry']['coordinates'][0];
@@ -136,7 +141,12 @@ class YandexZonesService
             foreach ($deletedPolygonsKeys as $description => $oldKey) {
                 $oldPolygon = $oldData['features'][$oldKey];
                 $explodedDescription = explode('|', $description);
-                $deletedPolygons[] = $this->makePolygonData($oldPolygon, $explodedDescription);
+
+                // проверяем что это не новый, добавленный полигон т.к.
+                // он не пройдёт по описанию
+                if (count($explodedDescription) > 1) {
+                    $deletedPolygons[] = $this->makePolygonData($oldPolygon, $explodedDescription);
+                }
             }
 
             Storage::put(self::UPDATED_FILE_NAME, json_encode($newData));

@@ -69,7 +69,7 @@
                                          label="name"
                                          :selectLabel="''"
                             >
-                                <template v-slot:singleLabel="{ option }">Id региона: {{ option.id }}</template>
+                                <template v-slot:singleLabel="{ option }">Id региона: {{ option.region_id }}</template>
                             </multiselect>
                         </td>
 
@@ -236,7 +236,12 @@ export default {
                     }
                 }).catch(errors => {
                     this.loading = false
-                    this.errorText = 'Ошибка обработки данных.'
+
+                    if (errors.data.message) {
+                        this.errorText = errors.data.message
+                    } else {
+                        this.errorText = 'Ошибка обработки данных.'
+                    }
                 })
 
             this.$refs.fileUpload.value = null;

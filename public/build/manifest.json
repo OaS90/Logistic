@@ -6,7 +6,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-Cx-HTZHr.js",
+    "file": "assets/app-CQ5gnum_.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -14,11 +14,11 @@
       "resources/js/bootstrap.js"
     ],
     "css": [
-      "assets/app-BzVzyKZn.css"
+      "assets/app-EwuwowWn.css"
     ]
   },
   "resources/js/bootstrap.js": {
-    "file": "assets/bootstrap-c-AvFOUj.js",
+    "file": "assets/bootstrap-Dqn8xu0s.js",
     "name": "bootstrap",
     "src": "resources/js/bootstrap.js",
     "isDynamicEntry": true,
