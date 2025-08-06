@@ -6,6 +6,7 @@ use App\Infrastructure\Events\EventDispatcher;
 use App\Infrastructure\Repositories\Hru\FilialRepository;
 use App\Infrastructure\Services\Kraken\Api;
 use App\Models\Region;
+use Exception;
 use Illuminate\Support\Facades\Storage;
 
 class YandexZonesService
@@ -18,7 +19,7 @@ class YandexZonesService
     ) {}
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function importFromDelivery(array $newData): array
     {
@@ -82,20 +83,34 @@ class YandexZonesService
 
             Storage::put(self::UPDATED_FILE_NAME, json_encode($newData));
         } else {
-            throw new \Exception('Не найден файл с настройками из сервиса');
+            throw new Exception('Не найден файл с настройками из сервиса');
         }
 
         return ['changes' => array_values($changes), 'notFoundPolygons' => $notFoundPolygons, 'diffsRegions' => $diffsRegions];
     }
 
+    /**
+     * @throws Exception
+     */
     public function exportFromDelivery(): array
     {
-        $allRegions = Region::all();
+//        $allRegions = Region::all();
+        // получаем регионы из коонфиг сервиса
+        // чтобы исключить выключенные регионы
         $polygonsCoordinates = [];
+        $allRegions = $this->krakenApi->configServiceRequest('config/regions');
+
+        if (!isset($allRegions['regions'])) {
+            throw new Exception("Doesn't regions exists from config service");
+        }
 
         foreach ($allRegions as $region) {
+            if (!$region->status) {
+                continue;
+            }
+
             $polygons = $this->krakenApi
-                ->deliveryServiceRequest('settings/delivery-zones/find-all-by-hru-region-id', ['region_id' => $region->region_id]);
+                ->deliveryServiceRequest('settings/delivery-zones/find-all-by-hru-region-id', ['region_id' => $region->id]);
             $polygonsCoordinatesByRegion = $this->prepareCoordinates($polygons);
             $polygonsCoordinates = array_merge($polygonsCoordinatesByRegion, $polygonsCoordinates);
         }
