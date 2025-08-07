@@ -24,6 +24,7 @@
                 <thead>
                 <tr>
                     <th class="choice" style="width: 5%"><input type="checkbox" class="input-lg checkbox" @change="selectAllZones($event)"></th>
+                    <th style="width: 15%">Id полигона в сервисе</th>
                     <th>Описание</th>
                     <th style="width: 15%">Id Региона</th>
                     <th style="width: 15%">Тип полигона</th>
@@ -37,6 +38,7 @@
                     <td class="choice">
                         <input type="checkbox" class="input-lg checkbox" v-model="zone.to_import">
                     </td>
+                    <td>{{ zone.id }}</td>
                     <td></td>
                     <td>{{ zone.region_id }}</td>
                     <td>{{ zone.type }}</td>
@@ -48,6 +50,7 @@
                     <td class="choice">
                         <input type="checkbox" class="input-lg checkbox" v-model="zone.to_import">
                     </td>
+                    <td>{{ zone.id }}</td>
                     <td></td>
                     <td>{{ zone.region_id }}</td>
                     <td>{{ zone.type }}</td>
@@ -59,6 +62,7 @@
                     <td class="choice">
                         <input type="checkbox" class="input-lg checkbox" v-model="newZone.to_import">
                     </td>
+                    <td></td>
                     <td>{{ newZone.polygon_data.properties.description }}</td>
                         <td>
                             <multiselect :options="regions"
