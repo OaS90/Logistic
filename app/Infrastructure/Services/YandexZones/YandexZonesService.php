@@ -38,15 +38,26 @@ class YandexZonesService
     /**
      * Метод получения данных по полигонам
      * из сервиса holodilnik-delivery
+     * @throws \Exception
      */
     public function exportFromDelivery(): array
     {
-        $allRegions = Region::all();
+        // получаем регионы из конфиг сервиса
+        // чтобы исключить выключенные регионы
         $polygonsCoordinates = [];
+        $allRegions = $this->krakenApi->configServiceRequest('config/regions');
+
+        if (!isset($allRegions['regions'])) {
+            throw new \Exception("Doesn't regions exists from config service");
+        }
 
         foreach ($allRegions as $region) {
+            if (!$region->status) {
+                continue;
+            }
+
             $polygons = $this->krakenApi
-                ->deliveryServiceRequest('settings/delivery-zones/find-all-by-hru-region-id', ['region_id' => $region->region_id]);
+                ->deliveryServiceRequest('settings/delivery-zones/find-all-by-hru-region-id', ['region_id' => $region->id]);
 
             // временный костыль. Когда не находит регион (тут 48 - Новокуйбышевск), возвращается пустой массив
             // а в апи у меня на этот случай подставляется status => true
@@ -252,8 +263,9 @@ class YandexZonesService
 
         if ($deliveryZones) {
             foreach ($deliveryZones as $deliveryZone) {
-                $deliveryZone['region_id'] = (int) $deliveryZone['region_id'];
-                $result = $this->krakenApi->deliveryServiceRequest('settings/delivery-zones/', $deliveryZone, 'PATCH');
+                $data = $this->prepareChangingZoneParams($deliveryZone);
+                $result = $this->krakenApi
+                    ->deliveryServiceRequest('settings/delivery-zones/' . $deliveryZone['id'], $data, 'PATCH');
 
                 if (!$result) {
                     $zonesWithErrors[] = $deliveryZone;
@@ -263,8 +275,8 @@ class YandexZonesService
 
         if ($allowZones) {
             foreach ($allowZones as $allowZone) {
-                $allowZone['region_id'] = (int) $allowZone['region_id'];
-                $result = $this->krakenApi->deliveryServiceRequest('settings/allow-zones', $allowZone, 'PATCH');
+                $data = $this->prepareChangingZoneParams($allowZone);
+                $result = $this->krakenApi->deliveryServiceRequest('settings/allow-zones' . $allowZone['id'], $data, 'PATCH');
 
                 if (!$result) {
                     $zonesWithErrors[] = $allowZone;
@@ -337,6 +349,16 @@ class YandexZonesService
         return $zonesWithErrors;
     }
 
+    private function prepareChangingZoneParams(array $zone): array
+    {
+        return [
+            'zone_code' => (int) $zone['zone_code'],
+            'points' => $zone['points'],
+            'region_id' => (int) $zone['region_id'],
+            'filial_id' => (int) $zone['filial_id'],
+        ];
+    }
+
     /**
      * @throws NewZoneImportException
      */
@@ -353,14 +375,7 @@ class YandexZonesService
                 $coordinates[] = $point;
             }
 
-            $newZoneDataForService = [
-                'region_id' => $newZone['region']['region_id'],
-                'filial_id' => $newZone['filial']['filial_id'],
-                'points' => $coordinates,
-                'zone_code' => $newZone['zone'],
-                'polygon_name' => $newZone['region']['name'] . ' zone_' . $newZone['zone']
-            ];
-
+            $newZoneDataForService = $this->prepareNewZoneParams($newZone, $coordinates);
             $newBranchOfficeZones[] = $newZoneDataForService;
 
             if ($newZone['type'] == 'delivery-zones') {
@@ -398,6 +413,17 @@ class YandexZonesService
         $this->eventDispatcher->filialZoneCreated($newBranchOfficeZones);
 
         return $zoneErrors;
+    }
+
+    private function prepareNewZoneParams(array $zone, array $coordinates): array
+    {
+        return [
+            'region_id' => $zone['region']['region_id'],
+            'filial_id' => $zone['filial']['filial_id'],
+            'points' => $coordinates,
+            'zone_code' => $zone['zone'] ? 'zone_' . $zone['zone'] : null,
+            'polygon_name' => $zone['region']['name'] . ' zone_' . $zone['zone']
+        ];
     }
 
     /**

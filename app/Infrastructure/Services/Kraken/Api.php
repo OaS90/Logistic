@@ -94,6 +94,17 @@ class Api
     public function deliveryServiceRequest(string $uri, array $data = [], $method = 'GET'): array
     {
         $result = [];
+
+        if ($method == 'PATCH') {
+            $action = 'CHANGE';
+        } elseif ($method === 'POST') {
+            $action = 'CREATE';
+        } elseif ($method === 'GET') {
+            $action = 'GET';
+        } else {
+            $action = 'DELETE';
+        }
+
         $params[RequestOptions::HEADERS]['Authorization'] = 'Bearer ' . config('services.delivery_service.token');
         $uri = 'holodilnik-delivery/api/v1/' . $uri;
 
@@ -103,7 +114,8 @@ class Api
             $params[RequestOptions::QUERY] = $data;
         }
 
-        Log::withContext(['uri' => $uri,])->info('Send to delivery service. Request: ' . json_encode($data));
+        Log::withContext(['uri' => $uri,])
+            ->info('Send to delivery service. Action: ' . $action . '. Request: ' . json_encode($data));
 
         try {
             $response = $this->client->request($method, $uri, $params);
