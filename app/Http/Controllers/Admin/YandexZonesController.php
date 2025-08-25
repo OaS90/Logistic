@@ -37,7 +37,7 @@ class YandexZonesController extends Controller
             'polygon_types' => $polygonTypes,
             'filials' => $filials,
             'zones' => $zones,
-            'exports_history_files' => $exportsHistory
+            'exports_history_files' => array_reverse($exportsHistory)
         ]);
     }
 

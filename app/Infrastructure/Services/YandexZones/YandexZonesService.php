@@ -276,7 +276,7 @@ class YandexZonesService
         if ($allowZones) {
             foreach ($allowZones as $allowZone) {
                 $data = $this->prepareChangingZoneParams($allowZone);
-                $result = $this->krakenApi->deliveryServiceRequest('settings/allow-zones' . $allowZone['id'], $data, 'PATCH');
+                $result = $this->krakenApi->deliveryServiceRequest('settings/allow-zones/' . $allowZone['id'], $data, 'PATCH');
 
                 if (!$result) {
                     $zonesWithErrors[] = $allowZone;
@@ -286,8 +286,8 @@ class YandexZonesService
 
         if ($polygonPaths) {
             foreach ($polygonPaths as $polygon) {
-                $polygon['region_id'] = (int) $polygon['region_id'];
-                $result = $this->krakenApi->deliveryServiceRequest('settings/polygon-paths', $polygon, 'PATCH');
+                $data = $this->prepareChangingZoneParams($polygon);
+                $result = $this->krakenApi->deliveryServiceRequest('settings/polygon-paths/' . $polygon['id'], $data, 'PATCH');
 
                 if (!$result) {
                     $zonesWithErrors[] = $polygon;
@@ -352,7 +352,7 @@ class YandexZonesService
     private function prepareChangingZoneParams(array $zone): array
     {
         return [
-            'zone_code' => (int) $zone['zone_code'],
+            'zone_code' => $zone['zone_code'] ?? null,
             'points' => $zone['points'],
             'region_id' => (int) $zone['region_id'],
             'filial_id' => (int) $zone['filial_id'],
@@ -418,7 +418,7 @@ class YandexZonesService
     private function prepareNewZoneParams(array $zone, array $coordinates): array
     {
         return [
-            'region_id' => $zone['region']['region_id'],
+            'region_id' => (int) $zone['region']['region_id'],
             'filial_id' => $zone['filial']['filial_id'],
             'points' => $coordinates,
             'zone_code' => $zone['zone'] ? 'zone_' . $zone['zone'] : null,
@@ -426,9 +426,6 @@ class YandexZonesService
         ];
     }
 
-    /**
-     * @throws DeletedZoneImportException
-     */
     private function importZonesForDelete(array $zonesToImport): array
     {
         $deletedBranchOfficeZones = [];
@@ -660,7 +657,7 @@ class YandexZonesService
         return [
             'id' => $polygon['id'],
             'zone_name' => $zoneName,
-            'zone_code' => $description[3] ?? null,
+            'zone_code' => $zoneCode,
             'region_name' => $regionName,
             'points' => $newCoordinates ?? $polygon['points'],
             'region_id' => $description[0],
