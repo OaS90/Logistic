@@ -4,9 +4,11 @@ namespace App\Infrastructure\Repositories;
 
 use App\Domain\DTO\ProductDTO;
 use App\Models\Product;
+use App\Shared\Eloquent\ConvertsToUtfTrait;
 
 class ProductRepository
 {
+    use ConvertsToUtfTrait;
     public function getById(int $id): Product
     {
         return Product::where('id', $id)->first();
@@ -27,8 +29,8 @@ class ProductRepository
         ]
         ,[
             'app_id' => $appId,
-            'name' => $dto->name,
-            'brand' => $dto->brand,
+            'name' => $this->toCp1251($dto->name),
+            'brand' => $this->toCp1251($dto->brand),
             'sku' => $dto->sku,
             'count' => $dto->count,
             'cost' => $dto->cost,

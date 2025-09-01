@@ -5,11 +5,14 @@ namespace App\Infrastructure\Repositories;
 use App\Domain\DTO\ApplicationDTO;
 use App\Domain\Enum\ApplicationStatus;
 use App\Models\Application;
+use App\Shared\Eloquent\ConvertsToUtfTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 class ApplicationRepository
 {
+    use ConvertsToUtfTrait;
+
     public function getById(int $id)
     {
         return Application::find($id);
@@ -69,7 +72,7 @@ class ApplicationRepository
         $app->update(['status' => $status]);
     }
 
-    public function updateByFields(Application $app, $fields): void
+    public function updateByFields(Application $app, array $fields): void
     {
         $app->update($fields);
     }

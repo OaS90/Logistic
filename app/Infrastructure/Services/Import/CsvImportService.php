@@ -49,6 +49,17 @@ class CsvImportService
      */
     public function import($file, ImportEntity $entity, int $userId, ?int $storeId = null): void
     {
+        // проверяем, если кодировка UTF-8, то перекодируем в Windows-1251
+        if (mb_detect_encoding(file_get_contents($file), ['UTF-8', 'Windows-1251']) === 'UTF-8') {
+            // удаляем BOM, если он есть
+            if ($this->hasUtf8Bom($file)) {
+                $file = $this->removeUtf8Bom($file);
+            }
+
+            $content = mb_convert_encoding(file_get_contents($file), 'Windows-1251', 'UTF-8');
+            file_put_contents($file, $content);
+        }
+
         $dataFromCsv = $this->getDataArraysWithDbRows($entity, $file);
         $warehouse = null;
 
@@ -77,7 +88,8 @@ class CsvImportService
                     $this->productRepo->create($productDTO, $existApp->id);
                 }
             } else {
-                $this->appCheckService->checkAppChangesAndUpdate($existApp, $appDTO, $warehouse->id);
+                $address = $this->addressRepo->create($appDTO->addressDTO);
+                $this->appCheckService->checkAppChangesAndUpdate($existApp, $address->id, $appDTO, $warehouse->id);
             }
 //            $this->appService->getDeliveryDateFromHru($existApp, $existApp->address);
         }
@@ -271,6 +283,28 @@ class CsvImportService
             $columns['deliveryTill'] = DefaultDeliveryTime::TO;
         }
     }
+
+    function hasUtf8Bom($file): bool
+    {
+        $fh = fopen($file, 'r');
+        $bytes = fread($fh, 3);
+        fclose($fh);
+
+        return $bytes === "\xEF\xBB\xBF";
+    }
+
+    function removeUtf8Bom($file)
+    {
+        $contents = file_get_contents($file);
+
+        if (substr($contents, 0, 3) === "\xEF\xBB\xBF") {
+            $contents = substr($contents, 3);
+            file_put_contents($file, $contents);
+        }
+
+        return $file;
+    }
+
 
     private function fileTitlesToDbColumnsPrepare(): array
     {

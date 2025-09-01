@@ -26,10 +26,10 @@ class ProductFactory
             depth: floatval(str_replace(',', '.', $data['depth'])),
             volume: floatval(str_replace(',', '.', $data['volume'])),
             weight: floatval(str_replace(',', '.', $data['weight'])),
-            tnved: $data['tnved'] ?? null,
+            tnved: $data['tnved'] ? (int) $data['tnved'] : null,
             discountCost: null,
             countryCode: $data['country_code'] ?? null,
-            barcode: $data['barcode'] ?? null,
+            barcode: $data['barcode'] ? (int) $data['barcode'] : null,
             leftToPay: $data['left_to_pay'] ?? 0
         );
     }

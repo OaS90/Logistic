@@ -49,7 +49,7 @@ class ApplicationFactory
             orderList: $data['orderList'],
             orderWeight: $data['orderWeight'],
             deliveryAddress: $data['deliveryAddress'],
-            overDeliveryZoneKm: $data['overDeliveryZoneKm'] ?? null,
+            overDeliveryZoneKm: $data['overDeliveryZoneKm'] ? (int) $data['overDeliveryZoneKm'] : null,
             liftType: $data['liftType'] ?? null,
             liftFloor: $data['liftFloor'] ?? null,
             handLiftFloor: $data['handLiftFloor'] ?? null,

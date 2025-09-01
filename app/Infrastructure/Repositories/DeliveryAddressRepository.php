@@ -3,7 +3,6 @@
 namespace App\Infrastructure\Repositories;
 
 use App\Application\DeliveryAddressDTOInterface;
-use App\Domain\DTO\DeliveryAddressDTO;
 use App\Models\DeliveryAddress;
 
 class DeliveryAddressRepository
@@ -20,7 +19,7 @@ class DeliveryAddressRepository
             $building .= $dto->houseBlock;
         }
 
-        return DeliveryAddress::create([
+        return DeliveryAddress::updateOrCreate([
             'city_name' => $dto->cityName ?? null,
             'region_name' => $dto->regionName ?? null,
             'city_fias' => $dto->cityFias,

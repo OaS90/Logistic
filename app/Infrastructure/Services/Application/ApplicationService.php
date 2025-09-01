@@ -38,6 +38,9 @@ class ApplicationService implements ApplicationServiceInterface
     // TODO убрать после добавления доступа по токену
     private array $disabledPartners = [
         '000000014',
+        '000000029',
+        '000000025',
+        '000000030'
     ];
 
     public function __construct(private readonly ApplicationRepository $appRepo,
@@ -117,7 +120,7 @@ class ApplicationService implements ApplicationServiceInterface
             $this->productRepo->create($dto->applicationDTO->products[0], $newApp->id);
             $existApp = $newApp;
         } else {
-            $this->appCheckService->checkAppChangesAndUpdate($existApp, $dto->applicationDTO, $dto->warehouseId);
+            $this->appCheckService->checkAppChangesAndUpdate($existApp, $newDeliveryAddress->id, $dto->applicationDTO, $dto->warehouseId);
         }
 
         $this->getDeliveryDateFromHru($existApp, $newDeliveryAddress);

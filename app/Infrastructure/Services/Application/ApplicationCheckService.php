@@ -16,7 +16,7 @@ class ApplicationCheckService
     )
     {}
 
-    public function checkAppChangesAndUpdate(Application $app, ApplicationDTO $dto, int $warehouseId): void
+    public function checkAppChangesAndUpdate(Application $app, int $addressId, ApplicationDTO $dto, int $warehouseId): void
     {
         if (!in_array($app->status, [ApplicationStatus::NEW, ApplicationStatus::REFUSAL])) {
             $this->appRepo->updateByFields($app, [
@@ -25,6 +25,7 @@ class ApplicationCheckService
                 'delivery_date' => $dto->deliveryDate,
                 'delivery_cost' => $dto->deliveryCost,
                 'delivery_time' => $dto->deliveryTime,
+                'delivery_address' => $addressId,
                 'warehouse_id' => $warehouseId,
                 'comment' => $dto->comment,
                 'client_name' => $dto->clientFullName,
