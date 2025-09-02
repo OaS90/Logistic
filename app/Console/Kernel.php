@@ -18,6 +18,9 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->command('app:get-filials-data')
             ->dailyAt('01:00');
+
+        $schedule->command('app:sync-warehouses')
+            ->dailyAt('02:00');
     }
 
     /**

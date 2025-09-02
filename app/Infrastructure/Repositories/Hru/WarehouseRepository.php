@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repositories\Hru;
 
 use App\Domain\DTO\HruWarehouseDTO;
 use App\Models\Hru\Warehouse;
+use Illuminate\Database\Eloquent\Collection;
 
 class WarehouseRepository
 {
@@ -27,5 +28,15 @@ class WarehouseRepository
     public function getByCode(string $code): ?Warehouse
     {
         return Warehouse::where('code', $code)->first();
+    }
+
+    public function getAll(): Collection
+    {
+        return Warehouse::get();
+    }
+
+    public function deleteByCode(string $code): Warehouse
+    {
+        return Warehouse::where('code', $code)->delete();
     }
 }

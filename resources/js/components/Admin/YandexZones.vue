@@ -292,7 +292,7 @@ export default {
             })
 
             zonesToImport.new.forEach((item, index) => {
-                if (!item.region || !item.filial || !item.type) {
+                if (!item.region.id || !item.filial || !item.type) {
                     this.newPolygonsErrors.push(index)
                 } else if (!item.zone && item.type === 'delivery-zones') {
                     this.newPolygonsErrors.push(index + '_polygon-type')

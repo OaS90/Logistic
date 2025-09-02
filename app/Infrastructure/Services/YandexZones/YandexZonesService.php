@@ -82,7 +82,7 @@ class YandexZonesService
             Storage::delete(self::FILE_NAME);
         }
 
-        $historyFileName = 'history_' . Carbon::now()->format('Y-m-d_H-i') . '.json';
+        $historyFileName = 'history_' . Carbon::now()->format('Y-m-d_H-i') . '.geojson';
         Storage::put(self::FILE_NAME, $jsonData);
         Storage::put(self::HISTORY_PATH . $historyFileName, $jsonData);
 

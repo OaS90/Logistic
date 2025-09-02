@@ -18,6 +18,8 @@ class Api
     public const DELIVERY_COURIER_PRICES_URI = 'settings/calculation/group/courier-delivery-prices';
     public const CONFIG_FILIALS_URI = 'config/filials';
 
+    public const CONFIG_WAREHOUSES_URI = 'config/warehouses';
+
 
     public function __construct(private readonly Client $client)
     {
