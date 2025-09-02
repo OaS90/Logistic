@@ -40,6 +40,7 @@ class HruFilialCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        $this->crud->removeAllButtons();
         CRUD::column('id');
         CRUD::column('filial_id')->label('Код');
         CRUD::addColumn([

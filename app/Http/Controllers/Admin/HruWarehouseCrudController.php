@@ -40,6 +40,7 @@ class HruWarehouseCrudController extends CrudController
      */
     protected function setupListOperation(): void
     {
+        $this->crud->removeAllButtons();
         CRUD::column('id');
         CRUD::addColumn([  // Select
             'name'  => 'region_name',
