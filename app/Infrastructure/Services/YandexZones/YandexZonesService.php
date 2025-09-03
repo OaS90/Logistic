@@ -197,12 +197,16 @@ class YandexZonesService
             $changedErrors = $this->importZonesForChange($zonesToUpdate['changed'], $allZones['changed']);
         }
 
-        if ($zonesToUpdate['new']) {
-            $createdErrors = $this->importNewZones($zonesToUpdate['new']);
-        }
-
+        /*
+         * перед созданием новых зон обязательно удаляем те, которые на удаление
+         * т.к. могли удалить, допустим, зон Б одного региона и потом её же перерисовать
+        */
         if ($zonesToUpdate['deleted']) {
             $deletedErrors = $this->importZonesForDelete($zonesToUpdate['deleted']);
+        }
+
+        if ($zonesToUpdate['new']) {
+            $createdErrors = $this->importNewZones($zonesToUpdate['new']);
         }
 
         $zonesWithErrors = array_merge($changedErrors, $createdErrors, $deletedErrors);

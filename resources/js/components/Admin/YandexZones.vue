@@ -48,7 +48,7 @@
                 </tr>
                 <tr v-for="(zone, index) in deletedPolygons" class="deleted-zones">
                     <td class="choice">
-                        <input type="checkbox" class="input-lg checkbox" v-model="zone.to_import">
+<!--                        <input type="checkbox" class="input-lg checkbox" v-model="zone.to_import">-->
                     </td>
                     <td>{{ zone.id }}</td>
                     <td></td>
@@ -287,8 +287,10 @@ export default {
                 return polygon.to_import === true
             })
 
-            zonesToImport.deleted = this.deletedPolygons.filter(polygon => {
-                return polygon.to_import === true
+            zonesToImport.deleted = this.deletedPolygons.map(polygon => {
+                polygon.to_import = true
+
+                return polygon
             })
 
             zonesToImport.new.forEach((item, index) => {
