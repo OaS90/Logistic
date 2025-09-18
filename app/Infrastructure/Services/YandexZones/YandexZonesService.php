@@ -23,7 +23,6 @@ class YandexZonesService
 
     const HISTORY_PATH = 'history/';
     const NEW_ZONES_FILE_NAME = 'new.json';
-    const UPDATED_NEW_ZONES_FILE_NAME = 'updated_new.json';
     const UPDATED_FILE_NAME = 'updated_zones.json';
     public function __construct(private readonly Api $krakenApi,
                                 private readonly FilialRepository $filialRepo,
@@ -103,6 +102,7 @@ class YandexZonesService
             $newPolygons = [];
             $oldDataDescriptions = [];
             $newDataDescriptions = [];
+            $preparedNewData = [];
 
             foreach ($newData['features'] as $newPolygon) {
                 if (!isset($newPolygon['properties']['description'])) {
@@ -128,6 +128,11 @@ class YandexZonesService
                     $zonesDescriptions[$polygon['properties']['description']] = true;
 
                     if ($polygon['properties']['description'] == $newDescription) {
+                        if (!isset($preparedNewData[$newDescription])) {
+                            $newPolygon['id'] = $polygon['id'];
+                            $preparedNewData[$newDescription] = $newPolygon;
+                        }
+
                         $diffs = $this->hasChanges($oldCoordinates, $newCoordinates);
 
                         if ($diffs) {
@@ -160,7 +165,7 @@ class YandexZonesService
                 }
             }
 
-            Storage::put(self::UPDATED_FILE_NAME, json_encode($newData));
+            Storage::put(self::UPDATED_FILE_NAME, json_encode(array_values($preparedNewData)));
 
             if ($newPolygons) {
                 Storage::put(self::NEW_ZONES_FILE_NAME, json_encode($newPolygons));
@@ -224,12 +229,13 @@ class YandexZonesService
     {
         $branchOfficeCodes = [];
         $zonesWithErrors = [];
+
         // берём зоны, которые не отметили для отправки в сервис
-        $filialIdsToUpdate = array_column($zonesToImport, 'filial_id');
-        $filialIdsChangedZones = array_column($allZones, 'filial_id');
-        $notSelectedZoneCodes = array_diff($filialIdsChangedZones, $filialIdsToUpdate);
-        $notSelectedZones = array_filter($allZones, function ($zone) use ($notSelectedZoneCodes) {
-            return in_array($zone['filial_id'], $notSelectedZoneCodes);
+        $polygonIdsToUpdate = array_column($zonesToImport, 'id');
+        $polygonIdsChangedZones = array_column($allZones, 'id');
+        $notSelectedZonesIds = array_diff($polygonIdsChangedZones, $polygonIdsToUpdate);
+        $notSelectedZones = array_filter($allZones, function ($zone) use ($notSelectedZonesIds) {
+            return in_array($zone['id'], $notSelectedZonesIds);
         });
 
         // Сначала изменяем координаты для всех зон
@@ -300,24 +306,24 @@ class YandexZonesService
         }
 
         if ($notSelectedZones) {
-            $notSelectedAllowZones = array_filter($allowZones, function ($zone) use ($notSelectedZoneCodes) {
-                if (in_array($zone['filial_id'], $notSelectedZoneCodes) && $zone['type'] == 'allow-zones') {
+            $notSelectedAllowZones = array_filter($allZones, function ($zone) use ($notSelectedZonesIds) {
+                if (in_array($zone['id'], $notSelectedZonesIds) && $zone['type'] == 'allow-zones') {
                     return true;
                 }
 
                 return false;
             });
 
-            $notSelectedDeliveryZones = array_filter($allowZones, function ($zone) use ($notSelectedZoneCodes) {
-                if (in_array($zone['filial_id'], $notSelectedZoneCodes) && $zone['type'] == 'delivery-zones') {
+            $notSelectedDeliveryZones = array_filter($allZones, function ($zone) use ($notSelectedZonesIds) {
+                if (in_array($zone['id'], $notSelectedZonesIds) && $zone['type'] == 'delivery-zones') {
                     return true;
                 }
 
                 return false;
             });
 
-            $notSelectedPolygonPaths = array_filter($allowZones, function ($zone) use ($notSelectedZoneCodes) {
-                if (in_array($zone['filial_id'], $notSelectedZoneCodes) && $zone['type'] == 'polygon-paths') {
+            $notSelectedPolygonPaths = array_filter($allZones, function ($zone) use ($notSelectedZonesIds) {
+                if (in_array($zone['id'], $notSelectedZonesIds) && $zone['type'] == 'polygon-paths') {
                     return true;
                 }
 
@@ -328,20 +334,47 @@ class YandexZonesService
             $preparedNotSelectedDeliveryZones = $this->prepareCoordinates($notSelectedDeliveryZones);
             $preparedNotSelectedPolygonPaths = $this->prepareCoordinates($notSelectedPolygonPaths, 'polygon-paths');
             $preparedNotSelectedZones = array_merge($preparedNotSelectedDeliveryZones, $preparedNotSelectedAllowZones, $preparedNotSelectedPolygonPaths);
-            $jsonData = json_encode($this->prepareDataForImportToFile($preparedNotSelectedZones));
+            $collectNotSelectedZones = collect($preparedNotSelectedZones);
 
             // Если есть файл, который выгружали из сервиса вначале, то удаляем его
             if (Storage::exists(self::FILE_NAME)) {
+                // 1. Получаем и декодируем старый набор данных
+                $contents = Storage::get(self::FILE_NAME);
+                $exportedData = json_decode($contents, true);
+                $collectExportedData = collect($exportedData['features']);
+
+                // 2. Получаем и декодируем новый набор данных
+                $updatedContents = Storage::get(self::UPDATED_FILE_NAME);
+                $updatedData = json_decode($updatedContents, true);
+                $collectUpdatedDate = collect($updatedData);
+
+                // 3. Подготавливаем быстрые “хэши” по description для обоих наборов
+                $exportedByDesc = $collectExportedData->keyBy(fn($item) => $item['properties']['description']);
+                $notSelectedByDesc = $collectNotSelectedZones->keyBy(fn($item) => $item['properties']['description']);
+
+                // 4. Заменяем координаты полигона старыми (из сервиса), если он не были выбраны
+                $collectUpdatedDate->transform(function ($polygon) use ($exportedByDesc, $notSelectedByDesc) {
+                    $desc = $polygon['properties']['description'];
+
+                    // Ищем в старом наборе по ключу
+                    if (isset($exportedByDesc[$desc]) && isset($notSelectedByDesc[$desc])) {
+                        // Если описание есть и в oldData, и в notSelectedZones — заменяем entire объект
+                        return $exportedByDesc[$desc];
+                    }
+
+                    // Иначе возвращаем без изменений
+                    return $polygon;
+                });
+
+                $newData = $this->prepareDataForImportToFile($collectUpdatedDate->toArray());
+
+                // Удаляем файлы: и тот, что был при экспорте zones.json и обвнлённый через
+                // яндекс карты. Создаём новый файл с учётом невыбранных зон, чтобы при
+                // следующей загрузке того же файла, они показывались как изменённые
                 Storage::delete(self::FILE_NAME);
-            }
-
-            // Если есть файл, с обновлёнными данными (с изменениями из яндекс карт), то его тоже удаляем
-            if (Storage::exists(self::UPDATED_FILE_NAME)) {
                 Storage::delete(self::UPDATED_FILE_NAME);
+                Storage::put(self::FILE_NAME, json_encode($newData));
             }
-
-            // И кладём предыдущую выгрузку из сервиса для того,
-            Storage::put(self::FILE_NAME, $jsonData);
         } else {
             Storage::delete(self::FILE_NAME);
             Storage::move(self::UPDATED_FILE_NAME, self::FILE_NAME);
@@ -663,6 +696,7 @@ class YandexZonesService
             'zone_name' => $zoneName,
             'zone_code' => $zoneCode,
             'region_name' => $regionName,
+            'description' => implode('|', $description),
             'points' => $newCoordinates ?? $polygon['points'],
             'region_id' => $description[0],
             'type' => $description[1],
