@@ -5,7 +5,7 @@ namespace App\Infrastructure\Repositories\Admin;
 use App\Models\TariffCategories;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use phpseclib3\Math\BigInteger\Engines\PHP\Reductions\Barrett;
+use Illuminate\Support\Facades\Log;
 
 class TariffCategoryRepository
 {
@@ -55,11 +55,17 @@ class TariffCategoryRepository
                                                    int $zoneId
     ): bool
     {
-        return $category->prices()
-            ->where('tariff_id', $tariffId)
-            ->where('region_id', $regionId)
-            ->where('zone_id', $zoneId)
-            ->delete();
+        try {
+            return $category->prices()
+                ->where('tariff_id', $tariffId)
+                ->where('region_id', $regionId)
+                ->where('zone_id', $zoneId)
+                ->delete();
+        } catch (\Throwable $e) {
+            Log::error('delete prices error .' . $e->getMessage());
+        }
+
+        return false;
     }
 
     public function getByCategoryServiceIdAndProductCategoryId(int $tariffCategory): ?TariffCategories
@@ -72,19 +78,23 @@ class TariffCategoryRepository
         return TariffCategories::where('result_category_id', $id)->first();
     }
 
-    public function deletePricesByTariffId(TariffCategories $category, int $tariffId)
+    public function deletePricesByTariffId(TariffCategories $category, int $tariffId): void
     {
-        return $category->prices()->where('tariff_id', $tariffId)->delete();
+        $category->prices()->where('tariff_id', $tariffId)->delete();
     }
 
     public function createPrice(TariffCategories $category, int $tariffId, int $regionId, int $zoneId): void
     {
-        $category->prices()->create([
-            'tariff_id' => $tariffId,
-            'region_id' => $regionId,
-            'zone_id' => $zoneId,
-            'price' => 0,
-            'second_price' => 0
-        ]);
+        $existsPrices = $this->getPrices($category, $tariffId, $regionId, $zoneId);
+
+        if (!$existsPrices) {
+            $category->prices()->create([
+                'tariff_id' => $tariffId,
+                'region_id' => $regionId,
+                'zone_id' => $zoneId,
+                'price' => null,
+                'second_price' => null
+            ]);
+        }
     }
 }

@@ -20,25 +20,6 @@
                         <th>Вкл/Выкл</th>
                         <th v-for="(details, index) in headers" class="th-title">
                             {{ details.title }}
-                            <i class="la la-window-close-o" @click="beforeDeleteZone(index, details.zoneName, details.zone)"></i>
-                        </th>
-                        <th>
-                            <label for="zones">Добавить зону <i class="la la-plus-circle"></i></label>
-                            <select name="zones"
-                                    id="zones"
-                                    v-model="selectedZone"
-                                    @change="addColumn($event)"
-                                    class="form-control col-md-12"
-                            >
-                                <option value="none" selected disabled hidden>Выберите зону</option>
-                                <option v-for="(zone, index) in zones"
-                                        :value="zone.name + '_' + index"
-                                        :disabled="zone.enabled"
-                                >
-                                    Зона {{ zone.name }}
-                                </option>
-                            </select>
-
                         </th>
                     </tr>
                 </thead>
@@ -50,19 +31,19 @@
                             <span class="extra-label">Стоимость первой единицы</span>
                             <input type="number" min="0" max="9999" class="form-control col-md-12"
                                    v-model="details.price"
+                                   :class="{'error': details.price === null }"
                                    @keydown="checkInputNumbers($event, details.price)"
                                    @keyup="checkFewZeros($event, details, 'price')"
                                    @focusout="checkIsEmpty($event, details, 'price')"
                             >
                             <span class="extra-label">Стоимость второй единицы</span>
-                            <input type="number" min="0" max="9999" class="form-control col-md-12"
+                            <input :class="{'error': details.secondPrice === null }" type="number" min="0" max="9999" class="form-control col-md-12"
                                    v-model="details.secondPrice"
                                    @keydown="checkInputNumbers($event, details.secondPrice)"
                                    @keyup="checkFewZeros($event, details, 'secondPrice')"
                                    @focusout="checkIsEmpty($event, details, 'secondPrice')"
                             >
                         </td>
-                        <td></td>
                     </tr>
                 </tbody>
             </table>
@@ -94,7 +75,6 @@
                         <span class="extra-label">Стоимость второй единицы</span>
                         <span class="form-control col-md-12">{{ details.secondPrice }}</span>
                     </td>
-                    <td></td>
                 </tr>
                 </tbody>
             </table>
@@ -279,5 +259,8 @@ export default {
 }
 table th,td {
     border: 1px solid #ddd
+}
+.error {
+    border: 1px solid red;
 }
 </style>

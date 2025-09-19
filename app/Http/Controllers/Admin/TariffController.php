@@ -240,4 +240,16 @@ class TariffController extends Controller
 
         return response(['message' => 'Тариф успешно обновлён'], Response::HTTP_OK);
     }
+
+    /**
+     * Страница с валидацией тарифов.
+     * Показывает в каких тарифах (регионах, категориях, зонах)
+     * не заполнено значение цены
+     */
+    public function validateTariffs(TariffService $service): View
+    {
+        $prices = $service->getEmptyPrices();
+
+        return view(backpack_view('tariff.tariff-validation-page'), ['prices' => $prices]);
+    }
 }

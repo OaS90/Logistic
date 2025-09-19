@@ -8,6 +8,7 @@ use App\Infrastructure\Repositories\Admin\UserTariffPermissionRepository;
 use Backpack\PermissionManager\app\Http\Controllers\UserCrudController as CrudController;
 use Backpack\PermissionManager\app\Http\Requests\UserStoreCrudRequest as StoreRequest;
 use Backpack\PermissionManager\app\Http\Requests\UserUpdateCrudRequest as UpdateRequest;
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 class UserCrudController extends CrudController
 {
@@ -23,52 +24,40 @@ class UserCrudController extends CrudController
         $this->tariffRepo = $tariffRepo;
     }
 
-    public function setupCreateOperation()
-    {
-        $this->addUserFields();
-        $this->crud->setValidation(StoreRequest::class);
-    }
-
-    public function setupUpdateOperation()
-    {
-        $this->addUserFields();
-        $this->crud->setValidation(UpdateRequest::class);
-    }
-
-    protected function addUserFields()
+    protected function addUserFields(): void
     {
         $this->crud->addFields([
             [
                 'name'  => 'name',
+                'tab' => 'Пользователи',
                 'label' => trans('backpack::permissionmanager.name'),
                 'type'  => 'text',
-                'tab' => 'Пользователь'
             ],
             [
                 'name'  => 'email',
+                'tab' => 'Настройки Тарифов',
                 'label' => trans('backpack::permissionmanager.email'),
                 'type'  => 'email',
-                'tab' => 'Пользователь'
             ],
             [
                 'name'  => 'password',
+                'tab' => 'Пользователи',
                 'label' => trans('backpack::permissionmanager.password'),
                 'type'  => 'password',
-                'tab' => 'Пользователь'
             ],
             [
                 'name'  => 'password_confirmation',
+                'tab' => 'Пользователи',
                 'label' => trans('backpack::permissionmanager.password_confirmation'),
                 'type'  => 'password',
-                'tab' => 'Пользователь'
             ],
             [
                 // two interconnected entities
                 'label'             => trans('backpack::permissionmanager.user_role_permission'),
-                'tab' => 'Пользователь',
                 'field_unique_name' => 'user_role_permission',
                 'type'              => 'checklist_dependency',
-                'name'              => ['roles', 'permissions'],
+                'tab' => 'Пользователи',
+                'name'              => 'roles,permissions',
                 'subfields'         => [
                     'primary' => [
                         'label'            => trans('backpack::permissionmanager.roles'),

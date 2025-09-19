@@ -4,7 +4,12 @@
     <div id="admin-app">
         <h1>Настрока зон</h1>
 
-        <yandex-zones></yandex-zones>
+        <yandex-zones :zones="{{  json_encode($zones) }}"
+                      :polygon-types="{{  json_encode($polygon_types) }}"
+                      :filials="{{ json_encode($filials) }}"
+                      :regions="{{ json_encode($regions) }}"
+                      :exports-history="{{ json_encode($exports_history_files) }}"
+        ></yandex-zones>
     </div>
 @endsection
 

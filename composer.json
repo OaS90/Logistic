@@ -16,8 +16,9 @@
     ],
     "require": {
         "php": "^8.1",
+        "backpack/activity-log": "^2.0",
         "backpack/crud": "^6.0",
-        "backpack/permissionmanager": "^7.0",
+        "backpack/permissionmanager": "^7.2",
         "backpack/theme-coreuiv2": "^1.2",
         "backpack/theme-tabler": "^1.2",
         "barryvdh/laravel-debugbar": "*",
@@ -26,13 +27,13 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "hedii/laravel-gelf-logger": "*",
         "hflabs/dadata": "^20.12",
+        "hrulibs/events": "^1.0",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^4.0",
         "maatwebsite/excel": "^3.1",
         "picqer/php-barcode-generator": "^2.2",
-        "hrulibs/events": "^1.0",
         "predis/predis": "2.0"
     },
     "require-dev": {

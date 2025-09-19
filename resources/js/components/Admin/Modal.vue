@@ -56,4 +56,8 @@ export default {
         min-width: 300px;
         text-align: center;
     }
+    .modal-body {
+        overflow-y: auto;
+        max-height: 50vh;
+    }
 </style>

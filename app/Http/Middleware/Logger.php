@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -67,6 +68,10 @@ class Logger
             $message = $response->getContent();
         } elseif (is_array($response)) {
             $message = json_encode($response, JSON_UNESCAPED_UNICODE);
+        } elseif ($response instanceof BinaryFileResponse) {
+            return $response;
+        } elseif ($response instanceof View) {
+            return $response;
         } else {
             $message = 'Invalid json response';
         }
