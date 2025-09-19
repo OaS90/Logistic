@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\Storage;
 class YandexZonesService
 {
     const FILE_NAME = 'zones.json';
-
     const HISTORY_PATH = 'history/';
     const NEW_ZONES_FILE_NAME = 'new.json';
     const UPDATED_FILE_NAME = 'updated_zones.json';
@@ -165,7 +164,9 @@ class YandexZonesService
                 }
             }
 
-            Storage::put(self::UPDATED_FILE_NAME, json_encode(array_values($preparedNewData)));
+            $preparedDataForFile = $this->prepareDataForImportToFile(array_values($preparedNewData));
+
+            Storage::put(self::UPDATED_FILE_NAME, json_encode($preparedDataForFile));
 
             if ($newPolygons) {
                 Storage::put(self::NEW_ZONES_FILE_NAME, json_encode($newPolygons));
