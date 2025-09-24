@@ -29,8 +29,8 @@ class ProductRepository
         ]
         ,[
             'app_id' => $appId,
-            'name' => $this->toCp1251($dto->name),
-            'brand' => $this->toCp1251($dto->brand),
+            'name' => $dto->name,
+            'brand' => $dto->brand,
             'sku' => $dto->sku,
             'count' => $dto->count,
             'cost' => $dto->cost,

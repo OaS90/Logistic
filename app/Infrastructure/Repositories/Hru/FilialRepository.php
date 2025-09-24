@@ -48,4 +48,20 @@ class FilialRepository
             $query->where('code', $code);
         })->get();
     }
+
+    public function setActiveInQuotes(int $id, bool $isActive): void
+    {
+        $branchOffice = $this->getById($id);
+        $branchOffice->update([
+            'is_active_for_quotes' => $isActive
+        ]);
+    }
+
+    public function setActiveInTkQuotes(int $id, bool $isActive): void
+    {
+        $branchOffice = $this->getById($id);
+        $branchOffice->update([
+            'is_active_for_tk' => $isActive
+        ]);
+    }
 }

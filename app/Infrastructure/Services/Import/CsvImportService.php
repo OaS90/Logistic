@@ -221,7 +221,7 @@ class CsvImportService
                 $this->isTimeExists($appWithDbColumns);
 
                 if ($appWithDbColumns['cityFias'] && strlen($appWithDbColumns['cityFias']) > 40) {
-                    throw new CityFiasWrongFormatException('Неверный формат ФИАС города в заявке номер ' . $appWithDbColumns['order_number']);
+                    throw new CityFiasWrongFormatException('Неверный формат ФИАС города в заявке номер ' . $appWithDbColumns['orderNumber']);
                 }
 
                 $address = $this->addressFactory->makeAddressDTO($appWithDbColumns);

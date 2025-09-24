@@ -36,6 +36,8 @@ Route::group([
     ),
     'namespace'  => 'App\Http\Controllers\Admin',
 ], function () { // custom admin routes
+    Route::post('filials/{id}/active-in-quotes', [\App\Http\Controllers\Admin\HruFilialController::class, 'setActiveInQuotes']);
+    Route::post('filials/{id}/active-in-tk-quotes', [\App\Http\Controllers\Admin\HruFilialController::class, 'setActiveInTkQuotes']);
     Route::crud('partners', 'PartnerCrudController');
     Route::crud('applications', 'ApplicationCrudController');
     Route::crud('warehouses', 'WarehouseCrudController');

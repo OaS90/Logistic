@@ -31,6 +31,7 @@ import TariffList from "./components/Admin/TariffList.vue";
 import UserTariffPermissions from "./components/Admin/UserTariffPermissions.vue";
 import TariffNameAliasForm from "./components/Admin/TariffNameAliasForm.vue";
 import YandexZones from "./components/Admin/YandexZones.vue";
+import Checkbox from "./components/Admin/Checkbox.vue";
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -86,9 +87,30 @@ if (document.getElementById('admin-app')) {
             'tariff-list': TariffList,
             'user-tariff-permissions': UserTariffPermissions,
             'tariff-name-alias-form': TariffNameAliasForm,
-            'yandex-zones': YandexZones
+            'yandex-zones': YandexZones,
+            'checkbox': Checkbox
         }
     })
 
     adminApp.mount('#admin-app')
+}
+
+function initVueCheckboxes() {
+    document.querySelectorAll('.vue-checkbox:not([data-vue-mounted])').forEach(el => {
+        const entry = JSON.parse(el.dataset.entry);
+        const uri = JSON.parse(el.dataset.uri);
+        const type = JSON.parse(el.dataset.type);
+        createApp(Checkbox, { entry, uri, type }).mount(el);
+        el.setAttribute('data-vue-mounted', 'true'); // метка, чтобы не инициализировать повторно
+    });
+}
+
+// Инициализация при первой загрузке
+initVueCheckboxes();
+
+const table = document.querySelector('table.dataTable');
+if (table) {
+    $(table).on('draw.dt', () => {
+        initVueCheckboxes();
+    });
 }

@@ -29,19 +29,15 @@
                         <td><input type="checkbox" :checked="category.isUse" v-model="category.isUse"></td>
                         <td v-for="(details, index) in category.prices">
                             <span class="extra-label">Стоимость первой единицы</span>
-                            <input type="number" min="0" max="9999" class="form-control col-md-12"
+                            <input class="form-control col-md-12"
                                    v-model="details.price"
                                    :class="{'error': details.price === null }"
-                                   @keydown="checkInputNumbers($event, details.price)"
-                                   @keyup="checkFewZeros($event, details, 'price')"
-                                   @focusout="checkIsEmpty($event, details, 'price')"
+                                   @input="checkPriceInput($event, details, 'price')"
                             >
                             <span class="extra-label">Стоимость второй единицы</span>
-                            <input :class="{'error': details.secondPrice === null }" type="number" min="0" max="9999" class="form-control col-md-12"
+                            <input :class="{'error': details.secondPrice === null }"  class="form-control col-md-12"
                                    v-model="details.secondPrice"
-                                   @keydown="checkInputNumbers($event, details.secondPrice)"
-                                   @keyup="checkFewZeros($event, details, 'secondPrice')"
-                                   @focusout="checkIsEmpty($event, details, 'secondPrice')"
+                                   @input="checkPriceInput($event, details, 'secondPrice')"
                             >
                         </td>
                     </tr>
@@ -166,6 +162,12 @@ export default {
                 zoneName:  zoneIndex[0]
             })
             this.zones[zoneIndex[1]].enabled = true
+        },
+        checkPriceInput(event, detailsObj, key) {
+            let value = event.target.value.replace(/\D/g, '');
+            if (value.length > 4) value = value.slice(0, 4);
+            event.target.value = value;
+            detailsObj[key] = value;
         },
         checkInputNumbers(event) {
             const keysAllowed = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Backspace'];

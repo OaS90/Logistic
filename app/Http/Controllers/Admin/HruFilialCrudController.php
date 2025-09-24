@@ -77,8 +77,22 @@ class HruFilialCrudController extends CrudController
                 });
             }
         ]);
-        CRUD::column('is_active_for_quotes')->label('Вкл/Выкл в квотах')->type('check');
-        CRUD::column('is_active_for_tk')->label('Вкл/Выкл для ТК')->type('check');
+        CRUD::addColumn([
+            'name' => 'check_in_quotes',
+            'type' => 'new_checkbox',
+            'uri' => 'active-in-quotes',
+            'checkbox_type' => 'main_quotes',
+            'label' => 'Вкл/Выкл в квотах'
+        ]);
+        CRUD::addColumn([
+            'name' => 'check_in_tk_quotes',
+            'type' => 'new_checkbox',
+            'label' => 'Вкл/Выкл для ТК',
+            'uri' => 'active-in-tk-quotes',
+            'checkbox_type' => 'tk_quotes'
+        ]);
+//        CRUD::column('is_active_for_quotes')->label('Вкл/Выкл в квотах')->type('check');
+//        CRUD::column('is_active_for_tk')->label('Вкл/Выкл для ТК')->type('check');
         /**
          * Columns can be defined using the fluent syntax or array syntax:
          * - CRUD::column('price')->type('number');
