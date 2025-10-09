@@ -102,8 +102,8 @@ class ApplicationFactory
     {
         $comment = $app->comment . '\n ' . implode(', ', $productsDescription);
         $deliveryTime = $this->getDeliveryTime($app->delivery_time);
-        $deliveryTimeFrom = $deliveryTime[0] ? trim($deliveryTime[0]) : DefaultDeliveryTime::FROM;
-        $deliveryTimeTo = $deliveryTime[1] ? trim($deliveryTime[1]) : DefaultDeliveryTime::TO;
+        $deliveryTimeFrom = isset($deliveryTime[0]) ? trim($deliveryTime[0]) : DefaultDeliveryTime::FROM;
+        $deliveryTimeTo = isset($deliveryTime[1]) ? trim($deliveryTime[1]) : DefaultDeliveryTime::TO;
 
         return new ApplicationObiDTOFor1c(
             orderNumber: $app->order_number,

@@ -50,13 +50,13 @@ class YandexZonesService
             throw new \Exception("Doesn't regions exists from config service");
         }
 
-        foreach ($allRegions as $region) {
-            if (!$region->status) {
+        foreach ($allRegions['regions'] as $region) {
+            if (!$region['status']) {
                 continue;
             }
 
             $polygons = $this->krakenApi
-                ->deliveryServiceRequest('settings/delivery-zones/find-all-by-hru-region-id', ['region_id' => $region->id]);
+                ->deliveryServiceRequest('settings/delivery-zones/find-all-by-hru-region-id', ['region_id' => $region['id']]);
 
             // временный костыль. Когда не находит регион (тут 48 - Новокуйбышевск), возвращается пустой массив
             // а в апи у меня на этот случай подставляется status => true
