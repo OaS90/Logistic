@@ -348,7 +348,7 @@ class YandexZonesService
                 // 2. Получаем и декодируем новый набор данных
                 $updatedContents = Storage::get(self::UPDATED_FILE_NAME);
                 $updatedData = json_decode($updatedContents, true);
-                $collectUpdatedDate = collect($updatedData);
+                $collectUpdatedDate = collect($updatedData['features']);
 
                 // 3. Подготавливаем быстрые “хэши” по description для обоих наборов
                 $exportedByDesc = $collectExportedData->keyBy(fn($item) => $item['properties']['description']);

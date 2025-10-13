@@ -107,7 +107,8 @@ class Api
             $action = 'DELETE';
         }
 
-        $params[RequestOptions::HEADERS]['Authorization'] = 'Bearer ' . config('services.delivery_service.token');
+        $authHeader = config('services.delivery_service.auth_header');
+        $params[RequestOptions::HEADERS][$authHeader] = 'Bearer ' . config('services.delivery_service.token');
         $uri = 'holodilnik-delivery/api/v1/' . $uri;
 
         if ($method !== 'GET') {
