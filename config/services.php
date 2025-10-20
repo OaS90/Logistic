@@ -40,6 +40,7 @@ return [
     ],
     'delivery_service' => [
         'token' => env('DELIVERY_SERVICE_TOKEN', ''),
+        'auth_header' => env('DELIVERY_SERVICE_AUTH_HEADER', 'Authorization')
     ],
     'config_service' => [
         'token' => env('CONFIG_SERVICE_TOKEN', ''),

@@ -97,7 +97,6 @@ class YandexZonesController extends Controller
         } catch (DeletedZoneImportException $e) {
             return $e->render();
         } catch (\Throwable $e) {
-            dd($e->getMessage());
             Log::error('Importing zones to service error ' . $e->getMessage());
 
             return response()->json(['success' => false], Response::HTTP_BAD_REQUEST);
