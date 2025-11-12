@@ -21,6 +21,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('app:sync-warehouses')
             ->dailyAt('02:00');
+
+        $schedule->command('app:sync-regions-from-config-service')
+            ->monthly();
     }
 
     /**

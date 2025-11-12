@@ -2,17 +2,18 @@
 
 namespace App\Infrastructure\Repositories;
 
-use App\Domain\DTO\Tariff\RegionDTO;
+use App\Domain\DTO\RegionDTO;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Region;
 
 class RegionRepository
 {
-    public function __construct()
+    public function create(RegionDTO $dto): void
     {
+        Region::query()->create(['region_id' => $dto->hruRegionId, 'name' => $dto->name]);
     }
 
-    public function findById(int $id): ?RegionDTO
+    public function findById(int $id): ?Region
     {
         $entity = Region::where('id', $id)->first();
 
