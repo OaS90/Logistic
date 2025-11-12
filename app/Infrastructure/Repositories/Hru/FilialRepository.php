@@ -30,6 +30,7 @@ class FilialRepository
             return Filial::create([
                 'filial_id' => $dto->filialId,
                 'name' => $dto->name,
+                'default_warehouse_code' => $dto->warehouseId,
                 'region_id' => $dto->regionId
             ]);
         }

@@ -55,30 +55,25 @@ class FilialsData extends Command
                         regionId: $region->id
                     );
 
-                    $existsFilial = $this->filialRepository->create($dto);
+                   $this->filialRepository->create($dto);
                 } else {
                     $existsFilial->update([
                         'region_id' => $region->id,
                         'name' => $item['name'],
+                        'default_warehouse_code' => $item['default_warehouse_id'],
                     ]);
                 }
 
-                if (isset($item['warehouse_ids'])) {
-                    foreach ($item['warehouse_ids'] as $warehouseCode) {
-                        if ($warehouseCode == $item['default_warehouse_id']) {
-                            continue;
-                        }
+                $warehouseCode = $item['default_warehouse_id'];
+                $warehouse = $this->warehouseRepository->getByCode($warehouseCode);
 
-                        $warehouse = $this->warehouseRepository->getByCode($warehouseCode);
-
-                        if ($warehouse) {
-                            if (!$existsFilial->warehouses->contains($warehouse->id)) {
-                                $existsFilial->warehouses()->attach($warehouse->id);
-                            }
-                        } else {
-                            Log::info('Attaching warehouse to filial error. ' . 'Warehouse with code ' . $warehouseCode . ' not found.');
-                        }
+                if ($warehouse) {
+                    if (!$existsFilial->warehouses->contains($warehouse->id)) {
+                        $existsFilial->warehouses()->attach($warehouse->id);
                     }
+                } else {
+                    echo "Attaching warehouse to filial error. Warehouse with code $warehouseCode not found. \n";
+                    Log::info('Attaching warehouse to filial error. ' . 'Warehouse with code ' . $item['default_warehouse_id'] . ' not found.');
                 }
             }
         } else {
