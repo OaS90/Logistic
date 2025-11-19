@@ -38,40 +38,40 @@ class SyncWarehousesFromConfigService extends Command
     public function handle(): void
     {
         $filials = $this->filialRepository->getAll();
-        $warehouses = $this->warehouseRepository->getAll();
-        $localWarehousesIds = $warehouses->pluck('code')->map(function (string $code) {
-            return (int) $code;
-        })->toArray();
-
-        $ids = $filials->pluck('id')->toArray();
+        $ids = $filials->pluck('filial_id')->toArray();
         $warehouses = $this->krakenApi->configServiceRequest($this->krakenApi::CONFIG_WAREHOUSES_URI, [
             'ids' => implode(',', $ids),
         ]);
 
-        $serviceWarehousesIds = [];
-
         if (isset($warehouses['success']) && $warehouses['success']) {
             foreach ($warehouses['list'] as $warehouseFromService) {
-                $filial = $filials->where('id', $warehouseFromService['branch_office_id'])->first();
+                $filial = $this->filialRepository->getAll()
+                    ->where('filial_id', $warehouseFromService['branch_office_id'])
+                    ->first();
+
                 $regionId = $filial->region_id;
-                $code = sprintf('%05d', $warehouseFromService['id']);
-                $existsWarehouse = $this->warehouseRepository->getByCode($code);
-                $serviceWarehousesIds[] = $warehouseFromService['id'];
 
-                if (!$existsWarehouse) {
-                    $dto = new HruWarehouseDTO(
-                        code: $code, name: $warehouseFromService['name'], regionId: $regionId
-                    );
+                foreach ($warehouseFromService['shipment_warehouses'] as $warehouse) {
+                    $existsWarehouse = null;
+                    $code = sprintf('%05d', $warehouse['id']);
+                    $existsWarehouse = $this->warehouseRepository->getByCode($code);
 
-                    $this->warehouseRepository->create($dto);
+                    if (!$existsWarehouse) {
+                        $dto = new HruWarehouseDTO(
+                            code: $code,
+                            name: $warehouse['name'],
+                            regionId: $regionId,
+                            isVirtual: $warehouse['is_virtual']
+                        );
+
+                        $warehouse = $this->warehouseRepository->create($dto);
+
+                        if (!$warehouse->filials->contains($filial->id)) {
+                            $warehouse->filials()->attach($filial->id);
+                        }
+                    }
                 }
             }
-        }
-
-        $deletedWarehouses = array_diff($localWarehousesIds, $serviceWarehousesIds);
-
-        foreach ($deletedWarehouses as $warehouseId) {
-            $this->warehouseRepository->deleteByCode(sprintf('%05d', $warehouseId));
         }
     }
 }

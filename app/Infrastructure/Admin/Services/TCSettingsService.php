@@ -85,7 +85,7 @@ class TCSettingsService
         $filials = $this->filialRepo->getAll();
 
         foreach ($filials as $filial) {
-            if (!$filial->is_active_for_tk) {
+            if (!$filial->is_active_for_tk && !$filial->default_warehouse_id) {
                 continue;
             }
 
