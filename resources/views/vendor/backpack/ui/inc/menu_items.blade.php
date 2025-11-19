@@ -34,11 +34,11 @@
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('filial') }}">
             <i class="nav-icon las la-store"></i>Филиалы</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ backpack_url('hru-warehouses') }}">
-            <i class="nav-icon las la-warehouse"></i> Склады
-        </a>
-    </li>
+{{--    <li class="nav-item">--}}
+{{--        <a class="nav-link" href="{{ backpack_url('hru-warehouses') }}">--}}
+{{--            <i class="nav-icon las la-warehouse"></i> Склады--}}
+{{--        </a>--}}
+{{--    </li>--}}
 @endif
 @if(backpack_user()->hasRole('quotes') || backpack_user()->hasRole('admin'))
     <li class='nav-item'><a class='nav-link' href='{{ backpack_url('quotes') }}'><i class="las la-user-tie"></i> Квоты</a></li>

@@ -44,7 +44,7 @@ class YandexZonesService
         // получаем регионы из конфиг сервиса
         // чтобы исключить выключенные регионы
         $polygonsCoordinates = [];
-        $allRegions = $this->krakenApi->configServiceRequest('config/regions');
+        $allRegions = $this->krakenApi->configServiceRequest($this->krakenApi::CONFIG_REGIONS_URI);
 
         if (!isset($allRegions['regions'])) {
             throw new \Exception("Doesn't regions exists from config service");
