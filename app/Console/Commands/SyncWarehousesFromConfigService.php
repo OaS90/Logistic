@@ -7,6 +7,7 @@ use App\Infrastructure\Repositories\Hru\FilialRepository;
 use App\Infrastructure\Repositories\Hru\WarehouseRepository;
 use App\Infrastructure\Services\Kraken\Api;
 use Illuminate\Console\Command;
+
 class SyncWarehousesFromConfigService extends Command
 {
     /**
