@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Hru\Filial;
 use App\Models\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,7 +56,7 @@ class TransportCompanySettings extends Model
         return '';
     }
 
-    public function filial()
+    public function filial(): BelongsTo
     {
         return $this->belongsTo(Filial::class, 'filial_id', 'id');
     }

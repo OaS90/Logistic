@@ -7,7 +7,6 @@ use App\Infrastructure\Repositories\Hru\FilialRepository;
 use App\Infrastructure\Repositories\Hru\WarehouseRepository;
 use App\Infrastructure\Services\Kraken\Api;
 use Illuminate\Console\Command;
-
 class SyncWarehousesFromConfigService extends Command
 {
     /**
@@ -67,7 +66,13 @@ class SyncWarehousesFromConfigService extends Command
                         $warehouse = $this->warehouseRepository->create($dto);
 
                         if (!$warehouse->filials->contains($filial->id)) {
-                            $warehouse->filials()->attach($filial->id);
+                            $warehouse->filials()->attach($filial->id, ['is_virtual' => $warehouse['is_virtual']]);
+                        }
+                    } else {
+                        if ($filial) {
+                            $existsWarehouse
+                                ->filials()
+                                ->updateExistingPivot($filial->id, ['is_virtual' => $warehouse['is_virtual']]);
                         }
                     }
                 }

@@ -6,6 +6,7 @@ use App\Infrastructure\Repositories\Admin\TransportCompanySettingsRepository;
 use App\Infrastructure\Repositories\Hru\FilialRepository;
 use App\Infrastructure\Services\Kraken\Api as KrakenApi;
 use App\Domain\DTO\Requests\FilialTCSaveRequestDTO;
+use App\Models\TransportCompanySettings;
 
 class TCSettingsService
 {
@@ -85,9 +86,9 @@ class TCSettingsService
         $filials = $this->filialRepo->getAll();
 
         foreach ($filials as $filial) {
-            if (!$filial->is_active_for_tk && !$filial->default_warehouse_id) {
-                continue;
-            }
+//            if (!$filial->is_active_for_tk && !$filial->default_warehouse_id) {
+//                continue;
+//            }
 
             $settings = [];
             $tcSettings = $filial->tcSettings;
@@ -113,20 +114,24 @@ class TCSettingsService
                 }
             }
 
-            $data[] = [
-                'id' => $filial->id,
-                'filial_id' => $filial->filial_id,
-                'name' => $filial->name,
-                'warehouse_code' => $filial->warehouses->first() ? $filial->warehouses->first()->code : '',
-                'code' => sprintf('%05d', $filial->filial_id),
-                'quote' => $setting->quote ?? 0,
-                'region' => $filial->region ?->name,
-                'region_id' => $filial->region_id,
-                'delay_days' => $setting->delay_days ?? 0,
-                'show_setting' => false,
-                'settings' => $settings,
-                'to_save' => false
-            ];
+            foreach ($filial->warehouses as $warehouse) {
+                if (!$warehouse->pivot->is_virtual && $filial->default_warehouse_code == $warehouse->code) {
+                    $data[] = [
+                        'id' => $filial->id,
+                        'filial_id' => $filial->filial_id,
+                        'name' => $filial->name,
+                        'warehouse_code' => $warehouse->code,
+                        'code' => sprintf('%05d', $filial->filial_id),
+                        'quote' => $setting->quote ?? 0,
+                        'region' => $filial->region?->name,
+                        'region_id' => $filial->region_id,
+                        'delay_days' => $setting->delay_days ?? 0,
+                        'show_setting' => false,
+                        'settings' => $settings,
+                        'to_save' => false
+                    ];
+                }
+            }
         }
 
         return collect($data)

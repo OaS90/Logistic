@@ -33,7 +33,8 @@ class Filial extends Model
 
     public function warehouses(): BelongsToMany
     {
-        return $this->belongsToMany(Warehouse::class, 'hru_warehouse_filial', 'filial_id', 'warehouse_id');
+        return $this->belongsToMany(Warehouse::class, 'hru_warehouse_filial', 'filial_id', 'warehouse_id')
+            ->withPivot(['is_virtual']);
     }
 
     public function tcSettings(): HasMany
