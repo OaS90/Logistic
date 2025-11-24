@@ -108,7 +108,7 @@ class Api
         }
 
         $authHeader = config('services.delivery_service.auth_header');
-        $params[RequestOptions::HEADERS][$authHeader] = 'Bearer ' . config('services.delivery_service.token');
+        $params[RequestOptions::HEADERS][$authHeader] = config('services.delivery_service.token');
         $uri = 'holodilnik-delivery/api/v1/' . $uri;
 
         if ($method !== 'GET') {
