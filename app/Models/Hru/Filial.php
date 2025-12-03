@@ -31,6 +31,11 @@ class Filial extends Model
      */
     protected $guarded = ['id'];
 
+    public function getFilialCodeAttribute(): string
+    {
+        return sprintf('%05d', $this->filial_id);
+    }
+
     public function warehouses(): BelongsToMany
     {
         return $this->belongsToMany(Warehouse::class, 'hru_warehouse_filial', 'filial_id', 'warehouse_id')

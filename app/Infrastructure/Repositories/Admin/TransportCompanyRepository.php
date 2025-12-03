@@ -7,6 +7,11 @@ use Illuminate\Support\Collection;
 
 class TransportCompanyRepository
 {
+    public function getById(int $id): TransportCompany
+    {
+        return TransportCompany::find($id);
+    }
+
     public function create(string $code, string $name)
     {
         $existsCompany = TransportCompany::where('code', $code)->first();

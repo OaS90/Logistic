@@ -32,6 +32,7 @@ import UserTariffPermissions from "./components/Admin/UserTariffPermissions.vue"
 import TariffNameAliasForm from "./components/Admin/TariffNameAliasForm.vue";
 import YandexZones from "./components/Admin/YandexZones.vue";
 import Checkbox from "./components/Admin/Checkbox.vue";
+import ShipmentWarehouseSettings from "./components/Admin/ShipmentWarehouseSettings.vue";
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -88,7 +89,8 @@ if (document.getElementById('admin-app')) {
             'user-tariff-permissions': UserTariffPermissions,
             'tariff-name-alias-form': TariffNameAliasForm,
             'yandex-zones': YandexZones,
-            'checkbox': Checkbox
+            'checkbox': Checkbox,
+            'shipment-warehouse-settings': ShipmentWarehouseSettings
         }
     })
 
