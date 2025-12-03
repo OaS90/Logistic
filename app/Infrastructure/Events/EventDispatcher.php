@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Events;
 
+use App\Domain\DTO\WarehouseShipmentSettingsDTO;
 use Hrulibs\Events\Domain\DispatchesEvents;
 use Illuminate\Support\Facades\Log;
 use Junges\Kafka\Message\Message;
@@ -46,6 +47,30 @@ class EventDispatcher
                 ->send();
         } catch (\Exception $e) {
             Log::error('Event changing filial zone error ', ['exception' => $e]);
+        }
+    }
+
+    /**
+     * Метод отправляет в кафку настройки складов отгрузки по филиалу
+     * Event sourcing pattern
+     */
+    public function warehouseShipmentSettings(WarehouseShipmentSettingsDTO $dto): void
+    {
+        try {
+            $data['departure_point_id'] = $dto->departurePointId;
+            $data['transport_company_code'] = $dto->transportCompanyCode;
+            $data['parameters'] = $dto->settings;
+
+            $this->getPublisher()
+                ->onTopic(self::FILIAL_ACTIONS_TOPIC)
+                ->withMessage(new Message(body: [
+                    'id' => $dto->filialCode,
+                    'action' => 'change_departure_points_transport_companies',
+                    'data' => $data
+                ]))
+                ->send();
+        } catch (\Exception $e) {
+            Log::error('Event changing filial shipment filial error ', ['exception' => $e]);
         }
     }
 }

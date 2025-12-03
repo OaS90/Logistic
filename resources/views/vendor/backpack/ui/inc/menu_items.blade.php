@@ -78,6 +78,11 @@
                 <i class="nav-icon la la-gears"></i> Настройки
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ backpack_url('transport-company-shipment-warehouse') }}">
+                <i class="nav-icon las la-warehouse"></i> Склады отгрузки
+            </a>
+        </li>
     </ul>
 </li>
 @if(backpack_user()->hasRole('admin'))

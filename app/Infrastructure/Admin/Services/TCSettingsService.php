@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Admin\Services;
 
 use App\Infrastructure\Repositories\Admin\TransportCompanySettingsRepository;
+use App\Infrastructure\Repositories\Admin\TransportCompanyShipmentWarehouseRepository;
 use App\Infrastructure\Repositories\Hru\FilialRepository;
 use App\Infrastructure\Services\Kraken\Api as KrakenApi;
 use App\Domain\DTO\Requests\FilialTCSaveRequestDTO;
@@ -12,7 +13,8 @@ class TCSettingsService
 
     public function __construct(private readonly TransportCompanySettingsRepository $settingsRepo,
                                 private readonly KrakenApi $krakenApi,
-                                private readonly FilialRepository $filialRepo
+                                private readonly FilialRepository $filialRepo,
+                                private readonly TransportCompanyShipmentWarehouseRepository $warehouseShipmentSettingsRepo,
     )
     {}
 
@@ -94,6 +96,9 @@ class TCSettingsService
 
             if (count($tcSettings) > 0) {
                 foreach ($tcSettings as $setting) {
+                    $shipmentSettings = $this->warehouseShipmentSettingsRepo
+                        ->getByTransportCompanyIdAndFilialId($filial->id, $setting->tc_id);
+
                     $settings[] = [
                         'id' => $setting->id,
                         'tc_name' => $setting->tc->name,
@@ -108,7 +113,7 @@ class TCSettingsService
                                 7 => false,
                             ],
                         'enabled' => $setting->enabled,
-                        'departure_id' => $setting->departure_terminal_id
+                        'departure_id' => $shipmentSettings?->departure_id
                     ];
                 }
             }

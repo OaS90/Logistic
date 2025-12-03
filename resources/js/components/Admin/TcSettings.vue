@@ -57,7 +57,7 @@
                     </div>
                 </td>
                 <td>
-                    <input type="text" class="form-control" v-model="setting.departure_id">
+                    <div>{{ setting.departure_id }}</div>
                 </td>
             </tr>
         </tbody>

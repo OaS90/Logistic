@@ -90,4 +90,5 @@ Route::group([
     Route::get('yandex-zones/export', [\App\Http\Controllers\Admin\YandexZonesController::class, 'export']);
     Route::crud('filial', 'HruFilialCrudController');
     Route::get('yandex-zones/export/history/{fileName}/download', [\App\Http\Controllers\Admin\YandexZonesController::class, 'downloadExportFile']);
+    Route::crud('transport-company-shipment-warehouse', 'TransportCompanyShipmentWarehouseCrudController');
 }); // this should be the absolute last line of this file
