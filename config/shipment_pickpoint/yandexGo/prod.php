@@ -1,0 +1,148 @@
+<?php
+
+return [
+    //Лого Арт
+    [
+        'branch_office_id' => 1,
+        'lat' => '55.968988',
+        'lng' => '37.320131',
+        'pvzcode' => '1',
+        'address' => 'Промышленная улица, с2, деревня Чёрная Грязь, городской округ Химки, Московская область',
+        'work_time' => 'Пн.- Вс. 9.00 -21.00 | Без выходных',
+        'city_code' => '1',
+        'city_name' => 'Москва',
+        'region_name' => 'Москва',
+        'postal_code' => '141580',
+        'type' => 'yandexgo',
+        'phone' => '+74952322203',
+        'date_updated' => date('Y-m-d H:i:s'),
+        'is_enable' => 1,
+        'is_handout' => 0,
+        'load_limit' => 0,
+        'volume_limit' => 0,
+        'is_prepay_only' => 1,
+        'region_guid' => '0c5b2444-70a0-4932-980c-b4dc0d3f02b5',
+        'city_guid' => '0c5b2444-70a0-4932-980c-b4dc0d3f02b5',
+    ],
+
+    //магазин Юг Михайловская Слобода
+    [
+        'branch_office_id' => 26,
+        'lat' => '55.553169',
+        'lng' => '38.068076',
+        'pvzcode' => '2',
+        'address' => 'Раменский р-н, с.Михайловская Слобода, ул.Промышленная, уч.1',
+        'work_time' => 'Пн.- Вс. 9.00 -21.00 | Без выходных',
+        'city_code' => '1',
+        'city_name' => 'Москва',
+        'region_name' => 'Москва',
+        'postal_code' => '108811',
+        'type' => 'yandexgo',
+        'phone' => '8 (495) 222-70-01',//todo fill
+        'date_updated' => date('Y-m-d H:i:s'),
+        'is_enable' => 1,
+        'is_handout' => 0,
+        'load_limit' => 0,
+        'volume_limit' => 0,
+        'is_prepay_only' => 1,
+        'region_guid' => '0c5b2444-70a0-4932-980c-b4dc0d3f02b5',
+        'city_guid' => '0c5b2444-70a0-4932-980c-b4dc0d3f02b5',
+    ],
+    //магазин Юго-Запад на Киевском шоссе
+    [
+        'branch_office_id' => 26,
+        'lat' => '55.630386',
+        'lng' => '37.42327',
+        'pvzcode' => '3',
+        'address' => 'г. Москва, п. Московский, Киевское ш., 23-км, домовл. 8, стр. 1 (ТЦ Family Room)',
+        //'Центральная улица, 70А, деревня Румянцево, поселение Московский, Москва, Россия',
+        'work_time' => 'Пн.- Вс. 10.00 -22.00 | Без выходных',
+        'city_code' => '1',
+        'city_name' => 'Москва',
+        'region_name' => 'Москва',
+        'postal_code' => '108811',
+        'type' => 'yandexgo',
+        'phone' => '+7 (495) 419-55-50',//todo fill
+        'date_updated' => date('Y-m-d H:i:s'),
+        'is_enable' => 1,
+        'is_handout' => 0,
+        'load_limit' => 0,
+        'volume_limit' => 0,
+        'is_prepay_only' => 1,
+        'region_guid' => '0c5b2444-70a0-4932-980c-b4dc0d3f02b5',
+        'city_guid' => '0c5b2444-70a0-4932-980c-b4dc0d3f02b5',
+    ],
+
+    //магазин Центр на Дорогомиловской
+    [
+        'branch_office_id' => 1,
+        'lat' => '55.745508',
+        'lng' => '37.563886',
+        'pvzcode' => '4',
+        'address' => 'г. Москва, ул. Большая Дорогомиловская, 1 (Рядом с ТРЦ Европейский)',
+        'work_time' => 'Пн.- Вс. 9.00 -21.00 | Без выходных',
+        'city_code' => '1',
+        'city_name' => 'Москва',
+        'region_name' => 'Москва',
+        'postal_code' => '108811',
+        'type' => 'yandexgo',
+        'phone' => '8 (495) 921-45-32',//todo fill
+        'date_updated' => date('Y-m-d H:i:s'),
+        'is_enable' => 0,
+        'is_handout' => 0,
+        'load_limit' => 0,
+        'volume_limit' => 0,
+        'is_prepay_only' => 1,
+        'region_guid' => '0c5b2444-70a0-4932-980c-b4dc0d3f02b5',
+        'city_guid' => '0c5b2444-70a0-4932-980c-b4dc0d3f02b5',
+    ],
+
+
+    //магазин Либхер на Сущевском Валу
+    // [
+    //     'lat' => '55.792366',
+    //     'lng' => '37.62486',
+    //     'pvzcode' => '',
+    //     'address' => 'г. Москва, улица Сущёвский Вал, 62',
+    //     'work_time' => 'Пн.- Вс. 9.00 -20.00 | Без выходных',
+    //     'city_code' => '1',
+    //     'city_name' => 'Москва',
+    //     'region_name' => 'Москва',
+    //     'postal_code' => '129272',
+    //     'type' => 'yandexgo',
+    //     'phone' => '+7 (495) 221-21-55',
+    //     'date_updated' => date('Y-m-d H:i:s'),
+    //     'is_enable' => 1,
+    //     'is_handout' => 0,
+    //     'load_limit' => 0,
+    //     'volume_limit' => 0,
+    //     'is_prepay_only' => 1,
+    //     'city_guid' => '0c5b2444-70a0-4932-980c-b4dc0d3f02b5',
+    // ]
+
+    //TODO магазин Бош-Сименс на Смоленской
+
+
+    [
+        'branch_office_id' => 11,
+        'lat' => '59.798419',
+        'lng' => '30.331669',
+        'pvzcode' => '5',
+        'address' => 'г. Санкт-Петербург, Пулковское шоссе, д. 56, к.4',
+        'work_time' => 'Пн.- Вс. 9.00 -21.00 | Без выходных',
+        'city_code' => '1',
+        'city_name' => 'Санкт-Петербург',
+        'region_name' => 'Санкт-Петербург',
+        'postal_code' => '196140',
+        'type' => 'yandexgo',
+        'phone' => '8 (812) 622-15-00',//todo fill
+        'date_updated' => date('Y-m-d H:i:s'),
+        'is_enable' => 1,
+        'is_handout' => 0,
+        'load_limit' => 0,
+        'volume_limit' => 0,
+        'is_prepay_only' => 1,
+        'region_guid' => 'c2deb16a-0330-4f05-821f-1d09c93331e6',
+        'city_guid' => 'c2deb16a-0330-4f05-821f-1d09c93331e6',
+    ],
+];
