@@ -7,7 +7,6 @@ use App\Infrastructure\Repositories\Admin\TransportCompanyShipmentWarehouseRepos
 use App\Infrastructure\Repositories\Hru\FilialRepository;
 use App\Infrastructure\Services\Kraken\Api as KrakenApi;
 use App\Domain\DTO\Requests\FilialTCSaveRequestDTO;
-use App\Models\TransportCompanySettings;
 
 class TCSettingsService
 {
@@ -88,9 +87,9 @@ class TCSettingsService
         $filials = $this->filialRepo->getAll();
 
         foreach ($filials as $filial) {
-//            if (!$filial->is_active_for_tk && !$filial->default_warehouse_id) {
-//                continue;
-//            }
+            if (!$filial->is_active_for_tk && !$filial->default_warehouse_id) {
+                continue;
+            }
 
             $settings = [];
             $tcSettings = $filial->tcSettings;
