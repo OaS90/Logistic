@@ -69,6 +69,8 @@ class GenerateStartShipmentConfig extends Command
                 }
             }
         }
+
+        $this->info('Done!');
     }
 
     private function prepareJsonData(array $settings): array

@@ -6,24 +6,12 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-D4Ngl8Pc.js",
+    "file": "assets/app-Ck7MG-H_.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
-    "dynamicImports": [
-      "resources/js/bootstrap.js"
-    ],
     "css": [
-      "assets/app-BHlrqFCf.css"
-    ]
-  },
-  "resources/js/bootstrap.js": {
-    "file": "assets/bootstrap-BXKtc3F5.js",
-    "name": "bootstrap",
-    "src": "resources/js/bootstrap.js",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.js"
+      "assets/app-BplhMUGF.css"
     ]
   }
 }
