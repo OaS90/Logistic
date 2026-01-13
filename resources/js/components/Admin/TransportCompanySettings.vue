@@ -170,7 +170,6 @@ export default {
             } else {
                 axios.post('save-tc-settings', this.warehousesToSave).then(response => {
                     // Проверка: есть ли наши заголовки?
-                    console.log('Global headers:', window.axios?.defaults?.headers?.common);
                     this.showModal = !this.showModal
                     this.modalText = response.data.message
                 }).catch(errors => {

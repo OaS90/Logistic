@@ -5,6 +5,25 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.axios.defaults.headers.common['Accept'] = 'application/json';
 axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+axios.interceptors.response.use(
+    response => {},
+    error => {
+        // Проверяем статус ошибки
+        const status = error.response ? error.response.status : null;
+
+        // 401: Пользователь не авторизован (сессия истекла)
+        // 419: CSRF токен устарел (тоже часто при истечении сессии)
+        if (status === 401 || status === 419) {
+            // Принудительно редиректим пользователя на страницу входа
+            window.location.href = 'admin/login';
+
+            // Возвращаем промис, чтобы цепочка прервалась, или обрабатываем дальше
+            return Promise.reject(error);
+        }
+
+        return Promise.reject(error);
+    }
+);
 // window._ = require('lodash');
 //
 // try {

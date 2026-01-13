@@ -27,7 +27,14 @@ Route::group([
     Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('backpack.auth.register');
     Route::post('register', [RegisterController::class, 'register']);
 });
-
+Route::group([
+    'prefix' => config('backpack.base.route_prefix', 'admin'),
+    'middleware' => config('backpack.base.middleware_class'),
+], function () {
+    Route::post('send-test', function () {
+        return response(['success' => false], 419);
+    });
+});
 Route::group([
     'prefix'     => config('backpack.base.route_prefix', 'admin'),
     'middleware' => array_merge(
