@@ -27,20 +27,10 @@ Route::group([
     Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('backpack.auth.register');
     Route::post('register', [RegisterController::class, 'register']);
 });
-Route::group([
-    'prefix' => config('backpack.base.route_prefix', 'admin'),
-    'middleware' => config('backpack.base.middleware_class'),
-], function () {
-    Route::post('send-test', function () {
-        return response(['success' => false], 419);
-    });
-});
+
 Route::group([
     'prefix'     => config('backpack.base.route_prefix', 'admin'),
-    'middleware' => array_merge(
-        (array) config('backpack.base.web_middleware', 'web'),
-        (array) config('backpack.base.middleware_key', 'admin')
-    ),
+    'middleware' => config('backpack.base.middleware_class'),
     'namespace'  => 'App\Http\Controllers\Admin',
 ], function () { // custom admin routes
     Route::post('filials/{id}/active-in-quotes', [\App\Http\Controllers\Admin\HruFilialController::class, 'setActiveInQuotes']);

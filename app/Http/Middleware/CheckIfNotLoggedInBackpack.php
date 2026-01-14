@@ -21,6 +21,10 @@ class CheckIfNotLoggedInBackpack
             }
         }
 
+        if (!backpack_user()) {
+            return redirect()->guest(backpack_url('login'));
+        }
+
         return $next($request);
     }
 }

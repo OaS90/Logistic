@@ -12,38 +12,47 @@ class EventDispatcher
 {
     use DispatchesEvents;
 
-    const FILIAL_ACTIONS_TOPIC = 'bort-udachi.branch-office';
+    const BRANCH_OFFICE_MAP_CHANGE_ACTIONS = 'bort-udachi.branch-office-map';
+    const BRANCH_OFFICE_ACTIONS = 'bort-udachi.branch-office';
 
-    public function filialZoneChanged(array $codes): void
+
+    public function filialZoneChanged(string $code): void
     {
         try {
             $this->getPublisher()
-                ->onTopic(self::FILIAL_ACTIONS_TOPIC)
-                ->withMessage(new Message(body: ['codes' => $codes, 'action' => 'change']))
+                ->onTopic(self::BRANCH_OFFICE_MAP_CHANGE_ACTIONS)
+                ->withMessage(new Message(body: ['code' => $code, 'action' => 'change_zone']))
+                ->withKafkaKey($code)
                 ->send();
         } catch (\Exception $e) {
             Log::error('Event changing filial zone error ', ['exception' => $e]);
         }
     }
 
-    public function filialZoneCreated(array $newZones): void
+    public function filialZoneCreated(array $newZone): void
     {
         try {
             $this->getPublisher()
-                ->onTopic(self::FILIAL_ACTIONS_TOPIC)
-                ->withMessage(new Message(body: ['zones' => $newZones, 'action' => 'create']))
+                ->onTopic(self::BRANCH_OFFICE_MAP_CHANGE_ACTIONS)
+                ->withMessage(new Message(body: ['zone' => $newZone, 'action' => 'create_zone']))
+                ->withKafkaKey($newZone['filial_code'])
                 ->send();
         } catch (\Exception $e) {
             Log::error('Event creating filial zone error ', ['exception' => $e]);
         }
     }
 
-    public function filialZoneDeleted(array $deletedZones): void
+    public function filialZoneDeleted(array $deleteZone): void
     {
         try {
             $this->getPublisher()
-                ->onTopic(self::FILIAL_ACTIONS_TOPIC)
-                ->withMessage(new Message(body: ['zones' => $deletedZones, 'action' => 'delete']))
+                ->onTopic(self::BRANCH_OFFICE_MAP_CHANGE_ACTIONS)
+                ->withMessage(new Message(body: [
+                    'id' => $deleteZone['filial_code'],
+                    'action' => 'delete_zones',
+                    'zone' => $deleteZone
+                ]))
+                ->withKafkaKey($deleteZone['filial_code'])
                 ->send();
         } catch (\Exception $e) {
             Log::error('Event changing filial zone error ', ['exception' => $e]);
@@ -62,12 +71,13 @@ class EventDispatcher
             $data['parameters'] = $dto->settings;
 
             $this->getPublisher()
-                ->onTopic(self::FILIAL_ACTIONS_TOPIC)
+                ->onTopic(self::BRANCH_OFFICE_ACTIONS)
                 ->withMessage(new Message(body: [
                     'id' => $dto->filialCode,
                     'action' => 'change_departure_points_transport_companies',
-                    'data' => $data
+                    'data' => [$data]
                 ]))
+                ->withKafkaKey($dto->filialCode)
                 ->send();
         } catch (\Exception $e) {
             Log::error('Event changing filial shipment filial error ', ['exception' => $e]);

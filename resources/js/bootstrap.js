@@ -15,7 +15,7 @@ axios.interceptors.response.use(
         // 419: CSRF токен устарел (тоже часто при истечении сессии)
         if (status === 401 || status === 419) {
             // Принудительно редиректим пользователя на страницу входа
-            window.location.href = 'admin/login';
+            window.location.href = '/admin/login';
 
             // Возвращаем промис, чтобы цепочка прервалась, или обрабатываем дальше
             return Promise.reject(error);
