@@ -35,7 +35,7 @@ class ApplicationApiCreateRequest extends FormRequest
             '*.deliveryDate' => 'required|date_format:d.m.Y',
             '*.deliveryTimeFrom' => 'required|date_format:H:i|min:1',
             '*.deliveryTimeTo' => 'required|date_format:H:i|min:1',
-            '*.comment' => 'string|min:1',
+            '*.comment' => 'string|min:1|nullable',
             '*.buyer' => 'required|array|min:2',
             '*.buyer.fio' => 'required|string|min:1',
             '*.buyer.phone' => 'required|string|min:1',

@@ -4,7 +4,7 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-import('./bootstrap');
+import './bootstrap';
 import { createApp } from 'vue'
 import ApplicationForm from "./components/ApplicationForm.vue";
 import Popup from "./components/Popup.vue";

@@ -70,8 +70,6 @@ class Logger
             $message = json_encode($response, JSON_UNESCAPED_UNICODE);
         } elseif ($response instanceof BinaryFileResponse) {
             return $response;
-        } elseif ($response instanceof View) {
-            return $response;
         } else {
             $message = 'Invalid json response';
         }
