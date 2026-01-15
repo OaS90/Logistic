@@ -45,12 +45,9 @@ class SupportController extends Controller
 
     public function showUploadPage(): View
     {
-        return view('vendor.backpack.support-application-upload');
-    }
+        $partners = $this->partnerRepository->getAll();
 
-    public function getPartners(): Collection
-    {
-        return $this->partnerRepository->getAll();
+        return view('vendor.backpack.support-application-upload', ['partners' => $partners]);
     }
 
     public function upload(Request $request): Response

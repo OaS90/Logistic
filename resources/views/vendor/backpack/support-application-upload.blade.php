@@ -2,7 +2,7 @@
 
 @section('content')
     <div id="admin-app">
-        <support-app-import></support-app-import>
+        <support-app-import :partners="{{ json_encode($partners) }}"></support-app-import>
     </div>
 @endsection
 
