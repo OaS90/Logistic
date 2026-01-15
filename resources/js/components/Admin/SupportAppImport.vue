@@ -63,22 +63,17 @@ export default {
         Modal,
         PulseLoader
     },
+    props: ['partners'],
     data() {
         return {
             selectedPartner: null,
             partnerWarehouse: null,
-            partners: {},
             showModal: false,
             modalText: '',
             loading: true,
             size: "15px",
             color: '#7c69ef'
         }
-    },
-    mounted() {
-        axios.get('/admin/support/partners').then(response => {
-            this.partners = response.data;
-        })
     },
     methods: {
         changePartner(partner) {
