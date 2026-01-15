@@ -25,20 +25,12 @@ class TransportCompanySettingsController extends Controller
 
     public function show(): View
     {
-        try {
-//            $warehouses = $this->repo->getAllWithSetting();
-            $isGuest = (bool) backpack_user()->hasRole('guest');
-//            $warehousesArray = $this->service->prepareForVue($warehouses);
-            $data = $this->service->prepareForVue();
+        $isGuest = (bool) backpack_user()->hasRole('guest');
+        $data = $this->service->prepareForVue();
 
-            return view('vendor.backpack.transport_company_settings', [
-                'warehouses' => collect($data)->values(), 'guest' => $isGuest
-            ]);
-        } catch (\Throwable $e) {
-            Log::error('Settings view error ' . $e->getMessage());
-
-            return view('errors.500');
-        }
+        return view('vendor.backpack.transport_company_settings', [
+            'warehouses' => collect($data)->values(), 'guest' => $isGuest
+        ]);
     }
 
     public function save(FilialTCSaveRequest $request, TCSettingsService $service): Response
