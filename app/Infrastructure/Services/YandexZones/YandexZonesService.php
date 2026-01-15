@@ -16,6 +16,7 @@ use App\Infrastructure\Services\Kraken\Api;
 use App\Models\Region;
 use Exception;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class YandexZonesService
@@ -382,8 +383,12 @@ class YandexZonesService
             Storage::move(self::UPDATED_FILE_NAME, self::FILE_NAME);
         }
 
-        //отпрака в кафку.
-        $this->eventDispatcher->filialZoneChanged($branchOfficeCodes);
+        // Отправка в кафку.
+
+        foreach ($branchOfficeCodes as $branchOfficeCode) {
+            $this->eventDispatcher->filialZoneChanged($branchOfficeCode);
+        }
+
 
         return $zonesWithErrors;
     }
@@ -398,12 +403,8 @@ class YandexZonesService
         ];
     }
 
-    /**
-     * @throws NewZoneImportException
-     */
     private function importNewZones(array $zones): array
     {
-        $newBranchOfficeZones = [];
         $zoneErrors = [];
 
         foreach ($zones as $newZone) {
@@ -415,7 +416,6 @@ class YandexZonesService
             }
 
             $newZoneDataForService = $this->prepareNewZoneParams($newZone, $coordinates);
-            $newBranchOfficeZones[] = $newZoneDataForService;
 
             if ($newZone['type'] == 'delivery-zones') {
                 $tariffs = $this->tariffRepo->getAll();
@@ -444,12 +444,10 @@ class YandexZonesService
                     'zone' => $newZone['zone'],
                     'region_name' => $newZone['region']['name'],
                 ];
-//                throw new NewZoneImportException($newZoneDataForService);
             }
-        }
 
-        //отпрака в кафку
-        $this->eventDispatcher->filialZoneCreated($newBranchOfficeZones);
+            $this->eventDispatcher->filialZoneCreated($newZoneDataForService);
+        }
 
         return $zoneErrors;
     }
@@ -461,7 +459,8 @@ class YandexZonesService
             'filial_id' => $zone['filial']['filial_id'],
             'points' => $coordinates,
             'zone_code' => $zone['zone'] ? 'zone_' . $zone['zone'] : null,
-            'polygon_name' => $zone['region']['name'] . ' zone_' . $zone['zone']
+            'polygon_name' => $zone['region']['name'] . ' zone_' . $zone['zone'],
+            'filial_code'  => sprintf('%05d',$zone['filial']['filial_id'])
         ];
     }
 
@@ -497,11 +496,9 @@ class YandexZonesService
                 }
             }
 
-            $deletedBranchOfficeZones[] = $zone;
+            // Отправка в кафку
+            $this->eventDispatcher->filialZoneDeleted($deletedBranchOfficeZones);
         }
-
-        //отпрака в кафку
-        $this->eventDispatcher->filialZoneDeleted($deletedBranchOfficeZones);
 
         return $zonesWithErrors;
     }

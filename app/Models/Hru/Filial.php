@@ -36,6 +36,17 @@ class Filial extends Model
         return sprintf('%05d', $this->filial_id);
     }
 
+    public function getDefaultWarehouseAttribute(): Warehouse
+    {
+        foreach ($this->warehouses as $warehouse) {
+            if (!$warehouse->pivot->is_virtual && $this->default_warehouse_code == $warehouse->code) {
+                return $warehouse;
+            }
+        }
+
+        return $this->warehouses->where('code', $this->default_warehouse_code);
+    }
+
     public function warehouses(): BelongsToMany
     {
         return $this->belongsToMany(Warehouse::class, 'hru_warehouse_filial', 'filial_id', 'warehouse_id')

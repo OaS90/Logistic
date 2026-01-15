@@ -169,6 +169,7 @@ export default {
                 this.modalText = 'Не выбрано ни одного склада для обновления'
             } else {
                 axios.post('save-tc-settings', this.warehousesToSave).then(response => {
+                    // Проверка: есть ли наши заголовки?
                     this.showModal = !this.showModal
                     this.modalText = response.data.message
                 }).catch(errors => {

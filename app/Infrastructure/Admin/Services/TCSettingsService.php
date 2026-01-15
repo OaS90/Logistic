@@ -63,7 +63,7 @@ class TCSettingsService
                 }
             }
 
-            $warehouse = $filial->warehouses->first();
+            $warehouse = $filial->default_warehouse;
             $filialsWithSettings[$warehouse->code] = [
                 'quote' => $filialDTO->quote,
                 'branch_office_id' => $filial->filial_id,
