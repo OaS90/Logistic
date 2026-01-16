@@ -6,7 +6,7 @@ window.axios.defaults.headers.common['Accept'] = 'application/json';
 axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
 axios.interceptors.response.use(
-    response => {},
+    response => response,
     error => {
         // Проверяем статус ошибки
         const status = error.response ? error.response.status : null;
