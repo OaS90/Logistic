@@ -168,14 +168,20 @@ export default {
                 this.showModal = !this.showModal
                 this.modalText = 'Не выбрано ни одного склада для обновления'
             } else {
-                axios.post('save-tc-settings', this.warehousesToSave).then(response => {
-                    // Проверка: есть ли наши заголовки?
-                    this.showModal = !this.showModal
-                    this.modalText = response.data.message
-                }).catch(errors => {
-                    this.showModal = !this.showModal
-                    this.modalText = errors.response.data.message
-                })
+                axios.post('save-tc-settings', this.warehousesToSave)
+                    .catch(errors => {
+                        if (errors.response.status > 400) {
+                            this.showModal = !this.showModal
+                            this.modalText = errors.response.data.message
+                        }
+                    })
+                    .then(response => {
+                        if (response.status < 300) {
+                            // Проверка: есть ли наши заголовки?
+                            this.showModal = !this.showModal
+                            this.modalText = response.data.message
+                        }
+                    })
 
             }
         },

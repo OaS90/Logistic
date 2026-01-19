@@ -53,7 +53,6 @@ Route::group([
     Route::prefix('support')->group(function() {
         Route::get('apps', [SupportController::class, 'showAppsStatuses']);
         Route::get('apps/get', [SupportController::class, 'getApps']);
-        Route::get('partners', [SupportController::class, 'getPartners']);
         Route::get('partner-warehouses', [SupportController::class, 'getPartnerWarehouses']);
         Route::get('show-upload-page', [SupportController::class, 'showUploadPage']);
         Route::post('import-app', [SupportController::class, 'upload']);
