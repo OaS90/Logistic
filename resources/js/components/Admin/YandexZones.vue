@@ -224,27 +224,32 @@ export default {
             formData.append('document', event.target.files[0])
 
             axios.post('/admin/yandex-zones/prepare-import', formData)
-                .then(response => {
-                    this.changedZones = response.data.changes
-                    this.newPolygons = response.data.new_polygons
-                    this.deletedPolygons = response.data.deleted_polygons
-                    for (let i = 0; i <  this.newPolygons.length; i++) {
-                        this.newPolygonsData[i] = {
-                            region: { name: null },
-                            type: null,
-                            zone: null,
-                            filial: null,
-                            polygon_data: this.newPolygons[i],
-                            to_import: false
+                .catch(errors => {
+                    if (errors.response.status > 400) {
+                        this.loading = false
+
+                        if (errors.data.message) {
+                            this.errorText = errors.data.message
+                        } else {
+                            this.errorText = 'Ошибка обработки данных.'
                         }
                     }
-                }).catch(errors => {
-                    this.loading = false
-
-                    if (errors.data.message) {
-                        this.errorText = errors.data.message
-                    } else {
-                        this.errorText = 'Ошибка обработки данных.'
+                })
+                .then(response => {
+                    if (response.status < 300) {
+                        this.changedZones = response.data.changes
+                        this.newPolygons = response.data.new_polygons
+                        this.deletedPolygons = response.data.deleted_polygons
+                        for (let i = 0; i < this.newPolygons.length; i++) {
+                            this.newPolygonsData[i] = {
+                                region: {name: null},
+                                type: null,
+                                zone: null,
+                                filial: null,
+                                polygon_data: this.newPolygons[i],
+                                to_import: false
+                            }
+                        }
                     }
                 })
 
@@ -255,20 +260,25 @@ export default {
             this.showModal = true
 
             axios.get('/admin/yandex-zones/export', {responseType: 'blob'})
+                .catch(errors => {
+                    if (errors.response.status > 400) {
+                        this.loading = false
+                        this.errorText = 'Ошибка экспорта из сервиса.'
+                    }
+                })
                 .then(response => {
-                    this.loading = false
-                    this.showModal = false
-                    const url = window.URL.createObjectURL(new Blob([response.data]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', 'data.geojson');
-                    document.body.appendChild(link);
-                    link.click();
+                    if (response.status < 300) {
+                        this.loading = false
+                        this.showModal = false
+                        const url = window.URL.createObjectURL(new Blob([response.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', 'data.geojson');
+                        document.body.appendChild(link);
+                        link.click();
+                    }
                 })
-                .catch(error => {
-                    this.loading = false
-                    this.errorText = 'Ошибка экспорта из сервиса.'
-                })
+
         },
 
         importSettings() {
@@ -313,6 +323,11 @@ export default {
             axios.post('/admin/yandex-zones/import-to-service', {
                 zonesToImport: zonesToImport,
                 zones: allZones,
+            }).catch(errors => {
+                if (errors.response.status > 400) {
+                    this.loading = false
+                    this.errorText = 'Ошибка импорта в сервис.'
+                }
             }).then(response => {
                 this.showModal = false;
                 this.loading = false
@@ -330,9 +345,6 @@ export default {
                         this.hasEmptyPrices = true
                     }
                 }
-            }).catch(errors => {
-                this.loading = false
-                this.errorText = 'Ошибка импорта в сервис.'
             })
         }
     }

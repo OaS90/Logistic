@@ -331,15 +331,21 @@ export default {
                     }
                 })
 
-                axios.post('save-quotes', this.quotesToSave).then(response => {
-                    this.loading = false
-                    this.showModal = true
-                    this.modalText = response.data.message
-                }).catch(errors => {
-                    this.showModal = true
-                    this.loading = false
-                    this.modalText = errors.response.data.message
-                })
+                axios.post('save-quotes', this.quotesToSave)
+                    .catch(errors => {
+                        if (errors.data.status > 400) {
+                            this.showModal = true
+                            this.loading = false
+                            this.modalText = errors.response.data.message
+                        }
+                    })
+                    .then(response => {
+                        if (response.status < 300) {
+                            this.loading = false
+                            this.showModal = true
+                            this.modalText = response.data.message
+                        }
+                    })
             }
         },
         excel() {
