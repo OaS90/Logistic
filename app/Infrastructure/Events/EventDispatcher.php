@@ -6,7 +6,6 @@ use App\Domain\DTO\WarehouseShipmentSettingsDTO;
 use Hrulibs\Events\Domain\DispatchesEvents;
 use Illuminate\Support\Facades\Log;
 use Junges\Kafka\Message\Message;
-use const Widmogrod\Functional\concat;
 
 class EventDispatcher
 {
@@ -40,9 +39,6 @@ class EventDispatcher
         } catch (\Exception $e) {
             Log::error('Event creating filial zone error ', ['exception' => $e]);
         }
-        $this->filialZoneChanged(array_map(function ($zone) {
-            return sprintf('%05d', $zone['filial_id']);
-        }, $newZones));
     }
 
     public function filialZoneDeleted(array $deleteZone): void
@@ -60,9 +56,6 @@ class EventDispatcher
         } catch (\Exception $e) {
             Log::error('Event changing filial zone error ', ['exception' => $e]);
         }
-        $this->filialZoneChanged(array_map(function ($zone) {
-            return sprintf('%05d', $zone['filial_id']);
-        }, $deletedZones));
     }
 
     /**

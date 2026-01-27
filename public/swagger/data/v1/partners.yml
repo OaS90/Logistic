@@ -37,31 +37,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response422'
-  /set-status:
-    post:
-      summary: "Обновление статуса заявки"
-      operationId: "set-status"
-      requestBody:
-        $ref: '#/components/requestBodies/SetStatus'
-      responses:
-        '200':
-          description: "Успешное получение"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Response200'
-        '400':
-          description: "Ошибка выполнения"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Response400'
-        '422':
-          description: "Ошибки валидации"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Response422'
   /order/create:
     post:
       summary: "Создание заявки"
