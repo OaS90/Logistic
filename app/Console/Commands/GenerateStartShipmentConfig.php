@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Domain\DTO\WarehouseShipmentSettingsDTO;
+use App\Infrastructure\Events\EventDispatcher;
 use App\Models\Hru\Filial;
 use App\Models\TransportCompany;
 use App\Models\TransportCompanyShipmentWarehouse;
@@ -27,7 +29,7 @@ class GenerateStartShipmentConfig extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public function handle(EventDispatcher $eventDispatcher): void
     {
         $settings = config('shipment_pickpoint');
 
@@ -64,6 +66,15 @@ class GenerateStartShipmentConfig extends Command
                         $data['data'] = $this->prepareJsonData($transportSetting);
                         $tcShipmentSettings->update($data);
                     }
+
+                    $dto = new WarehouseShipmentSettingsDTO(
+                        filialCode: $branchOffice->filial_code,
+                        transportCompanyCode: $tc->code,
+                        departurePointId: $tcShipmentSettings?->departure_id,
+                        settings: $data['data']
+                    );
+
+                    $eventDispatcher->warehouseShipmentSettings($dto);
                 } else {
                     $this->info('Branch office not found ' . $transportSetting['branch_office_id']);
                 }
