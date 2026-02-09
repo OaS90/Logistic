@@ -11,47 +11,16 @@ class EventDispatcher
 {
     use DispatchesEvents;
 
-    const BRANCH_OFFICE_MAP_CHANGE_ACTIONS = 'bort-udachi.branch-office-map';
+    const BRANCH_OFFICE_MAP_CHANGE_ACTIONS = 'bort-udachi.branch-offices-map';
     const BRANCH_OFFICE_ACTIONS = 'bort-udachi.branch-office';
 
 
-    public function filialZoneChanged(string $code): void
+    public function filialZoneChanged(array $codes): void
     {
         try {
             $this->getPublisher()
                 ->onTopic(self::BRANCH_OFFICE_MAP_CHANGE_ACTIONS)
-                ->withMessage(new Message(body: ['code' => $code, 'action' => 'change_zone']))
-                ->withKafkaKey($code)
-                ->send();
-        } catch (\Exception $e) {
-            Log::error('Event changing filial zone error ', ['exception' => $e]);
-        }
-    }
-
-    public function filialZoneCreated(array $newZone): void
-    {
-        try {
-            $this->getPublisher()
-                ->onTopic(self::BRANCH_OFFICE_MAP_CHANGE_ACTIONS)
-                ->withMessage(new Message(body: ['zone' => $newZone, 'action' => 'create_zone']))
-                ->withKafkaKey($newZone['filial_code'])
-                ->send();
-        } catch (\Exception $e) {
-            Log::error('Event creating filial zone error ', ['exception' => $e]);
-        }
-    }
-
-    public function filialZoneDeleted(array $deleteZone): void
-    {
-        try {
-            $this->getPublisher()
-                ->onTopic(self::BRANCH_OFFICE_MAP_CHANGE_ACTIONS)
-                ->withMessage(new Message(body: [
-                    'id' => $deleteZone['filial_code'],
-                    'action' => 'delete_zones',
-                    'zone' => $deleteZone
-                ]))
-                ->withKafkaKey($deleteZone['filial_code'])
+                ->withMessage(new Message(body: ['codes' => $codes, 'action' => 'change']))
                 ->send();
         } catch (\Exception $e) {
             Log::error('Event changing filial zone error ', ['exception' => $e]);

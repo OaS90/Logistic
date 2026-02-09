@@ -384,9 +384,9 @@ class YandexZonesService
         }
 
         // Отправка в кафку.
-
-        foreach ($branchOfficeCodes as $branchOfficeCode) {
-            $this->eventDispatcher->filialZoneChanged($branchOfficeCode);
+        if ($branchOfficeCodes) {
+            $branchOfficeCodes = array_unique($branchOfficeCodes);
+            $this->eventDispatcher->filialZoneChanged($branchOfficeCodes);
         }
 
 
@@ -406,6 +406,7 @@ class YandexZonesService
     private function importNewZones(array $zones): array
     {
         $zoneErrors = [];
+        $filialChanges = [];
 
         foreach ($zones as $newZone) {
             $coordinates = [];
@@ -444,9 +445,13 @@ class YandexZonesService
                     'zone' => $newZone['zone'],
                     'region_name' => $newZone['region']['name'],
                 ];
+            } else {
+                $filialChanges[] = $newZone['filial']['filial_code'];
             }
+        }
 
-            $this->eventDispatcher->filialZoneCreated($newZoneDataForService);
+        if (count($filialChanges)) {
+            $this->eventDispatcher->filialZoneChanged($filialChanges);
         }
 
         return $zoneErrors;
@@ -466,8 +471,8 @@ class YandexZonesService
 
     private function importZonesForDelete(array $zonesToImport): array
     {
-        $deletedBranchOfficeZones = [];
         $zonesWithErrors = [];
+        $filialChanges = [];
 
         foreach ($zonesToImport as $zone) {
             $successDelete = $this->krakenApi
@@ -476,6 +481,8 @@ class YandexZonesService
             if (!$successDelete) {
                 $zonesWithErrors[] = $zone;
 //                throw new DeletedZoneImportException($zone);
+            } else {
+                $filialChanges[] = $zone['filial_code'];
             }
 
             if (isset($successDelete['status']) && $successDelete['status']) {
@@ -495,9 +502,10 @@ class YandexZonesService
                     }
                 }
             }
+        }
 
-            // Отправка в кафку
-            $this->eventDispatcher->filialZoneDeleted($deletedBranchOfficeZones);
+        if (count($filialChanges)) {
+            $this->eventDispatcher->filialZoneChanged($filialChanges);
         }
 
         return $zonesWithErrors;
