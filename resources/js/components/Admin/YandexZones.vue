@@ -143,6 +143,8 @@
 
         <modal v-if="showModalZonesWithErrors" @close="showModalZonesWithErrors = false">
             <template #body>
+                {{ errorText }}
+                <br>
                 <h3>Зоны загруженные с ошибками</h3>
                 <table class="table-bordered">
                     <thead>
@@ -329,16 +331,16 @@ export default {
                     this.errorText = 'Ошибка импорта в сервис.'
                 }
             }).then(response => {
-                this.showModal = false;
                 this.loading = false
                 this.changedZones = null
                 this.newPolygons = null
 
                 if (response.status < 300) {
+                    this.errorText = response.data.message
+
                     if (response.data.result.zones_errors.length > 0) {
                         this.showModalZonesWithErrors = true
                         this.zonesWithErrors = response.data.result.zones_errors
-
                     }
 
                     if (response.data.result.has_empty_prices) {
