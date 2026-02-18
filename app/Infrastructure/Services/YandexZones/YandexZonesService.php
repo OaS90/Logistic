@@ -446,7 +446,7 @@ class YandexZonesService
                     'region_name' => $newZone['region']['name'],
                 ];
             } else {
-                $filialChanges[] = $newZone['filial']['filial_code'];
+                $filialChanges[] = $newZoneDataForService;
             }
         }
 

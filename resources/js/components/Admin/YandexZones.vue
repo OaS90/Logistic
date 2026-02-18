@@ -1,15 +1,22 @@
 <template>
     <div>
-        <label for="file-upload" class="btn btn-primary" data-modal="modal-request1" style="margin-bottom: 0; margin-right: 5px" id="button">
-            <span>Импорт c выводом изменений</span>
-        </label>
-        <input type="file" hidden id="file-upload" @change="beforeImport" ref="fileUpload">
-        <button class="btn btn-primary"  @click="exportSettings">Экспорт</button>
-        <a target="_blank" href="https://yandex.ru/map-constructor/" class="btn btn-success ml-1">Конструктор карт</a>
-        <a @click="showHistory" class="btn btn-secondary ml-1">История выгрузок</a>
-        <a v-if="hasEmptyPrices" href="/admin/tariffs/validation" class="btn btn-danger ml-1">Незаполненные цены для категорий</a>
-        <hr>
+        <div class="d-flex justify-content-between">
+            <div>
+                <button class="btn btn-primary"  @click="exportSettings">1. Экспорт</button>
+                <a target="_blank" href="https://yandex.ru/map-constructor/" class="btn btn-success ml-1">2. Конструктор карт</a>
+                <input type="file" hidden id="file-upload" @change="beforeImport" ref="fileUpload">
+                <label for="file-upload" class="btn btn-dropbox ml-1 cursor-pointer" data-modal="modal-request1" style="margin-bottom: 0; margin-right: 5px" id="button">
+                    <span>3. Импорт c выводом изменений</span>
+                </label>
 
+            </div>
+<!--            <div class="border border-secondary-subtle"></div>-->
+            <div>
+                <a @click="showHistory" class="btn btn-secondary ml-1 cursor-pointer">История выгрузок</a>
+                <a v-if="hasEmptyPrices" href="/admin/tariffs/validation" class="btn btn-danger ml-1 cursor-pointer" role="button">Незаполненные цены для категорий</a>
+            </div>
+        </div>
+        <hr>
         <div v-if="changedZones">
             <h2>Изменения в зонах</h2>
 
@@ -143,6 +150,8 @@
 
         <modal v-if="showModalZonesWithErrors" @close="showModalZonesWithErrors = false">
             <template #body>
+                {{ errorText }}
+                <br>
                 <h3>Зоны загруженные с ошибками</h3>
                 <table class="table-bordered">
                     <thead>
@@ -329,16 +338,16 @@ export default {
                     this.errorText = 'Ошибка импорта в сервис.'
                 }
             }).then(response => {
-                this.showModal = false;
                 this.loading = false
                 this.changedZones = null
                 this.newPolygons = null
 
                 if (response.status < 300) {
+                    this.errorText = response.data.message
+
                     if (response.data.result.zones_errors.length > 0) {
                         this.showModalZonesWithErrors = true
                         this.zonesWithErrors = response.data.result.zones_errors
-
                     }
 
                     if (response.data.result.has_empty_prices) {
@@ -376,5 +385,8 @@ span.deleted-zones {
 }
 span.changed-zones {
     padding: 5px;
+}
+.cursor-pointer {
+    cursor: pointer;
 }
 </style>

@@ -48,7 +48,6 @@ class YandexZonesController extends Controller
             $exportData = json_decode($fileContent, true);
             $result = $service->handleBeforeImportToService($exportData);
         } catch (\Throwable $e) {
-            dd($e->getTraceAsString());
             Log::error('Preparing zones for sending to service error ' . $e->getMessage());
             $message = '';
 
@@ -102,7 +101,7 @@ class YandexZonesController extends Controller
             return response()->json(['success' => false], Response::HTTP_BAD_REQUEST);
         }
 
-        return response()->json(['success' => true, 'result' => $result]);
+        return response()->json(['success' => true, 'result' => $result, 'message' => 'Зоны отправлены в сервис!']);
     }
 
     public function downloadExportFile(string $fileName): Response|BinaryFileResponse

@@ -100,7 +100,16 @@ class CsvImportService
         $dataFromFile = Excel::toArray($entity, $file)[0];
         $rows = $this->fileObiTitlesToDbColumnsPrepare();
 
-        foreach ($dataFromFile as $row) {
+        // Когда присылают кривой файл, нужно обрезать
+        // $dataFromFile = array_slice($dataFromFile, 4);
+
+        if (!array_splice($dataFromFile, 4)) {
+            $data = $dataFromFile;
+        } else {
+            $data = array_slice($dataFromFile, 4);
+        }
+
+        foreach ($data as $row) {
             // убираем номер строки из файла (№ п/п)
             unset($row[0]);
 
@@ -157,6 +166,7 @@ class CsvImportService
                 $appWithDbColumns['totalDeliveryCost'] = parse_to_float($appWithDbColumns['totalDeliveryCost']);
                 $appWithDbColumns['liftCost'] = parse_to_float($appWithDbColumns['liftCost']);
                 $appWithDbColumns['productsCost'] = parse_to_float($appWithDbColumns['productsCost']);
+                $appWithDbColumns['handLiftFloor'] = (int)$appWithDbColumns['handLiftFloor'];
 
                 if (!$existApp) {
                     $appDTO = $this->appFactory->makeObiApplicationDTO($appWithDbColumns);
