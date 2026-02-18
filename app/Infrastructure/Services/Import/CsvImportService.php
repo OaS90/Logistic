@@ -99,10 +99,17 @@ class CsvImportService
     {
         $dataFromFile = Excel::toArray($entity, $file)[0];
         $rows = $this->fileObiTitlesToDbColumnsPrepare();
+
         // Когда присылают кривой файл, нужно обрезать
-        // Пока не придумал, как это проверять
         // $dataFromFile = array_slice($dataFromFile, 4);
-        foreach ($dataFromFile as $row) {
+
+        if (!array_splice($dataFromFile, 4)) {
+            $data = $dataFromFile;
+        } else {
+            $data = array_slice($dataFromFile, 4);
+        }
+
+        foreach ($data as $row) {
             // убираем номер строки из файла (№ п/п)
             unset($row[0]);
 
