@@ -194,8 +194,6 @@ class YandexZonesService
      * Все зоны
      * @param array $allZones
      * @return array
-     * @throws DeletedZoneImportException
-     * @throws NewZoneImportException
      */
     public function importToService(array $zonesToUpdate, array $allZones): array
     {
@@ -418,6 +416,9 @@ class YandexZonesService
 
             $newZoneDataForService = $this->prepareNewZoneParams($newZone, $coordinates);
 
+            // т.к. зона новая, то если она имеет тип
+            // delivery-zone, то создаём её во всех тарифах,
+            // со всем категориями и ценами
             if ($newZone['type'] == 'delivery-zones') {
                 $tariffs = $this->tariffRepo->getAll();
                 $categories = $this->tariffCategoryRepo->getAll();
