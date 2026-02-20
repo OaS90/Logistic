@@ -231,6 +231,7 @@ export default {
         beforeImport(event) {
             let formData = new FormData()
             formData.append('document', event.target.files[0])
+            this.newPolygonsData = []
 
             axios.post('/admin/yandex-zones/prepare-import', formData)
                 .catch(errors => {
@@ -249,14 +250,17 @@ export default {
                         this.changedZones = response.data.changes
                         this.newPolygons = response.data.new_polygons
                         this.deletedPolygons = response.data.deleted_polygons
-                        for (let i = 0; i < this.newPolygons.length; i++) {
-                            this.newPolygonsData[i] = {
-                                region: {name: null},
-                                type: null,
-                                zone: null,
-                                filial: null,
-                                polygon_data: this.newPolygons[i],
-                                to_import: false
+
+                        if (this.newPolygons.length > 0) {
+                            for (let i = 0; i < this.newPolygons.length; i++) {
+                                this.newPolygonsData[i] = {
+                                    region: {name: null},
+                                    type: null,
+                                    zone: null,
+                                    filial: null,
+                                    polygon_data: this.newPolygons[i],
+                                    to_import: false
+                                }
                             }
                         }
                     }
