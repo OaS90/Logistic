@@ -103,7 +103,7 @@ class CsvImportService
         // Когда присылают кривой файл, нужно обрезать
         // $dataFromFile = array_slice($dataFromFile, 4);
 
-        if (!array_splice($dataFromFile, 4)) {
+        if (!array_slice($dataFromFile, 4)) {
             $data = $dataFromFile;
         } else {
             $data = array_slice($dataFromFile, 4);
