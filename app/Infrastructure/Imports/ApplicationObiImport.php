@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
 class ApplicationObiImport extends DefaultValueBinder implements ImportEntity,
-    WithCustomValueBinder, WithCalculatedFormulas, WithStartRow
+    WithCustomValueBinder, WithCalculatedFormulas
 {
 
     public function getCsvSettings(): array
@@ -16,10 +16,5 @@ class ApplicationObiImport extends DefaultValueBinder implements ImportEntity,
         return [
             'input_encoding' => 'windows-1251'
         ];
-    }
-
-    public function startRow(): int
-    {
-        return 5;
     }
 }
