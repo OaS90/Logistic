@@ -19,7 +19,8 @@ class Api
     public const CONFIG_FILIALS_URI = 'config/filials';
     public const CONFIG_WAREHOUSES_URI = 'config/warehouses';
     public const CONFIG_REGIONS_URI = 'config/regions';
-
+    public const KEY_TRACE_PREFIX = 'bortudachi_';
+    public const KEY_TRACE = 'x-trace-id';
 
     public function __construct(private readonly Client $client)
     {
@@ -29,6 +30,9 @@ class Api
     {
         $result = [];
         $params[RequestOptions::HEADERS]['Authorization'] = config('services.monolith.token');
+        $rid = uniqid(self::KEY_TRACE_PREFIX);
+        $params[RequestOptions::HEADERS][self::KEY_TRACE] = $rid;
+        Log::withContext(['rid' => $rid, 'request_path' => $uri, 'request_method' => $method]);
 
         Log::info('Send to monolith. Request: ' . json_encode($data) . ' uri: ' . $uri);
 
@@ -41,8 +45,9 @@ class Api
         try {
             $response = $this->client->request($method, $uri, $params);
             $result = json_decode($response->getBody()->getContents(), true);
-
-            Log::info('Monolith response: ' . $response->getBody()->getContents() . ' code: ' . $response->getStatusCode());
+            $rid = $response->getHeader(self::KEY_TRACE) ?? $rid;
+            Log::withContext(['rid' => $rid, 'request_path' => $uri, 'request_method' => $method])
+                ->info('Monolith response: ' . $response->getBody()->getContents() . ' code: ' . $response->getStatusCode());
 
             if ($response->getStatusCode() == 200 && (isset($result['success']) && $result['success'])) {
                 $result['status'] = true;
@@ -66,6 +71,9 @@ class Api
     {
         $result = [];
         $params[RequestOptions::HEADERS]['X-Config-Service-Token'] = config('services.config_service.token');
+        $rid = uniqid(self::KEY_TRACE_PREFIX);
+        $params[RequestOptions::HEADERS][self::KEY_TRACE] = $rid;
+        Log::withContext(['rid' => $rid, 'request_path' => $uri, 'request_method' => $method]);
 
         if ($method !== 'GET') {
             $params[RequestOptions::JSON] = ['data' => $data];
@@ -96,6 +104,9 @@ class Api
     public function deliveryServiceRequest(string $uri, array $data = [], $method = 'GET'): array
     {
         $result = [];
+        $rid = uniqid(self::KEY_TRACE_PREFIX);
+        $params[RequestOptions::HEADERS][self::KEY_TRACE] = $rid;
+        Log::withContext(['rid' => $rid, 'request_path' => $uri, 'request_method' => $method]);
 
         if ($method == 'PATCH') {
             $action = 'CHANGE';
