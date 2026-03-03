@@ -19,19 +19,19 @@ class Api
     public const CONFIG_FILIALS_URI = 'config/filials';
     public const CONFIG_WAREHOUSES_URI = 'config/warehouses';
     public const CONFIG_REGIONS_URI = 'config/regions';
+    public const KEY_TRACE_PREFIX = 'bortudachi_';
+    public const KEY_TRACE = 'x-trace-id';
 
-    public function __construct(private readonly Client $client, private string $keyTracePrefix, private string $keyTrace)
+    public function __construct(private readonly Client $client)
     {
-        $this->keyTracePrefix = env('APP_NAME', 'sessions') . '_';
-        $this->keyTrace = env('APP_KEY_TRACE', 'x-trace-id');
     }
 
     public function monolithRequest(string $uri, array $data = [], string $method = 'GET'): array
     {
         $result = [];
         $params[RequestOptions::HEADERS]['Authorization'] = config('services.monolith.token');
-        $rid = uniqid($this->keyTracePrefix);
-        $params[RequestOptions::HEADERS][$this->keyTrace] = $rid;
+        $rid = uniqid(self::KEY_TRACE_PREFIX);
+        $params[RequestOptions::HEADERS][self::KEY_TRACE] = $rid;
         Log::withContext(['rid' => $rid, 'request_path' => $uri, 'request_method' => $method]);
 
         Log::info('Send to monolith. Request: ' . json_encode($data) . ' uri: ' . $uri);
@@ -45,7 +45,7 @@ class Api
         try {
             $response = $this->client->request($method, $uri, $params);
             $result = json_decode($response->getBody()->getContents(), true);
-            $rid = $response->getHeader($this->keyTrace) ?? $rid;
+            $rid = $response->getHeader(self::KEY_TRACE) ?? $rid;
             Log::withContext(['rid' => $rid, 'request_path' => $uri, 'request_method' => $method])
                 ->info('Monolith response: ' . $response->getBody()->getContents() . ' code: ' . $response->getStatusCode());
 
@@ -71,8 +71,8 @@ class Api
     {
         $result = [];
         $params[RequestOptions::HEADERS]['X-Config-Service-Token'] = config('services.config_service.token');
-        $rid = uniqid($this->keyTracePrefix);
-        $params[RequestOptions::HEADERS][$this->keyTrace] = $rid;
+        $rid = uniqid(self::KEY_TRACE_PREFIX);
+        $params[RequestOptions::HEADERS][self::KEY_TRACE] = $rid;
         Log::withContext(['rid' => $rid, 'request_path' => $uri, 'request_method' => $method]);
 
         if ($method !== 'GET') {
@@ -104,8 +104,8 @@ class Api
     public function deliveryServiceRequest(string $uri, array $data = [], $method = 'GET'): array
     {
         $result = [];
-        $rid = uniqid($this->keyTracePrefix);
-        $params[RequestOptions::HEADERS][$this->keyTrace] = $rid;
+        $rid = uniqid(self::KEY_TRACE_PREFIX);
+        $params[RequestOptions::HEADERS][self::KEY_TRACE] = $rid;
         Log::withContext(['rid' => $rid, 'request_path' => $uri, 'request_method' => $method]);
 
         if ($method == 'PATCH') {
