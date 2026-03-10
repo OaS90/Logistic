@@ -60,6 +60,7 @@
                     <td v-if="showSiteProperties"><input type="checkbox" v-model="item.inHour"></td>
                     <td v-if="showSiteProperties">
                         <input type="text" v-model="item.deliveryDaysFromMoscow"
+                               disabled
                                class="form-control"
                                @keypress="onlyNumber"
                                maxlength=2>
