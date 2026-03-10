@@ -60,7 +60,9 @@
                     <td v-if="showSiteProperties"><input type="checkbox" v-model="item.inHour"></td>
                     <td v-if="showSiteProperties">
                         <input type="text" v-model="item.deliveryDaysFromMoscow"
-                               class="form-control"
+                               class="form-control bg-secondary"
+                               disabled
+                               readonly
                                @keypress="onlyNumber"
                                maxlength=2>
                     </td>
@@ -159,7 +161,8 @@
                         в указанный час
                     </th>
                     <th v-if="showSiteProperties" class="deliveryFromMoscow">
-                        Кол-во дней <br> доставки <br>со склада отгрузки
+                        Кол-во дней <br> доставки <br>со склада отгрузки <br>
+                        <span style="font-size: 12px; padding:4px;background-color: orangered">для редактирования обратиться  в тех. поддержку</span>
                     </th>
                     <th v-if="showSiteProperties">Ограничение по <br> времени оформления</th>
                     <th v-if="showSiteProperties">Часы доставки</th>

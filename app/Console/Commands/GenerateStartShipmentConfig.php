@@ -61,7 +61,7 @@ class GenerateStartShipmentConfig extends Command
                         ];
 
                         $data['data'] = $this->prepareJsonData($transportSetting);
-                        TransportCompanyShipmentWarehouse::query()->create($data);
+                        $tcShipmentSettings = TransportCompanyShipmentWarehouse::query()->create($data);
                     } else {
                         $data['data'] = $this->prepareJsonData($transportSetting);
                         $tcShipmentSettings->update($data);
